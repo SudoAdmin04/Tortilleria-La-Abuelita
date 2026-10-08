@@ -25,8 +25,10 @@ export const useRoles = () => {
 
   async function fetchAll() {
     loading.value = true
+    error.value = null
     try {
       items.value = await listRoles()
+      total.value = items.value.length
     } catch (e: any) {
       error.value = e?.data?.message || e?.message || 'Error al obtener roles'
     } finally {
@@ -46,11 +48,11 @@ export const useRoles = () => {
   async function create(payload: CreateRole) {
     try {
       const r = await createRole(payload)
-      toast.add({ title: 'Rol creado', color: 'success' })
+      toast.add({ title: 'Rol creado', color: 'success', icon: 'i-lucide-circle-check' })
       await fetchPaginado()
       return r
     } catch (e: any) {
-      toast.add({ title: 'Error', description: e?.data?.message || 'Error al crear rol', color: 'error' })
+      toast.add({ title: 'Error', description: e?.data?.message || 'Error al crear rol', color: 'error', icon: 'i-lucide-triangle-alert' })
       return undefined
     }
   }
@@ -58,11 +60,11 @@ export const useRoles = () => {
   async function update(id: number | string, payload: UpdateRole) {
     try {
       const r = await updateRole(id, payload)
-      toast.add({ title: 'Rol actualizado', color: 'success' })
+      toast.add({ title: 'Rol actualizado', color: 'success', icon: 'i-lucide-circle-check' })
       await fetchPaginado()
       return r
     } catch (e: any) {
-      toast.add({ title: 'Error', description: 'Error al actualizar rol', color: 'error' })
+      toast.add({ title: 'Error', description: e?.data?.message || 'Error al actualizar rol', color: 'error', icon: 'i-lucide-triangle-alert' })
       return undefined
     }
   }
@@ -70,13 +72,12 @@ export const useRoles = () => {
   async function remove(id: number | string) {
     try {
       await deleteRole(id)
-      toast.add({ title: 'Rol eliminado', color: 'success' })
+      toast.add({ title: 'Rol eliminado', color: 'success', icon: 'i-lucide-circle-check' })
       await fetchPaginado()
     } catch (e: any) {
-      toast.add({ title: 'Error', description: 'No se pudo eliminar', color: 'error' })
+      toast.add({ title: 'Error', description: e?.data?.message || 'No se pudo eliminar', color: 'error', icon: 'i-lucide-triangle-alert' })
     }
   }
 
   return { items, item, loading, error, total, filter, fetchPaginado, fetchAll, fetchById, create, update, remove }
 }
-

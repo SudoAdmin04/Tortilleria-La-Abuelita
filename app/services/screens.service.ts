@@ -39,6 +39,6 @@ export function deleteScreen(id: number | string) {
   return useApi().api<void>(`/screens/${id}`, { method: 'DELETE' })
 }
 
-export function toggleScreen(id: number | string, isActive: boolean) {
-  return useApi().api<Screen>(`/screens/${id}/toggle-active`, { method: 'PATCH', body: { isActive } })
+export function toggleScreen(id: number | string) {
+  return useApi().api<Screen>(`/screens/${id}/toggle-active`, { method: 'PATCH' })
 }

@@ -33,10 +33,10 @@ const configEntry = computed<NavigationMenuItem[]>(() => {
 })
 
 const menuUi = {
-  list: 'flex flex-col gap-1 w-full',
+  list: 'flex flex-col gap-2 w-full',
   item: 'w-full',
   link: [
-    'group relative flex items-center gap-3 px-3.5 py-2.5 w-full text-sm transition-all duration-150',
+    'group relative flex items-center gap-2 w-full text-sm transition-all duration-150',
     'rounded-xl',
     'border-s-3 border-s-transparent',
     'text-white/70 hover:bg-white/5 hover:text-primary-200 hover:border-s-primary-200',
@@ -58,7 +58,7 @@ const menuUi = {
   >
     <template #header="{ collapsed: isCollapsed, collapse }">
       <div
-        class="flex w-full items-center gap-2 px-1 py-1"
+        class="flex w-full items-center gap-2 "
         :class="isCollapsed ? 'flex-col justify-center gap-2' : 'justify-between'"
       >
         <div v-if="!isCollapsed" class="flex min-w-0 flex-1 items-center justify-start">
@@ -88,7 +88,7 @@ const menuUi = {
           class="w-full flex-1"
         />
 
-        <div v-if="configEntry.length" class="p-2 border-t border-white/10">
+        <div v-if="configEntry.length">
           <UNavigationMenu
             :items="configEntry"
             orientation="vertical"
@@ -102,7 +102,7 @@ const menuUi = {
     </template>
 
     <template #footer="{ collapsed: isCollapsed }">
-      <div class="w-full border-t border-white/10 p-2">
+      <div class="w-full border-t border-white/10">
         <UDropdownMenu
           v-if="!isCollapsed"
           :items="userMenuItems"

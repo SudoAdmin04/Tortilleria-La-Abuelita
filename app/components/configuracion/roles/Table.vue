@@ -1,141 +1,197 @@
 <script setup lang="ts">
 import { h, computed, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { components } from '~/types/api'
+import type { Role } from '~/services/roles.service'
 
-type Rol = components['schemas']['Rol']
-
-const UIcon = resolveComponent('UIcon')
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
-const UTooltip = resolveComponent('UTooltip')
-
-const { confirm } = useConfirm()
+const UDropdownMenu = resolveComponent('UDropdownMenu')
 
 const props = defineProps<{
-  data: Rol[]
+  data: Role[]
   total: number
-  loading?: boolean
+  loading: boolean
 }>()
 
 const emit = defineEmits<{
-  edit: [rol: Rol]
-  toggle: [id: string]
+  edit: [role: Role]
+  delete: [id: number]
 }>()
 
-const columns: TableColumn<Rol>[] = [
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('es-MX', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+const columnas: TableColumn<Role>[] = [
   {
-    accessorKey: 'descripcion',
+    accessorKey: 'name',
     header: 'Rol',
-    cell: ({ row }) => {
-      return h('div', { class: 'flex items-center gap-2.5 py-1' }, [
-        h('span', { class: 'font-semibold text-sm text-neutral-900 dark:text-white' }, row.original.descripcion)
-      ])
-    }
+    cell: ({ row }) => h('div', { class: 'flex flex-col min-w-0' }, [
+      h('span', { class: 'text-sm font-semibold text-white truncate' }, row.original.name),
+      h('span', { class: 'text-xs text-white/50 truncate' }, row.original.description || 'Sin descripción'),
+    ]),
   },
   {
-    accessorKey: 'activo',
+    accessorKey: 'isAdmin',
+    header: 'Tipo',
+    cell: ({ row }) => h(UBadge, {
+      color: row.original.isAdmin ? 'primary' : 'neutral',
+      variant: 'subtle',
+      size: 'sm',
+      class: 'capitalize font-medium',
+    }, () => row.original.isAdmin ? 'Admin' : 'Operativo'),
+  },
+  {
+    accessorKey: 'isActive',
     header: 'Estado',
     cell: ({ row }) => {
-      const active = row.original.activo
+      const active = row.original.isActive
       return h(UBadge, {
         color: active ? 'success' : 'neutral',
-        variant: 'soft',
-        size: 'sm'
+        variant: 'subtle',
+        size: 'sm',
+        class: 'font-medium',
       }, () => active ? 'Activo' : 'Inactivo')
-    }
+    },
+  },
+  {
+    accessorKey: 'updatedAt',
+    header: 'Última Actualización',
+    cell: ({ row }) => {
+      const acc = row.original.updatedAt
+      if (acc) return h('span', formatDate(acc))
+      return h('span', 'Sin registro')
+    },
   },
   {
     id: 'actions',
-    header: 'Acciones',
-    meta: { class: { td: 'text-center' } },
+    header: () => h('div', { class: 'text-right pr-2' }, 'Acciones'),
+    meta: { class: { td: 'text-right' } },
     cell: ({ row }) => {
       const record = row.original
-      const isActivo = record.activo
-            
-      return h('div', { class: 'flex items-center justify-center gap-1' }, [
-        h(UTooltip, { text: 'Editar rol', delayDuration:0 }, () => h(UButton, {
-          icon: 'i-heroicons-pencil-square',
-          color: 'info',
-          variant: 'soft',
-          size: 'sm',
-          onClick: () => emit('edit', record)
-        })),
-
-        h(UTooltip, { text: isActivo ? 'Desactivar' : 'Activar', delayDuration:0 }, () => h(UButton, {
-          icon: isActivo ? 'i-heroicons-no-symbol' : 'i-heroicons-check-circle',
-          color: isActivo ? 'warning' : 'success',
-          variant: 'soft',
-          size: 'sm',
-          onClick: async () => {
-            const isConfirmed = await confirm({
-              title: isActivo ? '¿Desactivar rol?' : '¿Activar rol?',
-              description: `¿Estás seguro de que deseas ${isActivo ? 'desactivar' : 'activar'}?`,
-              variant: isActivo ? 'warning' : 'save',
-              confirmText: isActivo ? 'Sí, desactivar' : 'Sí, activar',
-              cancelText: 'Cancelar'
-            })
-
-            if (isConfirmed) {
-              emit('toggle',  String(record.id))
-            }
-          }
-        })),
+      const dropdownItems = [
+        [
+          {
+            label: 'Editar',
+            icon: 'i-heroicons-pencil-square',
+            onSelect: () => emit('edit', record),
+          },
+          {
+            label: 'Eliminar',
+            icon: 'i-heroicons-trash',
+            color: 'error' as const,
+            onSelect: () => emit('delete', record.id),
+          },
+        ],
+      ]
+      return h('div', { class: 'flex justify-end pr-1' }, [
+        h(UDropdownMenu, {
+          items: dropdownItems,
+          content: { align: 'end' },
+        }, {
+          default: () => h(UButton, {
+            icon: 'i-heroicons-ellipsis-vertical',
+            color: 'neutral',
+            variant: 'ghost',
+            size: 'xs',
+            class: 'text-white/60 hover:text-white hover:bg-white/10 rounded-lg',
+            'aria-label': 'Acciones',
+          }),
+        }),
       ])
-    }
-  }
+    },
+  },
 ]
 
-const pageCountOptions = [5, 10, 25]
-const page = defineModel<number>('page', { default: 10 })
+const pageCountOptions = [10, 25, 50, 75, 100]
+const page = defineModel<number>('page', { default: 1 })
 const itemsPerPage = defineModel<number>('pageCount', { default: 10 })
 const totalItems = computed(() => props.total ?? props.data.length)
+const totalPaginas = computed(() => Math.ceil((props.total || 0) / itemsPerPage.value) || 1)
+
+watch([itemsPerPage, () => props.total], () => {
+  if (page.value > totalPaginas.value) {
+    page.value = 1
+  }
+})
 
 const pageLabel = computed(() => {
-  if (!props.total) return '0 registros'
+  if (!props.total) return 'Mostrando 0 registros'
   const start = (page.value - 1) * itemsPerPage.value + 1
   const end = Math.min(page.value * itemsPerPage.value, props.total)
-  return `Mostrando ${start}-${end} de ${props.total} registros`
+  return `Mostrando ${start}-${end} de ${props.total} roles registrados`
 })
 </script>
 
 <template>
-  <UCard class="flex-1 flex flex-col max-h-[calc(100vh-250px)]" :ui="{ body: 'p-0 overflow-auto', footer: 'py-3 px-4 border-t border-default' }">
-    <template #header>
-      <div class="flex items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-heroicons-lock-closed" class="size-5 text-primary" />
-          <span class="text-sm font-semibold">Roles Registrados</span>
-          <UBadge v-if="data.length" size="sm" color="primary" variant="subtle">{{ totalItems }}</UBadge>
-        </div>
-      </div>
-    </template>
-
-    <template #default>
-      <UTable
-        :data="props.data"
-        :loading="props.loading"
-        :columns="columns"
-        sticky
-      >
-        <template #empty>
-          <div class="flex flex-col items-center justify-center py-12 gap-3">
-            <UIcon name="i-heroicons-lock-closed" class="size-8 text-neutral-400" />
-            <p class="text-sm text-neutral-500 font-medium">No se encontraron roles en el sistema.</p>
+  <div class="flex flex-col gap-4 w-full">
+    <UCard
+      class="border border-white/10 overflow-hidden"
+      :ui="{
+        header: 'py-3.5 px-5 border-b border-white/10 bg-white/[0.02]',
+        body: 'p-0 overflow-x-auto',
+        footer: 'py-3 px-5 border-t border-white/10 bg-white/[0.01]',
+      }"
+    >
+      <template #header>
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-bold text-white tracking-wide">Gestión de Roles</span>
           </div>
-        </template>
-      </UTable>
-    </template>
-
-    <template #footer>
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400">{{ pageLabel }}</span>
-
-        <div class="flex items-center gap-2">
-          <USelect v-model="itemsPerPage" :items="pageCountOptions" class="w-20" />
-          <UPagination v-if="props.total >= itemsPerPage || page > 1" v-model:page="page" :page-size="pageCount" :items-per-page="itemsPerPage" :total="props.total" size="sm" />
+          <UBadge v-if="totalItems" size="sm" color="primary" variant="subtle" class="px-2.5 font-semibold">
+            {{ totalItems }} {{ totalItems === 1 ? 'Rol' : 'Roles' }}
+          </UBadge>
         </div>
-      </div>
-    </template>
-  </UCard>
+      </template>
+
+      <template #default>
+        <UTable
+          data-key="id"
+          :columns="columnas"
+          :data="props.data"
+          :loading="props.loading"
+          sticky
+          class="w-full"
+          :ui="{ tr: 'hover:bg-white/[0.01] transition-colors duration-150 cursor-pointer'}"
+        >
+          <template #empty>
+            <div class="flex flex-col items-center justify-center py-12 gap-3">
+              <UIcon name="i-heroicons-x-circle" class="size-8 text-white/30" />
+              <p class="text-sm text-white/50 font-medium">No hay roles que coincidan con los criterios.</p>
+            </div>
+          </template>
+        </UTable>
+      </template>
+
+      <template #footer>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+          <span class="text-white/60 font-medium">
+            {{ pageLabel }}
+          </span>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <span class="text-white/40">Filas por página:</span>
+              <USelect
+                v-model="itemsPerPage"
+                :items="pageCountOptions"
+                size="xs"
+                class="w-16"
+              />
+            </div>
+            <UPagination
+              v-if="props.total > itemsPerPage || page > 1"
+              v-model:page="page"
+              :items-per-page="itemsPerPage"
+              :total="props.total"
+              size="xs"
+            />
+          </div>
+        </div>
+      </template>
+    </UCard>
+  </div>
 </template>

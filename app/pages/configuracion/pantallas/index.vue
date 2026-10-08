@@ -1,84 +1,87 @@
-
 <script setup lang="ts">
 import type { Screen } from '~/services/screens.service'
 
-const { items, loading, total, filters, fetchPaginado, create, update, toggleActivo, remove } = usePantallas()
-const drawer = ref(false)
-const editId = ref<number | null>(null)
-const form = reactive({ name: '', path: '', icon: '', order: 0, module: 'finanzas', isActive: true })
-const cols = [
-  { accessorKey: 'name', header: 'Nombre' },
-  { accessorKey: 'path', header: 'Ruta' },
-  { accessorKey: 'module', header: 'Módulo' },
-  { accessorKey: 'isActive', header: 'Estado' },
-  { accessorKey: 'actions', header: '' },
-]
+const { items, total, loading, fetchPaginado, toggleActivo, remove, filter } = usePantallas()
 
-function abrirCrear() {
-  editId.value = null
-  Object.assign(form, { name: '', path: '', icon: '', order: 0, module: 'finanzas', isActive: true })
-  drawer.value = true
+const search = ref('')
+const formDrawerOpen = ref(false)
+const editingPantalla = ref<Screen | null>(null)
+const page = ref(1)
+const pageCount = ref(10)
+
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+
+watch([page, pageCount], () => {
+  filter.pagina = page.value
+  filter.registros = pageCount.value
+  fetchPaginado()
+})
+
+watch(search, (v) => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    page.value = 1
+    filter.pagina = 1
+    filter.buscar = v?.trim() ? v.trim() : undefined
+    fetchPaginado()
+  }, 350)
+})
+
+function openCreate() {
+  editingPantalla.value = null
+  formDrawerOpen.value = true
 }
 
-function abrirEditar(s: Screen) {
-  editId.value = s.id
-  Object.assign(form, { name: s.name, path: s.path || '', icon: s.icon || '', order: s.order || 0, module: s.module || 'finanzas', isActive: s.isActive })
-  drawer.value = true
+function openEdit(screen: Screen) {
+  editingPantalla.value = screen
+  formDrawerOpen.value = true
 }
 
-async function guardar() {
-  const payload: any = { name: form.name, path: form.path || undefined, icon: form.icon || undefined, order: Number(form.order), module: form.module || undefined, isActive: form.isActive }
-  if (editId.value) await update(editId.value, payload)
-  else await create(payload)
-  drawer.value = false
+async function handleToggle(id: number) {
+  await toggleActivo(id)
 }
 
-onMounted(fetchPaginado)
+async function handleDelete(id: number) {
+  await remove(id)
+}
+
+onMounted(async () => {
+  filter.pagina = page.value
+  filter.registros = pageCount.value
+  filter.buscar = undefined
+  await fetchPaginado()
+})
+
+onUnmounted(() => clearTimeout(searchTimer))
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h1 class="font-display text-2xl font-semibold">Pantallas</h1>
-        <p class="text-sm text-slate-400">{{ total }} pantallas · viajan en el JWT como permisos</p>
-      </div>
-      <UButton icon="i-lucide-plus" @click="abrirCrear()">Nueva pantalla</UButton>
-    </div>
+  <div class="space-y-6">
+    <AppToolbar
+      v-model:search="search"
+      title="Pantallas"
+      description="Catálogo de pantallas · viajan en el JWT como permisos"
+      search-placeholder="Buscar pantalla por nombre o ruta..."
+      create-label="Nueva Pantalla"
+      @create="openCreate"
+    />
 
-    <UCard>
-      <div class="flex gap-2 mb-4">
-        <UInput v-model="filters.buscar" icon="i-lucide-search" placeholder="Buscar..." class="max-w-64" @change="fetchPaginado()" />
-      </div>
-      <UTable :data="items" :columns="cols" :loading="loading">
-        <template #isActive-cell="{ row }"><UBadge :color="row.original.isActive ? 'success' : 'neutral'" variant="soft">{{ row.original.isActive ? 'Activa' : 'Inactiva' }}</UBadge></template>
-        <template #actions-cell="{ row }">
-          <div class="flex gap-1 justify-end">
-            <UButton size="xs" variant="ghost" icon="i-lucide-pencil" @click="abrirEditar(row.original)" />
-            <UButton size="xs" variant="ghost" :icon="row.original.isActive ? 'i-lucide-eye-off' : 'i-lucide-eye'" @click="toggleActivo(row.original.id, !row.original.isActive)" />
-            <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="remove(row.original.id)" />
-          </div>
-        </template>
-      </UTable>
-      <UPagination v-model="filters.pagina" :total="total" :per-page="filters.registros" class="mt-4" @update:model-value="fetchPaginado()" />
-    </UCard>
+    <ConfiguracionPantallasTable
+      :data="items"
+      :loading="loading"
+      :total="total"
+      v-model:page="page"
+      v-model:pageCount="pageCount"
+      @edit="openEdit"
+      @toggle="handleToggle"
+      @delete="handleDelete"
+    />
 
-    <USlideover v-model:open="drawer" title="Pantalla">
-      <template #body>
-        <UForm :state="form" class="space-y-4" @submit="guardar">
-          <UFormField label="Nombre" required><UInput v-model="form.name" class="w-full" /></UFormField>
-          <UFormField label="Ruta"><UInput v-model="form.path" placeholder="/dashboard" class="w-full" /></UFormField>
-          <UFormField label="Icono"><UInput v-model="form.icon" placeholder="i-lucide-..." class="w-full" /></UFormField>
-          <UFormField label="Orden"><UInput v-model="form.order" type="number" class="w-full" /></UFormField>
-          <UFormField label="Módulo"><UInput v-model="form.module" placeholder="finanzas|sistema|catalogos" class="w-full" /></UFormField>
-          <UFormField label="Activa"><USwitch v-model="form.isActive" /></UFormField>
-          <UButton type="submit" block>Guardar</UButton>
-        </UForm>
-      </template>
-    </USlideover>
+    <ConfiguracionPantallasDrawer
+      v-model:open="formDrawerOpen"
+      :pantalla="editingPantalla"
+      :pantallas="items"
+      @refresh="fetchPaginado"
+    />
   </div>
 </template>
-
-
-
-

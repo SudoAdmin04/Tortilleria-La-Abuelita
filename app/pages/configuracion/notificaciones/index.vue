@@ -1,45 +1,75 @@
-
 <script setup lang="ts">
-const { notificaciones, total, loading, sinLeer, filters, fetchNotificaciones, marcarLeida, eliminar } = useNotificaciones()
-const cols = [
-  { accessorKey: 'title', header: 'Título' },
-  { accessorKey: 'body', header: 'Mensaje' },
-  { accessorKey: 'type', header: 'Tipo' },
-  { accessorKey: 'isRead', header: 'Estado' },
-  { accessorKey: 'actions', header: '' },
-]
+const { items: notificaciones, total, loading, sinLeer, filter, fetchPaginado, toggleLeida, eliminar } = useNotificaciones()
 
-onMounted(fetchNotificaciones)
+const search = ref('')
+const formDrawerOpen = ref(false)
+const page = ref(1)
+const pageCount = ref(10)
+
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+
+watch([page, pageCount], () => {
+  filter.pagina = page.value
+  filter.registros = pageCount.value
+  fetchPaginado()
+})
+
+watch(search, (v) => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    page.value = 1
+    filter.pagina = 1
+    filter.buscar = v?.trim() ? v.trim() : undefined
+    fetchPaginado()
+  }, 350)
+})
+
+function openCreate() {
+  formDrawerOpen.value = true
+}
+
+async function handleToggle(id: string, isRead: boolean) {
+  await toggleLeida(id, isRead)
+}
+
+async function handleDelete(id: string) {
+  await eliminar(id)
+}
+
+onMounted(async () => {
+  filter.pagina = page.value
+  filter.registros = pageCount.value
+  filter.buscar = undefined
+  await fetchPaginado()
+})
+
+onUnmounted(() => clearTimeout(searchTimer))
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h1 class="font-display text-2xl font-semibold">Notificaciones</h1>
-        <p class="text-sm text-slate-400">{{ total }} registros · {{ sinLeer }} sin leer</p>
-      </div>
-      <UButton variant="ghost" color="neutral" icon="i-lucide-refresh-cw" :loading="loading" @click="fetchNotificaciones()" />
-    </div>
+  <div class="space-y-6">
+    <AppToolbar
+      v-model:search="search"
+      title="Notificaciones"
+      :description="`${total} registros · ${sinLeer} sin leer`"
+      search-placeholder="Buscar notificación..."
+      create-label="Nueva Notificación"
+      @create="openCreate"
+    />
 
-    <UCard>
-      <div class="flex gap-2 mb-4">
-        <UInput v-model="filters.buscar" icon="i-lucide-search" placeholder="Buscar..." class="max-w-64" @change="fetchNotificaciones()" />
-      </div>
-      <UTable :data="notificaciones" :columns="cols" :loading="loading">
-        <template #type-cell="{ row }"><UBadge variant="soft" :color="row.original.type === 'error' ? 'error' : row.original.type === 'warning' ? 'warning' : row.original.type === 'success' ? 'success' : 'info'">{{ row.original.type }}</UBadge></template>
-        <template #isRead-cell="{ row }"><UBadge :color="row.original.isRead ? 'neutral' : 'primary'" variant="soft">{{ row.original.isRead ? 'Leída' : 'Nueva' }}</UBadge></template>
-        <template #actions-cell="{ row }">
-          <div class="flex gap-1 justify-end">
-            <UButton v-if="!row.original.isRead" size="xs" variant="ghost" icon="i-lucide-check" @click="marcarLeida(row.original.id)" />
-            <UButton size="xs" variant="ghost" color="error" icon="i-lucide-trash-2" @click="eliminar(row.original.id)" />
-          </div>
-        </template>
-      </UTable>
-    </UCard>
+    <ConfiguracionNotificacionesTable
+      :data="notificaciones"
+      :loading="loading"
+      :total="total"
+      v-model:page="page"
+      v-model:pageCount="pageCount"
+      @toggle="handleToggle"
+      @delete="handleDelete"
+    />
+
+    <ConfiguracionNotificacionesDrawer
+      v-model:open="formDrawerOpen"
+      @refresh="fetchPaginado"
+    />
   </div>
 </template>
-
-
-
-
