@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { CategoriaRow } from '~/composables/useCategorias'
 
-const { items, rubros, total, loading, fetchPaginado, toggleActivo, remove, filter } = useCategorias()
+const { items, rubros, total, loading, fetchPaginado, fetchTree, toggleActivo, remove, filter } = useCategorias()
 
 const search = ref('')
 const formDrawerOpen = ref(false)
 const editingCategoria = ref<CategoriaRow | null>(null)
 const page = ref(1)
 const pageCount = ref(10)
+/** id de la categoría en proceso de activar/desactivar */
+const togglingId = ref<string | null>(null)
 
 let searchTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -37,8 +39,14 @@ function openEdit(categoria: CategoriaRow) {
   formDrawerOpen.value = true
 }
 
-async function handleToggle(id: string, current: boolean) {
-  await toggleActivo(id, current)
+async function handleToggle(id: string) {
+  if (togglingId.value) return
+  togglingId.value = id
+  try {
+    await toggleActivo(id)
+  } finally {
+    togglingId.value = null
+  }
 }
 
 async function handleDelete(id: string) {
@@ -49,8 +57,7 @@ onMounted(async () => {
   filter.pagina = page.value
   filter.registros = pageCount.value
   filter.buscar = undefined
-  filter.tree = true
-  await fetchPaginado()
+  await Promise.all([fetchPaginado(), fetchTree()])
 })
 
 onUnmounted(() => clearTimeout(searchTimer))
@@ -71,6 +78,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       :data="items"
       :loading="loading"
       :total="total"
+      :toggling-id="togglingId"
       v-model:page="page"
       v-model:pageCount="pageCount"
       @edit="openEdit"

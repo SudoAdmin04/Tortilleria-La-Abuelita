@@ -9,6 +9,8 @@ const formDrawerOpen = ref(false)
 const editingUsuario = ref<User | null>(null)
 const page = ref(1)
 const pageCount = ref(10)
+/** id del usuario en proceso de activar/desactivar */
+const togglingId = ref<string | null>(null)
 
 let searchTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -39,7 +41,13 @@ function openEdit(user: User) {
 }
 
 async function handleToggle(id: string) {
-  await toggleActivo(id)
+  if (togglingId.value) return
+  togglingId.value = id
+  try {
+    await toggleActivo(id)
+  } finally {
+    togglingId.value = null
+  }
 }
 
 onMounted(async () => {
@@ -67,6 +75,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       :data="items"
       :loading="loading"
       :total="total"
+      :toggling-id="togglingId"
       v-model:page="page"
       v-model:pageCount="pageCount"
       @edit="openEdit"

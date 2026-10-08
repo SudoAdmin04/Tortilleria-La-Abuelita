@@ -11,6 +11,8 @@ const props = defineProps<{
   data: User[]
   total: number
   loading: boolean
+  /** id del usuario en proceso de activar/desactivar (viene de `useUsuarios.toggleActivo` en el padre) */
+  togglingId?: string | null
 }>()
 
 const emit = defineEmits<{
@@ -74,6 +76,7 @@ const columnas: TableColumn<User>[] = [
     cell: ({ row }) => {
       const record = row.original
       const isActivo = record.isActive
+      const isToggling = props.togglingId === record.id
 
       const dropdownItems = [
         [
@@ -83,9 +86,10 @@ const columnas: TableColumn<User>[] = [
             onSelect: () => emit('edit', record),
           },
           {
-            label: isActivo ? 'Desactivar' : 'Activar',
+            label: isToggling ? 'Procesando...' : (isActivo ? 'Desactivar' : 'Activar'),
             icon: isActivo ? 'i-heroicons-no-symbol' : 'i-heroicons-check-circle',
             color: isActivo ? ('error' as const) : ('success' as const),
+            disabled: isToggling,
             onSelect: () => emit('toggle', record.id),
           },
         ],
@@ -101,6 +105,7 @@ const columnas: TableColumn<User>[] = [
             color: 'neutral',
             variant: 'ghost',
             size: 'xs',
+            loading: isToggling,
             class: 'text-white/60 hover:text-white hover:bg-white/10 rounded-lg',
             'aria-label': 'Acciones',
           }),

@@ -1,4 +1,4 @@
-import { listRolesPaginado, listRoles, createRole, updateRole, deleteRole, type Role, type CreateRole, type UpdateRole } from '~/services/roles.service'
+import { listRolesPaginado, listRoles, createRole, updateRole, deleteRole, toggleRoleActive, type Role, type CreateRole, type UpdateRole } from '~/services/roles.service'
 
 export const useRoles = () => {
   const toast = useToast()
@@ -79,5 +79,17 @@ export const useRoles = () => {
     }
   }
 
-  return { items, item, loading, error, total, filter, fetchPaginado, fetchAll, fetchById, create, update, remove }
+  async function toggleActivo(id: number | string) {
+    try {
+      const r = await toggleRoleActive(id)
+      toast.add({ title: r.isActive ? 'Rol activado' : 'Rol desactivado', color: 'success', icon: 'i-lucide-circle-check' })
+      await fetchPaginado()
+      return r
+    } catch (e: any) {
+      toast.add({ title: 'Error', description: e?.data?.message || 'No se pudo cambiar el estado', color: 'error', icon: 'i-lucide-triangle-alert' })
+      return undefined
+    }
+  }
+
+  return { items, item, loading, error, total, filter, fetchPaginado, fetchAll, fetchById, create, update, toggleActivo, remove }
 }

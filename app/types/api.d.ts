@@ -195,6 +195,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/categories/paginado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obtener categorías paginadas
+         * @description Devuelve una página de categorías junto con el total de registros que coinciden con la búsqueda (nombre).
+         */
+        get: operations["CategoriesController_findAllPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories/{id}": {
         parameters: {
             query?: never;
@@ -221,6 +241,23 @@ export interface paths {
          * @description Actualiza nombre, color, icono, orden o activación. No se puede mover de rubro ni cambiar su `kind`.
          */
         patch: operations["CategoriesController_update"];
+        trace?: never;
+    };
+    "/api/categories/{id}/toggle-active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Activar o desactivar una categoría */
+        patch: operations["CategoriesController_toggleActive"];
         trace?: never;
     };
     "/api/accounts": {
@@ -890,7 +927,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Obtener todas las pantallas */
+        /**
+         * Obtener todas las pantallas
+         * @description Devuelve todas las pantallas raíz con sus hijas, sin importar si están activas o no.
+         */
         get: operations["ScreensController_findAll"];
         put?: never;
         /** Crear una nueva pantalla */
@@ -1012,6 +1052,23 @@ export interface paths {
         head?: never;
         /** Actualizar un rol */
         patch: operations["RolesController_update"];
+        trace?: never;
+    };
+    "/api/roles/{id}/toggle-active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Activar o desactivar un rol */
+        patch: operations["RolesController_toggleActive"];
         trace?: never;
     };
     "/api/role-screens": {
@@ -4218,6 +4275,74 @@ export interface operations {
             };
         };
     };
+    CategoriesController_findAllPaginated: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1) */
+                pagina?: number;
+                /** @description Cantidad de registros por página */
+                registros?: number;
+                /** @description Texto a buscar */
+                buscar?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lista de categorías paginadas obtenida exitosamente. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Categorías obtenidas exitosamente */
+                        message?: string;
+                        /** @example 10 */
+                        total?: number;
+                        data?: components["schemas"]["CategoryResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     CategoriesController_findOne: {
         parameters: {
             query?: never;
@@ -4364,6 +4489,67 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @example Categoría actualizada exitosamente */
+                        message?: string;
+                    } & components["schemas"]["CategoryResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CategoriesController_toggleActive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la categoría. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Categoría con estado actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Estado de la categoría actualizado exitosamente */
                         message?: string;
                     } & components["schemas"]["CategoryResponseDto"];
                 };
@@ -8087,6 +8273,66 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @example Rol actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["RoleResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RolesController_toggleActive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Estado del rol actualizado exitosamente */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Estado del rol actualizado exitosamente */
                         message?: string;
                     } & components["schemas"]["RoleResponseDto"];
                 };

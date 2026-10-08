@@ -11,10 +11,13 @@ const props = defineProps<{
   data: Role[]
   total: number
   loading: boolean
+  /** id del rol en proceso de activar/desactivar (viene de `useRoles.toggleActivo` en el padre) */
+  togglingId?: number | null
 }>()
 
 const emit = defineEmits<{
   edit: [role: Role]
+  toggle: [id: number]
   delete: [id: number]
 }>()
 
@@ -73,12 +76,21 @@ const columnas: TableColumn<Role>[] = [
     meta: { class: { td: 'text-right' } },
     cell: ({ row }) => {
       const record = row.original
+      const isActivo = record.isActive
+      const isToggling = props.togglingId === record.id
       const dropdownItems = [
         [
           {
             label: 'Editar',
             icon: 'i-heroicons-pencil-square',
             onSelect: () => emit('edit', record),
+          },
+          {
+            label: isToggling ? 'Procesando...' : (isActivo ? 'Desactivar' : 'Activar'),
+            icon: isActivo ? 'i-heroicons-no-symbol' : 'i-heroicons-check-circle',
+            color: isActivo ? ('error' as const) : ('success' as const),
+            disabled: isToggling,
+            onSelect: () => emit('toggle', record.id),
           },
           {
             label: 'Eliminar',
@@ -98,6 +110,7 @@ const columnas: TableColumn<Role>[] = [
             color: 'neutral',
             variant: 'ghost',
             size: 'xs',
+            loading: isToggling,
             class: 'text-white/60 hover:text-white hover:bg-white/10 rounded-lg',
             'aria-label': 'Acciones',
           }),

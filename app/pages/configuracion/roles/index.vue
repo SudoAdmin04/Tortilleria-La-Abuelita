@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { Role } from '~/services/roles.service'
 
-const { items, total, loading, fetchPaginado, remove, filter } = useRoles()
+const { items, total, loading, fetchPaginado, toggleActivo, remove, filter } = useRoles()
 
 const search = ref('')
 const formDrawerOpen = ref(false)
 const editingRol = ref<Role | null>(null)
 const page = ref(1)
 const pageCount = ref(10)
+/** id del rol en proceso de activar/desactivar */
+const togglingId = ref<number | null>(null)
 
 let searchTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -41,6 +43,16 @@ async function handleDelete(id: number) {
   await remove(id)
 }
 
+async function handleToggle(id: number) {
+  if (togglingId.value) return
+  togglingId.value = id
+  try {
+    await toggleActivo(id)
+  } finally {
+    togglingId.value = null
+  }
+}
+
 onMounted(async () => {
   filter.pagina = page.value
   filter.registros = pageCount.value
@@ -66,9 +78,11 @@ onUnmounted(() => clearTimeout(searchTimer))
       :data="items"
       :loading="loading"
       :total="total"
+      :toggling-id="togglingId"
       v-model:page="page"
       v-model:pageCount="pageCount"
       @edit="openEdit"
+      @toggle="handleToggle"
       @delete="handleDelete"
     />
 

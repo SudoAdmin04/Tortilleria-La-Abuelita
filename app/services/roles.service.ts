@@ -37,3 +37,7 @@ export function updateRole(id: number | string, payload: UpdateRole) {
 export function deleteRole(id: number | string) {
   return useApi().api<void>(`/roles/${id}`, { method: 'DELETE' })
 }
+
+export function toggleRoleActive(id: number | string) {
+  return useApi().api<Role>(`/roles/${id}/toggle-active`, { method: 'PATCH' })
+}
