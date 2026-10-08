@@ -125,8 +125,6 @@ const avatarMenu = computed(() => [
     <template #left>
       <UDashboardNavbarToggle class="lg:hidden" />
 
-      <USeparator orientation="vertical" class="h-8" color="primary" />
-
       <div v-if="currentPageMeta" class="flex items-center gap-3">
         <div class="flex-shrink-0 w-10 h-10 rounded-sm flex items-center justify-center bg-primary/20 dark:bg-primary-400/20">
           <UIcon :name="currentPageMeta.icon" class="w-7 h-7 text-primary-400" />

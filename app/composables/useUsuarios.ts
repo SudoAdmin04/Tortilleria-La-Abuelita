@@ -1,5 +1,4 @@
-import { ref } from 'vue'
-import { listUsers, asignarRol, type User } from '~/services/users.service'
+import { listUsers, listUsersPaginado, getUser, createUser, updateUser, toggleUserActive, asignarRol, type User, type CreateUser, type UpdateUser } from '~/services/users.service'
 import { useAuthStore } from '~/stores/auth.store'
 
 export const useUsuarios = () => {
@@ -9,36 +8,79 @@ export const useUsuarios = () => {
   const items = ref<User[]>([])
   const item = ref<User | null>(null)
   const loading = ref(false)
+  const error = ref<string | null>(null)
   const total = ref(0)
 
-  const filter = reactive({ buscar: '' as string })
+  const filter = reactive({ pagina: 1, registros: 10, buscar: undefined as string | undefined })
 
-  const filtered = computed(() => {
-    const q = filter.buscar.trim().toLowerCase()
-    if (!q) return items.value
-    return items.value.filter(u =>
-      u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
-    )
-  })
+  async function fetchPaginado() {
+    loading.value = true
+    error.value = null
+    try {
+      const res = await listUsersPaginado({ pagina: filter.pagina, registros: filter.registros, buscar: filter.buscar })
+      items.value = res.data
+      total.value = res.total
+    } catch (e: any) {
+      error.value = e?.data?.message || e?.message || 'Error al obtener usuarios'
+    } finally {
+      loading.value = false
+    }
+  }
 
   async function fetchAll() {
     loading.value = true
+    error.value = null
     try {
       items.value = await listUsers()
       total.value = items.value.length
     } catch (e: any) {
-      toast.add({ title: 'Error', description: e?.data?.message || e?.message || 'Error al obtener usuarios', color: 'error' })
+      error.value = e?.data?.message || e?.message || 'Error al obtener usuarios'
     } finally {
       loading.value = false
     }
   }
 
   async function fetchById(id: string) {
-    const found = items.value.find(u => u.id === id)
-    if (found) item.value = found
-    else {
-      if (!items.value.length) await fetchAll()
-      item.value = items.value.find(u => u.id === id) ?? null
+    try {
+      item.value = await getUser(id)
+    } catch (e: any) {
+      error.value = e?.data?.message || 'Error al obtener usuario'
+    }
+  }
+
+  async function create(payload: CreateUser) {
+    try {
+      const r = await createUser(payload)
+      toast.add({ title: 'Usuario creado', color: 'success', icon: 'i-lucide-circle-check' })
+      await fetchPaginado()
+      return r
+    } catch (e: any) {
+      toast.add({ title: 'Error', description: e?.data?.message || 'Error al crear usuario', color: 'error' , icon:'i-lucide-triangle-alert'})
+      return undefined
+    }
+  }
+
+  async function update(id: string, payload: UpdateUser) {
+    try {
+      const r = await updateUser(id, payload)
+      toast.add({ title: 'Usuario actualizado', color: 'success', icon: 'i-lucide-circle-check'  })
+      await fetchPaginado()
+      return r
+    } catch (e: any) {
+      toast.add({ title: 'Error', description: e?.data?.message || 'Error al actualizar usuario', color: 'error', icon:'i-lucide-triangle-alert' })
+      return undefined
+    }
+  }
+
+  async function toggleActivo(id: string) {
+    try {
+      const r = await toggleUserActive(id)
+      toast.add({ title: r.isActive ? 'Usuario activado' : 'Usuario desactivado', color: 'success', icon: 'i-lucide-circle-check' })
+      await fetchPaginado()
+      return r
+    } catch (e: any) {
+      toast.add({ title: 'Error', description: e?.data?.message || 'No se pudo cambiar el estado', color: 'error', icon:'i-lucide-triangle-alert' })
+      return undefined
     }
   }
 
@@ -46,12 +88,12 @@ export const useUsuarios = () => {
     try {
       await asignarRol(id, roleId)
       toast.add({ title: 'Rol asignado', description: 'Aplica en el próximo login del usuario.', color: 'success' })
-      await fetchAll()
+      await fetchPaginado()
     } catch (e: any) {
-      toast.add({ title: 'Error', description: e?.data?.message || e?.message || 'No se pudo asignar el rol', color: 'error' })
+      toast.add({ title: 'Error', description: e?.data?.message || e?.message || 'No se pudo asignar el rol', color: 'error', icon:'i-lucide-triangle-alert' })
       throw e
     }
   }
 
-  return { items, filtered, item, loading, total, filter, fetchAll, fetchPaginado: fetchAll, fetchById, assignRole, isAdmin: computed(() => auth.isAdmin) }
+  return { items, item, loading, error, total, filter, fetchPaginado, fetchAll, fetchById, create, update, toggleActivo, assignRole, isAdmin: computed(() => auth.isAdmin) }
 }

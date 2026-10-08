@@ -35,6 +35,14 @@ export function monthYearLabel(year: number, month: number): string {
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
+/** "05/10/2025" en es-MX ('—' si vacío o inválido). */
+export function formatDate(value: string | null | undefined): string {
+  if (!value) return '—'
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return '—'
+  return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d)
+}
+
 /** Variación con signo: +$1,333 / -$200. */
 export function formatVariance(value: number | null | undefined, currency = 'MXN'): string {
   const v = num(value)

@@ -1,6 +1,36 @@
+
+<script setup lang="ts">
+import { getApiMessage } from '~/utils/api-error'
+import { formatMoney } from '~/utils/format'
+
+const auth = useAuthStore()
+const dash = useDashboardData()
+
+const currency = computed(() => auth.user?.currency || 'MXN')
+
+function matchesSearch(name: string): boolean {
+  const q = dash.search.value.trim().toLowerCase()
+  return q === '' || name.toLowerCase().includes(q)
+}
+
+const filteredIncome = computed(() => dash.incomeRubros.value.filter(r => matchesSearch(r.name)))
+const filteredExpense = computed(() => dash.expenseRubros.value.filter(r => matchesSearch(r.name)))
+
+const expenseBadge = computed(() => {
+  const over = dash.expenseRubros.value.filter(r => r.status === 'exceeded' || r.status === 'unbudgeted').length
+  return over > 0 ? `${over} rubro(s) con sobregiro` : 'Ejecución bajo control'
+})
+
+const scopedAccounts = computed(() => ({
+  ...dash.accounts.value,
+  items: dash.accountId.value
+    ? dash.accounts.value.items.filter(a => a.id === dash.accountId.value)
+    : dash.accounts.value.items,
+}))
+</script>
+
 <template>
   <div class="flex flex-col gap-6">
-    <!-- Encabezado -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
       <div>
         <h1 class="font-display text-2xl font-semibold tracking-tight">
@@ -20,7 +50,6 @@
       </div>
     </div>
 
-    <!-- Error -->
     <UAlert
       v-if="dash.error.value"
       color="error"
@@ -35,7 +64,6 @@
       </template>
     </UAlert>
 
-    <!-- Carga inicial -->
     <div v-else-if="dash.pending.value && !dash.data.value" class="flex flex-col gap-4">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <USkeleton v-for="i in 4" :key="i" class="h-44" />
@@ -47,7 +75,6 @@
       </div>
     </div>
 
-    <!-- Contenido -->
     <template v-else>
       <UEmpty
         v-if="!dash.hasMovements.value"
@@ -109,33 +136,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { getApiMessage } from '~/utils/api-error'
-import { formatMoney } from '~/utils/format'
-
-const auth = useAuthStore()
-const dash = useDashboardData()
-
-const currency = computed(() => auth.user?.currency || 'MXN')
-
-function matchesSearch(name: string): boolean {
-  const q = dash.search.value.trim().toLowerCase()
-  return q === '' || name.toLowerCase().includes(q)
-}
-
-const filteredIncome = computed(() => dash.incomeRubros.value.filter(r => matchesSearch(r.name)))
-const filteredExpense = computed(() => dash.expenseRubros.value.filter(r => matchesSearch(r.name)))
-
-const expenseBadge = computed(() => {
-  const over = dash.expenseRubros.value.filter(r => r.status === 'exceeded' || r.status === 'unbudgeted').length
-  return over > 0 ? `${over} rubro(s) con sobregiro` : 'Ejecución bajo control'
-})
-
-// Filtro global de cuenta del header: acota las tarjetas de cuentas
-const scopedAccounts = computed(() => ({
-  ...dash.accounts.value,
-  items: dash.accountId.value
-    ? dash.accounts.value.items.filter(a => a.id === dash.accountId.value)
-    : dash.accounts.value.items,
-}))
-</script>

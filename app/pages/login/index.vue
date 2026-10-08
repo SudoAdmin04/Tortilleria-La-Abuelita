@@ -21,8 +21,8 @@ const state = reactive({
 
 const logo = computed(() => {
   return colorMode.value === 'dark'
-    ? '/logo.png'
-    : '/logo.png'
+    ? 'img/logo.png'
+    : 'img/logo.png'
 })
 
 const loading = ref(false)

@@ -14,11 +14,67 @@ export interface paths {
         /** Listar usuarios (admin) */
         get: operations["UsersController_findAll"];
         put?: never;
+        /** Crear un nuevo usuario (admin) */
+        post: operations["UsersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users/paginado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obtener usuarios paginados (admin)
+         * @description Devuelve una página de usuarios junto con el total de registros que coinciden con la búsqueda (nombre o correo).
+         */
+        get: operations["UsersController_findAllPaginated"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtener un usuario por ID (admin) */
+        get: operations["UsersController_findOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Editar un usuario (admin) */
+        patch: operations["UsersController_update"];
+        trace?: never;
+    };
+    "/api/users/{id}/toggle-active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Activar o desactivar un usuario (admin) */
+        patch: operations["UsersController_toggleActive"];
         trace?: never;
     };
     "/api/users/{id}/rol": {
@@ -1096,6 +1152,117 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        RoleBriefDto: {
+            /** @example 2 */
+            id: number;
+            /** @example Usuario */
+            name: string;
+            /** @example Rol base con permisos limitados */
+            description: string | null;
+            /** @example false */
+            isAdmin: boolean;
+            /** @example true */
+            isActive: boolean;
+            /**
+             * Format: date-time
+             * @example 2025-10-01T12:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-05T12:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        UserCatalogResponseDto: {
+            /**
+             * Format: uuid
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            id: string;
+            /** @example Alan */
+            name: string;
+            /** @example alan@example.com */
+            email: string;
+            /** @example MXN */
+            currency: string;
+            /** @example America/Monterrey */
+            timezone: string;
+            /** @example true */
+            isActive: boolean;
+            /**
+             * @description FK al rol. null = sin rol.
+             * @example 2
+             */
+            roleId: number | null;
+            /** @description Rol poblado vía relations. null si el usuario no tiene rol. */
+            role: components["schemas"]["RoleBriefDto"] | null;
+            /**
+             * Format: date-time
+             * @example 2025-10-01T12:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2025-10-05T12:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        CreateUserDto: {
+            /** @example Alan */
+            name: string;
+            /** @example alan@example.com */
+            email: string;
+            /** @example Password123! */
+            password: string;
+            /**
+             * @default MXN
+             * @example MXN
+             */
+            currency: string;
+            /**
+             * @default America/Monterrey
+             * @example America/Monterrey
+             */
+            timezone: string;
+            /**
+             * @description ID del rol (RBAC). null para sin rol.
+             * @example 2
+             */
+            roleId?: number | null;
+        };
+        UpdateUserDto: {
+            /** @example Alan */
+            name?: string;
+            /** @example alan@example.com */
+            email?: string;
+            /** @example Password123! */
+            password?: string;
+            /**
+             * @default MXN
+             * @example MXN
+             */
+            currency: string;
+            /**
+             * @default America/Monterrey
+             * @example America/Monterrey
+             */
+            timezone: string;
+            /**
+             * @description ID del rol (RBAC). null para retirarlo.
+             * @example 2
+             */
+            roleId?: number | null;
+            /** @example true */
+            isActive?: boolean;
+        };
+        AsignarRolDto: {
+            /**
+             * @description ID del rol. null para retirarlo.
+             * @example 1
+             */
+            roleId?: Record<string, never>;
+        };
         UserResponseDto: {
             /**
              * Format: uuid
@@ -1138,13 +1305,6 @@ export interface components {
              */
             updatedAt: string;
         };
-        AsignarRolDto: {
-            /**
-             * @description ID del rol. null para retirarlo.
-             * @example 1
-             */
-            roleId?: Record<string, never>;
-        };
         AuthResponseDto: {
             /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... */
             access_token: string;
@@ -1169,6 +1329,11 @@ export interface components {
              * @example America/Monterrey
              */
             timezone: string;
+            /**
+             * @description ID del rol (RBAC). null para sin rol.
+             * @example 2
+             */
+            roleId?: number | null;
         };
         LoginDto: {
             /** @example alan@example.com */
@@ -3254,7 +3419,322 @@ export interface operations {
                     "application/json": {
                         /** @example Usuarios obtenidos exitosamente */
                         message?: string;
+                        items?: components["schemas"]["UserCatalogResponseDto"][];
                     };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUserDto"];
+            };
+        };
+        responses: {
+            /** @description Usuario creado exitosamente. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Usuario creado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["UserCatalogResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_findAllPaginated: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1) */
+                pagina?: number;
+                /** @description Cantidad de registros por página */
+                registros?: number;
+                /** @description Texto a buscar */
+                buscar?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lista de usuarios paginados obtenida exitosamente. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Usuarios obtenidos exitosamente */
+                        message?: string;
+                        /** @example 10 */
+                        total?: number;
+                        data?: components["schemas"]["UserCatalogResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Usuario obtenido. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Usuario obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["UserCatalogResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserDto"];
+            };
+        };
+        responses: {
+            /** @description Usuario con datos actualizados. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Usuario actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["UserCatalogResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_toggleActive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Usuario con estado actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Estado del usuario actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["UserCatalogResponseDto"];
                 };
             };
             /** @description Solicitud incorrecta */
@@ -3318,7 +3798,7 @@ export interface operations {
                     "application/json": {
                         /** @example Rol asignado exitosamente */
                         message?: string;
-                    } & components["schemas"]["UserResponseDto"];
+                    } & components["schemas"]["UserCatalogResponseDto"];
                 };
             };
             /** @description Solicitud incorrecta */

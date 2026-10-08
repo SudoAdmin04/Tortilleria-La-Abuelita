@@ -1,25 +1,23 @@
 import { z } from 'zod'
 
 export const createSchema = z.object({
-  nombreUsuario: z.string().min(1, 'Requerido'),
-  correo: z.string().email('Correo inválido'),
-  contrasena: z.string().min(4, 'Mínimo 4 caracteres'),
-  rolId: z.number().min(1, 'Selecciona un rol'),
-  perfil: z.object({
-    nombre: z.string().min(1, 'Requerido'),
-    apellidoPaterno: z.string().min(1, 'Requerido'),
-    apellidoMaterno: z.string().min(1, 'Requerido'),
-    genero: z.string().optional(),
-    fechaNacimiento: z.string().optional(),
-    foto: z.string().optional(),
-  }),
+  name: z.string().min(1, 'Requerido'),
+  email: z.string().email('Correo inválido'),
+  password: z.string().min(4, 'Mínimo 4 caracteres'),
+  currency: z.string().min(1, 'Requerido'),
+  timezone: z.string().min(1, 'Requerido'),
+  roleId: z.number().nullable().optional(),
 })
 
 export const editSchema = z.object({
-  nombreUsuario: z.string().min(1, 'Requerido'),
-  correo: z.string().email('Correo inválido'),
-  contrasena: z.string().optional(),
-  rolId: z.number().min(1, 'Selecciona un rol'),
+  name: z.string().min(1, 'Requerido'),
+  email: z.string().email('Correo inválido'),
+  password: z.string().optional(),
+  currency: z.string().min(1, 'Requerido'),
+  timezone: z.string().min(1, 'Requerido'),
+  roleId: z.number().nullable().optional(),
+  isActive: z.boolean().optional(),
 })
 
-export type Schema = z.output<typeof createSchema>
+export type CreateSchema = z.output<typeof createSchema>
+export type EditSchema = z.output<typeof editSchema>
