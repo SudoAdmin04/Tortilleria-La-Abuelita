@@ -4,14 +4,20 @@ import {
   updateAccount,
   deleteAccount,
   getAccount,
+  getAccountsSummary,
+  getAssetsDistribution,
+  getReconciliation,
   type Account,
+  type AccountSummary,
+  type AssetsDistribution,
+  type Reconciliation,
   type CreateAccount,
   type UpdateAccount,
   type AccountType,
 } from '~/services/accounts.service'
 import { getApiMessage } from '~/utils/api-error'
 
-export type { Account, CreateAccount, UpdateAccount, AccountType }
+export type { Account, AccountSummary, AssetsDistribution, Reconciliation, CreateAccount, UpdateAccount, AccountType }
 
 export interface CuentasResumen {
   totalCuentas: number
@@ -35,6 +41,15 @@ export const useCuentas = () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const total = ref(0)
+  /** Resumen del backend (`GET /accounts/summary`) para las stat cards. */
+  const summary = ref<AccountSummary | null>(null)
+  const loadingSummary = ref(false)
+  /** Distribución de activos (`GET /accounts/assets-distribution`). */
+  const distribucion = ref<AssetsDistribution | null>(null)
+  const loadingDistribucion = ref(false)
+  /** Estado de conciliación (`GET /accounts/reconciliation`). */
+  const conciliacion = ref<Reconciliation | null>(null)
+  const loadingConciliacion = ref(false)
   const filter = reactive({
     pagina: 1,
     registros: 9,
@@ -89,6 +104,44 @@ export const useCuentas = () => {
     } catch (e: unknown) {
       error.value = getApiMessage(e, 'Error al obtener cuenta')
     }
+  }
+
+  async function fetchSummary() {
+    loadingSummary.value = true
+    try {
+      summary.value = await getAccountsSummary()
+    } catch (e: unknown) {
+      error.value = getApiMessage(e, 'Error al obtener resumen')
+    } finally {
+      loadingSummary.value = false
+    }
+  }
+
+  async function fetchDistribucion() {
+    loadingDistribucion.value = true
+    try {
+      distribucion.value = await getAssetsDistribution()
+    } catch (e: unknown) {
+      error.value = getApiMessage(e, 'Error al obtener distribución')
+    } finally {
+      loadingDistribucion.value = false
+    }
+  }
+
+  async function fetchConciliacion() {
+    loadingConciliacion.value = true
+    try {
+      conciliacion.value = await getReconciliation()
+    } catch (e: unknown) {
+      error.value = getApiMessage(e, 'Error al obtener conciliación')
+    } finally {
+      loadingConciliacion.value = false
+    }
+  }
+
+  /** Carga summary + distribución + conciliación en paralelo (widgets laterales). */
+  async function fetchInsights() {
+    await Promise.allSettled([fetchSummary(), fetchDistribucion(), fetchConciliacion()])
   }
 
   async function create(payload: CreateAccount) {
@@ -146,5 +199,5 @@ export const useCuentas = () => {
     }
   }
 
-  return { items, todas, item, loading, error, total, filter, resumen, fetchPaginado, fetchById, create, update, toggleActive, setPrimary, remove }
+  return { items, todas, item, loading, error, total, filter, resumen, summary, loadingSummary, distribucion, loadingDistribucion, conciliacion, loadingConciliacion, fetchPaginado, fetchById, fetchSummary, fetchDistribucion, fetchConciliacion, fetchInsights, create, update, toggleActive, setPrimary, remove }
 }

@@ -5,6 +5,10 @@ export type Account = components['schemas']['AccountResponseDto']
 export type CreateAccount = components['schemas']['CreateAccountDto']
 export type UpdateAccount = components['schemas']['UpdateAccountDto']
 export type AccountType = Account['type']
+export type AccountSummary = components['schemas']['AccountSummaryResponseDto']
+export type AssetsDistribution = components['schemas']['AssetsDistributionResponseDto']
+export type AssetGroup = components['schemas']['AssetGroupDto']
+export type Reconciliation = components['schemas']['ReconciliationResponseDto']
 
 function unwrap<T>(res: unknown): T[] {
   if (Array.isArray(res)) return res as T[]
@@ -32,4 +36,16 @@ export function updateAccount(id: string, payload: UpdateAccount) {
 
 export function deleteAccount(id: string) {
   return useApi().api<void>(`/accounts/${id}`, { method: 'DELETE' })
+}
+
+export function getAccountsSummary() {
+  return useApi().api<AccountSummary>('/accounts/summary')
+}
+
+export function getAssetsDistribution() {
+  return useApi().api<AssetsDistribution>('/accounts/assets-distribution')
+}
+
+export function getReconciliation() {
+  return useApi().api<Reconciliation>('/accounts/reconciliation')
 }

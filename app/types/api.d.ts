@@ -284,6 +284,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/accounts/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resumen general para cartas de stats
+         * @description Suma `balance` de cuentas activas (ej. $21,330 + "4 cuentas activas"), conteo `active/total` (ej. "4 / 4", "0 inactivas") y la cuenta principal con su saldo (ej. "Cuenta Principal" $10,950). Sin parámetros.
+         */
+        get: operations["AccountsController_getSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accounts/assets-distribution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Distribución de activos por tipo
+         * @description Agrupa saldos de cuentas activas: `checking` → "Cuentas Corrientes" (ej. $12,450 60%), `savings` → "Reserva / Ahorro" ($5,200 25%), `cash` → "Caja y Efectivo" ($3,180 15%). `totalActivos` = suma líquida (ej. $20,830). Ideal para la barra 0%–100% + filas con porcentaje.
+         */
+        get: operations["AccountsController_getDistribution"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accounts/reconciliation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Estado de conciliación rápida
+         * @description Devuelve `completionRate/completionLabel` (ej. "91% Completado"), `squaredAccounts/totalAccounts/statusLabel` (ej. "10 de 11 Cuadradas"), `byAccount` (cuentas cuadradas vs pendientes) y `recentPending` (máx. 5 con `debtReference`, ej. "1 movimiento por conciliar en Préstamo #D892"). El botón "Importar Extracto (CSV/OFX)" es solo frontend.
+         */
+        get: operations["AccountsController_getReconciliation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/accounts/{id}": {
         parameters: {
             query?: never;
@@ -1766,6 +1826,219 @@ export interface components {
              * @example 2025-10-05T12:00:00.000Z
              */
             updatedAt: string;
+        };
+        PrimaryAccountDto: {
+            /**
+             * @description UUID de la cuenta principal.
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            id: string;
+            /**
+             * @description Nombre (ej. "Cuenta Principal").
+             * @example Cuenta Principal
+             */
+            name: string;
+            /**
+             * @description Tipo de cuenta.
+             * @example checking
+             * @enum {string}
+             */
+            type: "checking" | "savings" | "cash" | "credit_card";
+            /**
+             * @description Saldo calculado de la principal.
+             * @example 10950
+             */
+            balance: number;
+        };
+        AccountSummaryResponseDto: {
+            /**
+             * @description Carta "Saldo total (activas)" (ej. $21,330). Suma de `balance` de cuentas activas.
+             * @example 21330
+             */
+            totalBalance: number;
+            /**
+             * @description Cuentas activas (ej. 4).
+             * @example 4
+             */
+            activeCount: number;
+            /**
+             * @description Cuentas inactivas (ej. 0).
+             * @example 0
+             */
+            inactiveCount: number;
+            /**
+             * @description Total de cuentas (ej. 4).
+             * @example 4
+             */
+            totalCount: number;
+            /**
+             * @description Etiqueta "4 / 4" para la carta de conteo.
+             * @example 4 / 4
+             */
+            label: string;
+            /** @description Carta "Cuenta principal" (null si ninguna marcada). */
+            primary: components["schemas"]["PrimaryAccountDto"] | null;
+        };
+        AssetGroupDto: {
+            /**
+             * @description Clave del grupo (`checking | savings | cash | credit_card`).
+             * @example checking
+             */
+            key: string;
+            /**
+             * @description Etiqueta lista para UI (ej. "Cuentas Corrientes").
+             * @example Cuentas Corrientes
+             */
+            label: string;
+            /**
+             * @description Saldo sumado del grupo (solo activas).
+             * @example 12450
+             */
+            balance: number;
+            /**
+             * @description Porcentaje sobre el total de activos (`balance / totalActivos * 100`).
+             * @example 60
+             */
+            percent: number;
+            /**
+             * @description Número de cuentas activas en el grupo.
+             * @example 2
+             */
+            count: number;
+        };
+        AssetsDistributionResponseDto: {
+            /**
+             * @description Total de activos (ej. $20,830). Suma de `checking + savings + cash` activas.
+             * @example 20830
+             */
+            totalActivos: number;
+            /**
+             * @description Etiqueta lista para UI (ej. "Total Activos: $20,830.00").
+             * @example Total Activos: $20,830.00
+             */
+            label: string;
+            /** @description Grupos para la barra segmentada y las filas (ej. Corrientes 60%, Ahorro 25%, Efectivo 15%). */
+            items: components["schemas"]["AssetGroupDto"][];
+        };
+        ReconciliationAccountDto: {
+            /**
+             * @description UUID de la cuenta.
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            accountId: string;
+            /**
+             * @description Nombre de la cuenta.
+             * @example Nómina BBVA
+             */
+            accountName: string;
+            /**
+             * @description Movimientos totales de la cuenta.
+             * @example 6
+             */
+            total: number;
+            /**
+             * @description Movimientos conciliados.
+             * @example 6
+             */
+            reconciled: number;
+            /**
+             * @description Movimientos por conciliar.
+             * @example 0
+             */
+            pending: number;
+            /**
+             * @description Monto por conciliar en la cuenta.
+             * @example 0
+             */
+            pendingAmount: number;
+            /**
+             * @description `true` si `pending === 0` (cuenta "cuadrada").
+             * @example true
+             */
+            isSquared: boolean;
+        };
+        PendingItemDto: {
+            /**
+             * @description UUID del movimiento.
+             * @example e5f6a7b8-c9d0-1234-efab-345678901234
+             */
+            id: string;
+            /**
+             * @description Concepto del movimiento.
+             * @example Abono préstamo
+             */
+            concept: string;
+            /**
+             * @description Monto por conciliar.
+             * @example 3000
+             */
+            amount: number;
+            /**
+             * @description Fecha contable YYYY-MM-DD.
+             * @example 2025-10-05
+             */
+            date: string;
+            /**
+             * @description Cuenta origen.
+             * @example Nómina BBVA
+             */
+            accountName: string;
+            /**
+             * @description Referencia de la deuda vinculada (ej. "#D892", null si no aplica).
+             * @example #D892
+             */
+            debtReference: string | null;
+        };
+        ReconciliationResponseDto: {
+            /**
+             * @description Movimientos totales del usuario.
+             * @example 11
+             */
+            total: number;
+            /**
+             * @description Movimientos conciliados.
+             * @example 10
+             */
+            reconciledCount: number;
+            /**
+             * @description Movimientos por conciliar.
+             * @example 1
+             */
+            pendingCount: number;
+            /**
+             * @description Monto total por conciliar.
+             * @example 3000
+             */
+            pendingAmount: number;
+            /**
+             * @description Avance `reconciled / total * 100` (ej. 91% Completado).
+             * @example 91
+             */
+            completionRate: number;
+            /**
+             * @description Etiqueta "91% Completado".
+             * @example 91% Completado
+             */
+            completionLabel: string;
+            /**
+             * @description Cuentas cuadradas (`pending === 0`).
+             * @example 10
+             */
+            squaredAccounts: number;
+            /**
+             * @description Cuentas activas evaluadas.
+             * @example 11
+             */
+            totalAccounts: number;
+            /**
+             * @description Etiqueta "10 de 11 Cuadradas".
+             * @example 10 de 11 Cuadradas
+             */
+            statusLabel: string;
+            /** @description Desglose por cuenta. */
+            byAccount: components["schemas"]["ReconciliationAccountDto"][];
+            /** @description Pendientes recientes (máx. 5, ej. "1 movimiento por conciliar en Préstamo #D892"). */
+            recentPending: components["schemas"]["PendingItemDto"][];
         };
         CreateAccountDto: {
             /**
@@ -5032,6 +5305,180 @@ export interface operations {
                         /** @example Cuenta creada exitosamente */
                         message?: string;
                     } & components["schemas"]["AccountResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AccountsController_getSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resumen para las 3 cartas de la imagen. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Resumen de cuentas obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["AccountSummaryResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AccountsController_getDistribution: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Distribución para el componente de activos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Distribución de activos obtenida exitosamente */
+                        message?: string;
+                    } & components["schemas"]["AssetsDistributionResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AccountsController_getReconciliation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Estado para el componente de conciliación rápida. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Conciliación obtenida exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ReconciliationResponseDto"];
                 };
             };
             /** @description Solicitud incorrecta */
