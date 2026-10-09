@@ -11,7 +11,6 @@ const props = defineProps<{
   data: CategoriaRow[]
   total: number
   loading: boolean
-  /** id de la categoría en proceso de activar/desactivar (viene de `useCategorias.toggleActivo` en el padre) */
   togglingId?: string | null
 }>()
 

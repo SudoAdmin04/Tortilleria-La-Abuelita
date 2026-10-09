@@ -4,7 +4,7 @@ export type CategoriaRow = Category & { displayName: string; isRubro: boolean }
 
 function toRow(c: Category): CategoriaRow {
   const isRubro = !c.parentId
-  return { ...c, displayName: isRubro ? c.name : `— ${c.name}`, isRubro }
+  return { ...c, displayName: isRubro ? c.name : `${c.name}`, isRubro }
 }
 
 function flattenTree(res: Category[] | CategoryTree[]): CategoriaRow[] {
@@ -32,7 +32,6 @@ export const useCategorias = () => {
   const total = ref(0)
   const filter = reactive({ pagina: 1, registros: 10, buscar: undefined as string | undefined })
 
-  /** Paginado en servidor: GET /categories/paginado (lista plana). */
   async function fetchPaginado() {
     loading.value = true
     error.value = null
@@ -47,7 +46,6 @@ export const useCategorias = () => {
     }
   }
 
-  /** Árbol completo para el selector de rubro padre del Drawer (no paginado). */
   async function fetchTree() {
     try {
       const res = await listCategories(true)
@@ -92,7 +90,6 @@ export const useCategorias = () => {
     }
   }
 
-  /** PATCH /categories/:id/toggle-active — sin body, el backend invierte el estado. */
   async function toggleActivo(id: string) {
     try {
       const r = await toggleCategoryActive(id)

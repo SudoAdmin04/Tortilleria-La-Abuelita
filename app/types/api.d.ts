@@ -511,7 +511,7 @@ export interface paths {
         put?: never;
         /**
          * Crear una meta
-         * @description Crea una meta con aporte mensual y opcionalmente cuenta y categoría (los egresos de esa categoría cuentan como aportes). `accountId` y `categoryId` deben ser propios.
+         * @description Crea una meta con aporte mensual y opcionalmente cuenta reserva (`accountId`, donde vive el dinero real) y categoría (`categoryId`, solo fallback de metas sin ledger). `accountId` y `categoryId` deben ser propios. El avance se alimenta con `POST /savings-goals/:id/deposits`.
          */
         post: operations["SavingsGoalsController_create"];
         delete?: never;
@@ -529,9 +529,49 @@ export interface paths {
         };
         /**
          * Avance de metas en el mes
-         * @description Para cada meta activa calcula: `contributed` (egresos del mes en su categoría), `monthlyTarget`, `percent`, `remaining`, `totalContributed` (histórico) y `targetProgressPercent` (vs `targetAmount`). Requiere `year` y `month`.
+         * @description Para cada meta activa calcula `contributed` (neto del mes: depósitos − retiros del ledger; si la meta aún no tiene movimientos usa el fallback de egresos en su categoría), `monthlyTarget`, `percent`, `remaining`, `totalContributed` (neto histórico) y `targetProgressPercent` (vs `targetAmount`). Requiere `year` y `month`.
          */
         get: operations["SavingsGoalsController_progress"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/savings-goals/{id}/balance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Saldo de una meta
+         * @description Saldo neto del ledger (`depósitos − retiros`) más totales históricos y número de movimientos.
+         */
+        get: operations["SavingsGoalsController_balance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/savings-goals/{id}/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Historial de aportes y retiros
+         * @description Ledger auditable de la meta (más recientes primero). Filtros opcionales `from`/`to` (YYYY-MM-DD).
+         */
+        get: operations["SavingsGoalsController_entries"];
         put?: never;
         post?: never;
         delete?: never;
@@ -556,7 +596,7 @@ export interface paths {
         post?: never;
         /**
          * Eliminar una meta
-         * @description Borrado físico (no borra los movimientos asociados).
+         * @description Borrado físico de la meta y su ledger (CASCADE). Las transferencias de dinero permanecen como movimientos normales.
          */
         delete: operations["SavingsGoalsController_remove"];
         options?: never;
@@ -566,6 +606,66 @@ export interface paths {
          * @description Actualización parcial (nombre, montos, cuenta, categoría, activación).
          */
         patch: operations["SavingsGoalsController_update"];
+        trace?: never;
+    };
+    "/api/savings-goals/{id}/deposits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Aportar a una meta
+         * @description Registra un aporte en el ledger y mueve dinero real con un `transfer` operativa → reserva (si la meta tiene `accountId`). Aumenta `contributed`/`totalContributed` de `GET /savings-goals/progress`. Ejemplo: `{amount:1500, date:"2025-10-05", fromAccountId:"<operativa>"}`.
+         */
+        post: operations["SavingsGoalsController_deposit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/savings-goals/{id}/withdrawals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Retirar de una meta
+         * @description Registra un retiro en el ledger y mueve dinero real reserva → operativa. Resta del avance. Falla con 400 si `amount` supera el saldo del ledger. `toAccountId` es opcional (por defecto la operativa del último aporte).
+         */
+        post: operations["SavingsGoalsController_withdraw"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/savings-goals/{id}/entries/{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Revertir un aporte/retiro
+         * @description Borra el movimiento del ledger y su transferencia asociada (revierte el dinero). Úsalo para corregir errores.
+         */
+        delete: operations["SavingsGoalsController_removeEntry"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/debts": {
@@ -2243,7 +2343,7 @@ export interface components {
                 month?: number;
             };
             /**
-             * @description Egresos del mes en su categoría.
+             * @description Aporte neto del mes (depósitos − retiros del ledger; fallback: egresos de su categoría).
              * @example 1500
              */
             contributed: number;
@@ -2263,7 +2363,7 @@ export interface components {
              */
             remaining: number;
             /**
-             * @description Aportes históricos acumulados.
+             * @description Aportes históricos netos acumulados.
              * @example 8500
              */
             totalContributed: number;
@@ -2272,6 +2372,84 @@ export interface components {
              * @example 28.33
              */
             targetProgressPercent: number | null;
+            /**
+             * @description Depósitos brutos del mes (solo modo ledger).
+             * @example 1500
+             */
+            depositsMonth?: number;
+            /**
+             * @description Retiros brutos del mes (solo modo ledger).
+             * @example 0
+             */
+            withdrawalsMonth?: number;
+            /**
+             * @description Origen del cálculo: `ledger` o `category` (fallback sin movimientos).
+             * @example ledger
+             */
+            source?: Record<string, never>;
+        };
+        SavingsGoalBalanceResponseDto: {
+            /** @description Meta evaluada. */
+            goal: components["schemas"]["SavingsGoalResponseDto"];
+            /**
+             * @description Saldo neto del ledger (depósitos − retiros).
+             * @example 1000
+             */
+            balance: number;
+            /**
+             * @description Total histórico de depósitos.
+             * @example 1500
+             */
+            totalDeposited: number;
+            /**
+             * @description Total histórico de retiros.
+             * @example 500
+             */
+            totalWithdrawn: number;
+            /**
+             * @description Número de movimientos en el ledger.
+             * @example 2
+             */
+            entriesCount: number;
+        };
+        SavingsGoalEntryResponseDto: {
+            /**
+             * Format: uuid
+             * @description UUID del movimiento.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description UUID de la meta.
+             */
+            goalId: string;
+            /**
+             * @description Tipo: aporte o retiro.
+             * @example deposit
+             * @enum {string}
+             */
+            kind: "deposit" | "withdrawal";
+            /**
+             * @description Monto siempre positivo.
+             * @example 1500
+             */
+            amount: number;
+            /**
+             * @description Fecha contable YYYY-MM-DD.
+             * @example 2025-10-05
+             */
+            date: string;
+            /** @description Cuenta operada (null en modo virtual). */
+            accountId: string | null;
+            /** @description Transfer que movió el dinero (null en modo virtual). */
+            transactionId: string | null;
+            /** @description Concepto. */
+            concept: string | null;
+            /**
+             * Format: date-time
+             * @description Creación.
+             */
+            createdAt: string;
         };
         CreateSavingsGoalDto: {
             /**
@@ -2301,6 +2479,54 @@ export interface components {
              * @example c3d4e5f6-a7b8-9012-cdef-123456789012
              */
             categoryId?: string;
+        };
+        DepositSavingsGoalDto: {
+            /**
+             * @description Monto a aportar (> 0, 2 decimales).
+             * @example 1500
+             */
+            amount: number;
+            /**
+             * Format: date
+             * @description Fecha contable del aporte (YYYY-MM-DD).
+             * @example 2025-10-05
+             */
+            date: string;
+            /**
+             * Format: uuid
+             * @description Cuenta origen (operativa). Si la meta tiene cuenta reserva distinta, se crea un `transfer` real hacia ella.
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            fromAccountId: string;
+            /**
+             * @description Concepto del aporte.
+             * @example Aporte quincenal
+             */
+            concept?: string;
+        };
+        WithdrawSavingsGoalDto: {
+            /**
+             * @description Monto a retirar (> 0, debe ser ≤ saldo del ledger).
+             * @example 500
+             */
+            amount: number;
+            /**
+             * Format: date
+             * @description Fecha contable del retiro (YYYY-MM-DD).
+             * @example 2025-10-10
+             */
+            date: string;
+            /**
+             * Format: uuid
+             * @description Cuenta destino (operativa). Por defecto se usa la misma cuenta origen del último aporte o la primera propia.
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            toAccountId?: string;
+            /**
+             * @description Concepto del retiro.
+             * @example Emergencia médica
+             */
+            concept?: string;
         };
         UpdateSavingsGoalDto: {
             /**
@@ -5987,6 +6213,134 @@ export interface operations {
             };
         };
     };
+    SavingsGoalsController_balance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la meta. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Saldo de la meta. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Saldo de la meta obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SavingsGoalBalanceResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SavingsGoalsController_entries: {
+        parameters: {
+            query?: {
+                /** @description Fecha inicial inclusiva (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusiva (YYYY-MM-DD). */
+                to?: string;
+            };
+            header?: never;
+            path: {
+                /** @description UUID de la meta. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Historial del ledger. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Movimientos de la meta obtenidos exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["SavingsGoalEntryResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     SavingsGoalsController_findOne: {
         parameters: {
             query?: never;
@@ -6135,6 +6489,199 @@ export interface operations {
                         /** @example Meta de ahorro actualizada exitosamente */
                         message?: string;
                     } & components["schemas"]["SavingsGoalResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SavingsGoalsController_deposit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la meta. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DepositSavingsGoalDto"];
+            };
+        };
+        responses: {
+            /** @description Aporte registrado (ledger + transfer). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Aporte registrado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SavingsGoalEntryResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SavingsGoalsController_withdraw: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la meta. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WithdrawSavingsGoalDto"];
+            };
+        };
+        responses: {
+            /** @description Retiro registrado (ledger + transfer). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Retiro registrado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SavingsGoalEntryResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SavingsGoalsController_removeEntry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la meta. */
+                id: string;
+                /** @description UUID del movimiento del ledger. */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Movimiento revertido. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Movimiento revertido exitosamente */
+                        message?: string;
+                    };
                 };
             };
             /** @description Solicitud incorrecta */

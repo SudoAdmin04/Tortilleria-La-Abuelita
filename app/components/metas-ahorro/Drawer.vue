@@ -18,7 +18,7 @@ const schema = computed(() => (isEditing.value ? editSchema : createSchema))
 
 const formState = reactive({
   name: '',
-  monthlyContribution: 0 as number,
+  monthlyContribution: undefined as number | undefined,
   targetAmount: '' as string,
   accountId: '',
   categoryId: '',
@@ -39,7 +39,7 @@ watch(open, (isOpen) => {
   } else {
     Object.assign(formState, {
       name: '',
-      monthlyContribution: 0,
+      monthlyContribution: undefined,
       targetAmount: '',
       accountId: '',
       categoryId: '',
@@ -58,15 +58,25 @@ const categoriaItems = computed(() => [
   ...((props.categorias ?? [])),
 ])
 
+function cleanId(v: unknown): string | undefined {
+  return typeof v === 'string' && v.trim() !== '' ? v : undefined
+}
+
+function cleanTarget(v: unknown): number | undefined {
+  if (v === '' || v === null || v === undefined) return undefined
+  const n = Number(v)
+  return Number.isFinite(n) ? n : undefined
+}
+
 const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
   const payload = event.data
   if (isEditing.value && props.meta) {
     const body: UpdateSavingsGoal = {
       name: (payload as EditSchema).name,
       monthlyContribution: (payload as EditSchema).monthlyContribution,
-      targetAmount: (payload as EditSchema).targetAmount ?? undefined,
-      accountId: (payload as EditSchema).accountId || undefined,
-      categoryId: (payload as EditSchema).categoryId || undefined,
+      targetAmount: cleanTarget((payload as EditSchema).targetAmount),
+      accountId: cleanId((payload as EditSchema).accountId),
+      categoryId: cleanId((payload as EditSchema).categoryId),
       isActive: formState.isActive,
     }
     const r = await update(props.meta.id, body)
@@ -75,9 +85,9 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
     const body: CreateSavingsGoal = {
       name: (payload as CreateSchema).name,
       monthlyContribution: Number((payload as CreateSchema).monthlyContribution),
-      targetAmount: (payload as CreateSchema).targetAmount ?? undefined,
-      accountId: (payload as CreateSchema).accountId || undefined,
-      categoryId: (payload as CreateSchema).categoryId || undefined,
+      targetAmount: cleanTarget((payload as CreateSchema).targetAmount),
+      accountId: cleanId((payload as CreateSchema).accountId),
+      categoryId: cleanId((payload as CreateSchema).categoryId),
     }
     const r = await create(body)
     if (!r) return
@@ -120,15 +130,15 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
                 Datos de la Meta
               </h3>
               <div class="grid grid-cols-1 gap-4">
-                <UFormField label="Nombre" name="name">
+                <UFormField label="Nombre" name="name" required>
                   <UInput v-model="formState.name" placeholder="Ej. Reserva de emergencia" class="w-full" />
                 </UFormField>
                 <div class="grid grid-cols-2 gap-4">
-                  <UFormField label="Aporte mensual" name="monthlyContribution">
-                    <UInput v-model="formState.monthlyContribution" type="number" min="0.01" step="0.01" class="w-full" />
+                  <UFormField label="Aporte mensual" name="monthlyContribution" required hint="Se compara con los egresos del mes en su categoría">
+                    <UInput v-model="formState.monthlyContribution" type="number" min="0.01" step="0.01" placeholder="2000" class="w-full" />
                   </UFormField>
-                  <UFormField label="Objetivo total" name="targetAmount">
-                    <UInput v-model="formState.targetAmount" type="number" min="0" step="0.01" class="w-full" />
+                  <UFormField label="Objetivo total" name="targetAmount" hint="Opcional: calcula el % histórico">
+                    <UInput v-model="formState.targetAmount" type="number" min="0" step="0.01" placeholder="30000" class="w-full" />
                   </UFormField>
                 </div>
               </div>
@@ -142,21 +152,23 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
                 Cuenta y Categoría
               </h3>
               <div class="grid grid-cols-1 gap-4">
-                <UFormField label="Cuenta" name="accountId">
+                <UFormField label="Cuenta" name="accountId" hint="Cuenta donde vive el ahorro">
                   <USelectMenu
                     v-model="formState.accountId"
                     :items="cuentaItems"
                     value-key="value"
                     label-key="label"
+                    placeholder="— Ninguna —"
                     class="w-full"
                   />
                 </UFormField>
-                <UFormField label="Categoría (egresos que cuentan)" name="categoryId">
+                <UFormField label="Categoría (egresos que cuentan)" name="categoryId" hint="Los egresos del mes en esta categoría cuentan como aportes">
                   <USelectMenu
                     v-model="formState.categoryId"
                     :items="categoriaItems"
                     value-key="value"
                     label-key="label"
+                    placeholder="— Ninguna —"
                     class="w-full"
                   />
                 </UFormField>

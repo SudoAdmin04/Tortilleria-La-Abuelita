@@ -8,7 +8,6 @@ const formDrawerOpen = ref(false)
 const editingCategoria = ref<CategoriaRow | null>(null)
 const page = ref(1)
 const pageCount = ref(10)
-/** id de la categoría en proceso de activar/desactivar */
 const togglingId = ref<string | null>(null)
 
 let searchTimer: ReturnType<typeof setTimeout> | undefined
