@@ -5,7 +5,7 @@ import type { Transaction } from '~/services/transactions.service'
 
 useHead({ title: 'Transacciones' })
 
-const { items, total, loading, fetchPaginado, fetchResumen, summary, summaryLoading, remove, conciliar, filter } = useTransacciones()
+const { items, total, loading, fetchPaginado, fetchResumen, fetchAnaliticas, summary, summaryLoading, gastos, gastosLoading, ingresos, ingresosLoading, remove, conciliar, filter } = useTransacciones()
 const auth = useAuthStore()
 const permisos = usePermisosStore()
 const currency = computed(() => auth.user?.currency || 'MXN')
@@ -31,7 +31,7 @@ const conteos = computed(() => ({
 const totalRegistros = computed(() => summary.value?.totalCount ?? total.value)
 
 function refreshAll() {
-  return Promise.all([fetchPaginado(), fetchResumen()])
+  return Promise.all([fetchPaginado(), fetchResumen(), fetchAnaliticas()])
 }
 
 let searchTimer: ReturnType<typeof setTimeout> | undefined
@@ -160,6 +160,19 @@ onUnmounted(() => clearTimeout(searchTimer))
       @delete="handleDelete"
       @reconcile="handleReconcile"
     />
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      <TransaccionesExpensesDistribution
+        :data="gastos"
+        :currency="currency"
+        :loading="gastosLoading && !gastos"
+      />
+      <TransaccionesIncomeSources
+        :data="ingresos"
+        :currency="currency"
+        :loading="ingresosLoading && !ingresos"
+      />
+    </div>
 
     <TransaccionesDrawer
       v-model:open="formDrawerOpen"

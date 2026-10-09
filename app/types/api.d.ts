@@ -416,6 +416,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/transactions/expenses-distribution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Distribución de gastos por rubro
+         * @description Agrupa egresos por rubro (partidas → rubro) bajo los filtros `from, to, accountId, categoryId, paymentMethod, search` y devuelve `total` (ej. $26,619), `budgetTotal` (ej. $22,331, presupuestos no-`income` del mes si el rango es mes único), `variance/isOverBudget` (ej. Exceso +$4,288) e `items` con `amount/percent/count/budget/variance` (ej. Gastos generales $15,144 57%). Ideal para la barra segmentada 0–100% y las filas con color.
+         */
+        get: operations["TransactionsController_getExpensesDistribution"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/transactions/income-sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fuentes de ingreso contra metas
+         * @description Agrupa ingresos por rubro bajo los mismos filtros y devuelve `total` (ej. $20,100), `budgetTotal` (metas `income` del mes), `complianceRate` (ej. 99.5%) e `items` con `actual/budget/variance/executionRate/label` (ej. Sueldo Base +$5,800 / $6,000). Ideal para barras actual vs meta.
+         */
+        get: operations["TransactionsController_getIncomeSources"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/transactions/reconcile": {
         parameters: {
             query?: never;
@@ -2377,6 +2417,143 @@ export interface components {
              */
             totalCount: number;
         };
+        ExpenseDistributionItemDto: {
+            /**
+             * @description UUID del rubro (agrupa sus partidas).
+             * @example c3d4e5f6-a7b8-9012-cdef-123456789012
+             */
+            categoryId: string;
+            /**
+             * @description Nombre del rubro (ej. "Gastos generales").
+             * @example Gastos generales
+             */
+            name: string;
+            /**
+             * @description Color del rubro (null si no definido).
+             * @example #f4a7b9
+             */
+            color: string | null;
+            /**
+             * @description Icono Material Symbols (null si no definido).
+             * @example shopping_cart
+             */
+            icon: string | null;
+            /**
+             * @description Monto sumado del rubro (ej. $15,144).
+             * @example 15144
+             */
+            amount: number;
+            /**
+             * @description Participación `amount / total * 100` (ej. 57%).
+             * @example 57
+             */
+            percent: number;
+            /**
+             * @description Movimientos del rubro.
+             * @example 4
+             */
+            count: number;
+            /**
+             * @description Presupuesto del rubro en el mes (0 si no hay o el rango no es mes único).
+             * @example 12000
+             */
+            budget: number;
+            /**
+             * @description Diferencia `amount - budget`.
+             * @example 3144
+             */
+            variance: number;
+        };
+        ExpenseDistributionResponseDto: {
+            range: components["schemas"]["DashboardRangeResponseDto"];
+            /**
+             * @description Total egresos del rango (centro del donut).
+             * @example 26619
+             */
+            total: number;
+            items: components["schemas"]["ExpenseDistributionItemDto"][];
+        };
+        IncomeSourceItemDto: {
+            /**
+             * @description UUID del rubro de ingreso.
+             * @example c3d4e5f6-a7b8-9012-cdef-123456789012
+             */
+            categoryId: string;
+            /**
+             * @description Nombre (ej. "Sueldo Base").
+             * @example Sueldo Base
+             */
+            name: string;
+            /**
+             * @description Color del rubro (null si no definido).
+             * @example #34d399
+             */
+            color: string | null;
+            /**
+             * @description Icono Material Symbols (null si no definido).
+             * @example payments
+             */
+            icon: string | null;
+            /**
+             * @description Entradas efectivas (ej. $9,300).
+             * @example 9300
+             */
+            actual: number;
+            /**
+             * @description Meta presupuestada del mes (0 si no hay).
+             * @example 9200
+             */
+            budget: number;
+            /**
+             * @description Diferencia `actual - budget`.
+             * @example 100
+             */
+            variance: number;
+            /**
+             * @description `actual / budget * 100` (null sin presupuesto, ej. barra +$9,300 / $9,200).
+             * @example 101.1
+             */
+            executionRate: number | null;
+            /**
+             * @description Movimientos de la fuente.
+             * @example 1
+             */
+            count: number;
+            /**
+             * @description Etiqueta "+$9,300 / $9,200" lista para UI.
+             * @example +$9,300 / $9,200
+             */
+            label: string;
+        };
+        IncomeSourcesResponseDto: {
+            /**
+             * @description Total de ingresos del filtro (ej. $20,100).
+             * @example 20100
+             */
+            total: number;
+            /**
+             * @description Metas presupuestadas sumadas (ej. $20,200).
+             * @example 20200
+             */
+            budgetTotal: number;
+            /**
+             * @description Cumplimiento total `total / budgetTotal * 100` (ej. 99.5%).
+             * @example 99.5
+             */
+            complianceRate: number | null;
+            /**
+             * @description Etiqueta "Total: $20,100".
+             * @example Total: $20,100
+             */
+            totalLabel: string;
+            /**
+             * @description Etiqueta "Cumplimiento total ingresos 99.5%".
+             * @example Cumplimiento total ingresos 99.5%
+             */
+            complianceLabel: string;
+            /** @description Fuentes con barra actual vs meta (ordenadas por monto desc). */
+            items: components["schemas"]["IncomeSourceItemDto"][];
+        };
         ReconcileResponseDto: {
             /**
              * @description Movimientos que pasaron de `pending` a `reconciled`.
@@ -3468,32 +3645,6 @@ export interface components {
             /** @description Card Egresos Totales. */
             expense: components["schemas"]["TotalKpiDto"];
             liquidity: components["schemas"]["LiquidityResponseDto"];
-        };
-        ExpenseDistributionItemDto: {
-            /** @example c3d4e5f6-a7b8-9012-cdef-123456789012 */
-            categoryId: string;
-            /** @example Gastos */
-            name: string;
-            /** @example expense */
-            kind: string;
-            /** @example #4d8eff */
-            color: string | null;
-            /** @example 15144 */
-            amount: number;
-            /**
-             * @description % del gasto total.
-             * @example 57
-             */
-            percent: number;
-        };
-        ExpenseDistributionResponseDto: {
-            range: components["schemas"]["DashboardRangeResponseDto"];
-            /**
-             * @description Total egresos del rango (centro del donut).
-             * @example 26619
-             */
-            total: number;
-            items: components["schemas"]["ExpenseDistributionItemDto"][];
         };
         IncomeBarItemDto: {
             /** @example c3d4e5f6-a7b8-9012-cdef-123456789012 */
@@ -5880,6 +6031,148 @@ export interface operations {
                         /** @example Resumen de movimientos obtenido exitosamente */
                         message?: string;
                     } & components["schemas"]["TransactionSummaryResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TransactionsController_getExpensesDistribution: {
+        parameters: {
+            query?: {
+                /** @description Fecha inicial inclusiva (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusiva (YYYY-MM-DD). */
+                to?: string;
+                /** @description Filtrar por medio de pago. */
+                paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+                /** @description Rubro o partida. Si es un rubro, incluye sus partidas. */
+                categoryId?: string;
+                /** @description Cuenta origen o destino. */
+                accountId?: string;
+                /** @description Búsqueda por texto en concepto, descripción o referencia. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Distribución para el componente de gastos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Distribución de gastos obtenida exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ExpenseDistributionResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TransactionsController_getIncomeSources: {
+        parameters: {
+            query?: {
+                /** @description Fecha inicial inclusiva (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusiva (YYYY-MM-DD). */
+                to?: string;
+                /** @description Filtrar por medio de pago. */
+                paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+                /** @description Rubro o partida. Si es un rubro, incluye sus partidas. */
+                categoryId?: string;
+                /** @description Cuenta origen o destino. */
+                accountId?: string;
+                /** @description Búsqueda por texto en concepto, descripción o referencia. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Fuentes para el componente de ingresos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Fuentes de ingreso obtenidas exitosamente */
+                        message?: string;
+                    } & components["schemas"]["IncomeSourcesResponseDto"];
                 };
             };
             /** @description Solicitud incorrecta */

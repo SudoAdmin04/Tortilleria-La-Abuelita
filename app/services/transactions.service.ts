@@ -61,3 +61,20 @@ export function reconcileTransactions(ids: string[]) {
     body: { ids },
   })
 }
+
+export type ExpenseDistributionItem = components['schemas']['ExpenseDistributionItemDto']
+export type ExpenseDistribution = components['schemas']['ExpenseDistributionResponseDto'] & {
+  budgetTotal?: number
+  variance?: number
+  isOverBudget?: boolean
+}
+export type IncomeSourceItem = components['schemas']['IncomeSourceItemDto']
+export type IncomeSources = components['schemas']['IncomeSourcesResponseDto']
+
+export function getExpensesDistribution(filters: SummaryFilters = {}) {
+  return useApi().api<ExpenseDistribution>('/transactions/expenses-distribution', { query: { ...filters } })
+}
+
+export function getIncomeSources(filters: SummaryFilters = {}) {
+  return useApi().api<IncomeSources>('/transactions/income-sources', { query: { ...filters } })
+}

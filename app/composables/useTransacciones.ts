@@ -6,16 +6,20 @@ import {
   getTransaction,
   reconcileTransactions,
   getTransactionsSummary,
+  getExpensesDistribution,
+  getIncomeSources,
   type Transaction,
   type CreateTransaction,
   type UpdateTransaction,
   type TransactionFilters,
   type TransactionSummary,
   type SummaryFilters,
+  type ExpenseDistribution,
+  type IncomeSources,
 } from '~/services/transactions.service'
 import { getApiMessage } from '~/utils/api-error'
 
-export type { Transaction, CreateTransaction, UpdateTransaction, TransactionFilters, TransactionSummary, SummaryFilters }
+export type { Transaction, CreateTransaction, UpdateTransaction, TransactionFilters, TransactionSummary, SummaryFilters, ExpenseDistribution, IncomeSources }
 export type TipoMovimiento = 'income' | 'expense' | 'transfer'
 export type EstadoMovimiento = 'pending' | 'reconciled'
 export type MetodoPago = 'bank_transfer' | 'debit_card' | 'credit_card' | 'cash'
@@ -30,6 +34,10 @@ export const useTransacciones = () => {
   const pages = ref(1)
   const summary = ref<TransactionSummary | null>(null)
   const summaryLoading = ref(false)
+  const gastos = ref<ExpenseDistribution | null>(null)
+  const gastosLoading = ref(false)
+  const ingresos = ref<IncomeSources | null>(null)
+  const ingresosLoading = ref(false)
   const filter = reactive({
     pagina: 1,
     registros: 20,
@@ -63,6 +71,32 @@ export const useTransacciones = () => {
     } finally {
       summaryLoading.value = false
     }
+  }
+
+  async function fetchGastos() {
+    gastosLoading.value = true
+    try {
+      gastos.value = await getExpensesDistribution(buildSummaryFilters())
+    } catch (e: unknown) {
+      error.value = getApiMessage(e, 'Error al obtener distribución de gastos')
+    } finally {
+      gastosLoading.value = false
+    }
+  }
+
+  async function fetchIngresos() {
+    ingresosLoading.value = true
+    try {
+      ingresos.value = await getIncomeSources(buildSummaryFilters())
+    } catch (e: unknown) {
+      error.value = getApiMessage(e, 'Error al obtener fuentes de ingreso')
+    } finally {
+      ingresosLoading.value = false
+    }
+  }
+
+  function fetchAnaliticas() {
+    return Promise.all([fetchGastos(), fetchIngresos()])
   }
 
   async function fetchPaginado() {
@@ -103,7 +137,7 @@ export const useTransacciones = () => {
     try {
       const r = await createTransaction(payload)
       toast.add({ title: 'Movimiento registrado', color: 'success', icon: 'i-lucide-circle-check' })
-      await Promise.all([fetchPaginado(), fetchResumen()])
+      await Promise.all([fetchPaginado(), fetchResumen(), fetchAnaliticas()])
       return r
     } catch (e: unknown) {
       toast.add({ title: 'Error', description: getApiMessage(e, 'Error al registrar movimiento'), color: 'error', icon: 'i-lucide-triangle-alert' })
@@ -115,7 +149,7 @@ export const useTransacciones = () => {
     try {
       const r = await updateTransaction(id, payload)
       toast.add({ title: 'Movimiento actualizado', color: 'success', icon: 'i-lucide-circle-check' })
-      await Promise.all([fetchPaginado(), fetchResumen()])
+      await Promise.all([fetchPaginado(), fetchResumen(), fetchAnaliticas()])
       return r
     } catch (e: unknown) {
       toast.add({ title: 'Error', description: getApiMessage(e, 'Error al actualizar'), color: 'error', icon: 'i-lucide-triangle-alert' })
@@ -127,7 +161,7 @@ export const useTransacciones = () => {
     try {
       const r = await reconcileTransactions([id])
       toast.add({ title: r.updated > 0 ? 'Movimiento conciliado' : 'Sin cambios', description: r.updated > 0 ? undefined : 'Ya estaba conciliado', color: 'success', icon: 'i-lucide-circle-check' })
-      await Promise.all([fetchPaginado(), fetchResumen()])
+      await Promise.all([fetchPaginado(), fetchResumen(), fetchAnaliticas()])
       return r
     } catch (e: unknown) {
       toast.add({ title: 'Error', description: getApiMessage(e, 'No se pudo conciliar'), color: 'error', icon: 'i-lucide-triangle-alert' })
@@ -139,11 +173,11 @@ export const useTransacciones = () => {
     try {
       await deleteTransaction(id)
       toast.add({ title: 'Movimiento eliminado', color: 'success', icon: 'i-lucide-circle-check' })
-      await Promise.all([fetchPaginado(), fetchResumen()])
+      await Promise.all([fetchPaginado(), fetchResumen(), fetchAnaliticas()])
     } catch (e: unknown) {
       toast.add({ title: 'Error', description: getApiMessage(e, 'No se pudo eliminar'), color: 'error', icon: 'i-lucide-triangle-alert' })
     }
   }
 
-  return { items, item, loading, error, total, pages, filter, summary, summaryLoading, fetchPaginado, fetchResumen, fetchById, create, update, conciliar, remove }
+  return { items, item, loading, error, total, pages, filter, summary, summaryLoading, gastos, gastosLoading, ingresos, ingresosLoading, fetchPaginado, fetchResumen, fetchGastos, fetchIngresos, fetchAnaliticas, fetchById, create, update, conciliar, remove }
 }
