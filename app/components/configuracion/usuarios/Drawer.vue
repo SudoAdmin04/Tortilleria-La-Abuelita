@@ -87,7 +87,7 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
           <div class="flex justify-between items-center gap-4">
             <div class="flex items-center gap-3">
               <div class="flex items-center justify-center p-2 rounded-lg bg-primary-50 dark:bg-primary-950/50 text-primary-500 shrink-0">
-                <UIcon name="i-heroicons-user" class="size-6" />
+                <UIcon name="i-lucide-user" class="size-6" />
               </div>
               <div>
                 <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">
@@ -98,7 +98,7 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
                 </p>
               </div>
             </div>
-            <UButton color="neutral" variant="ghost" icon="i-heroicons-x-mark" class="rounded-full shrink-0" @click="() => { open = false }" />
+            <UButton color="neutral" variant="ghost" icon="i-lucide-x" class="rounded-full shrink-0" @click="() => { open = false }" />
           </div>
         </div>
 

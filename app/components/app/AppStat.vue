@@ -80,7 +80,7 @@ const trendColors = {
           class="inline-flex items-center gap-1 text-xs font-extrabold px-2.5 py-1 rounded-full border"
         >
           <UIcon 
-            :name="trend > 0 ? 'i-heroicons-arrow-trending-up-20-solid' : trend < 0 ? 'i-heroicons-arrow-trending-down-20-solid' : 'i-heroicons-minus-20-solid'" 
+            :name="trend > 0 ? 'i-lucide-trending-up' : trend < 0 ? 'i-lucide-trending-down' : 'i-lucide-minus'" 
             class="w-3.5 h-3.5"
           />
           {{ trend > 0 ? '+' : '' }}{{ trend }}%

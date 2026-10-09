@@ -14,7 +14,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   searchPlaceholder: 'Buscar...',
   clearable: true,
-  createIcon: 'i-heroicons-plus',
+  createIcon: 'i-lucide-plus',
 })
 
 const model = defineModel<string>('search', { default: '' })
@@ -44,13 +44,13 @@ const showCreate = computed(() => !!(props.createLabel || slots.create))
           <UInput
             v-model="model"
             :placeholder="props.searchPlaceholder"
-            leading-icon="i-heroicons-magnifying-glass-20-solid"
+            leading-icon="i-lucide-search"
             :disabled="props.searchDisabled"
             size="md"
             class="w-full sm:w-72"
           >
             <template v-if="props.clearable && model" #trailing>
-              <UButton color="neutral" variant="link" size="xs" icon="i-heroicons-x-mark-20-solid" :padded="false" aria-label="Limpiar búsqueda" @click="model = ''" />
+              <UButton color="neutral" variant="link" size="xs" icon="i-lucide-x" :padded="false" aria-label="Limpiar búsqueda" @click="model = ''" />
             </template>
           </UInput>
         </div>
@@ -61,13 +61,13 @@ const showCreate = computed(() => !!(props.createLabel || slots.create))
           v-if="hasHeader && !hideSearch"
           v-model="model"
           :placeholder="props.searchPlaceholder"
-          leading-icon="i-heroicons-magnifying-glass-20-solid"
+          leading-icon="i-lucide-search"
           :disabled="props.searchDisabled"
           size="md"
           class="w-full sm:w-72"
         >
           <template v-if="props.clearable && model" #trailing>
-            <UButton color="neutral" variant="link" size="xs" icon="i-heroicons-x-mark-20-solid" :padded="false" aria-label="Limpiar búsqueda" @click="model = ''" />
+            <UButton color="neutral" variant="link" size="xs" icon="i-lucide-x" :padded="false" aria-label="Limpiar búsqueda" @click="model = ''" />
           </template>
         </UInput>
         <div class="flex items-center gap-2">

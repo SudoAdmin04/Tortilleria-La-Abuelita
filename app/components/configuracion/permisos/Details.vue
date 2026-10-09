@@ -224,7 +224,7 @@ function handlePermissionChange(
         v-if="props.noRoleSelected"
         class="flex items-center px-4 py-3 rounded-xl border border-dashed border-gray-800 bg-slate-900/20 text-gray-400"
       >
-        <UIcon name="i-heroicons-information-circle" class="size-5 shrink-0" />
+        <UIcon name="i-lucide-info" class="size-5 shrink-0" />
         <p class="text-xs">
           Vista general de todas las pantallas. Selecciona un rol arriba para
           ver y editar sus permisos.
@@ -237,7 +237,7 @@ function handlePermissionChange(
           <div class="flex items-center gap-4">
             <div class="size-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary"
               :class="{ 'cursor-pointer': item.isParent }" @click="item.isParent && toggleSection(item.id)">
-              <UIcon :name="item.icon || 'i-heroicons-window'" class="size-6" />
+              <UIcon :name="item.icon || 'i-lucide-app-window'" class="size-6" />
             </div>
             <div>
               <div class="flex items-center">
@@ -265,8 +265,8 @@ function handlePermissionChange(
                 : bulkAction(item.id, false)
               " />
             <UButton v-if="item.isParent" :icon="expandedSections[item.id]
-              ? 'i-heroicons-chevron-up'
-              : 'i-heroicons-chevron-down'
+              ? 'i-lucide-chevron-up'
+              : 'i-lucide-chevron-down'
               " variant="ghost" color="neutral" size="sm" @click="toggleSection(item.id)" />
           </div>
         </div>
@@ -323,7 +323,7 @@ function handlePermissionChange(
 
       <div v-if="structuredData.length === 0"
         class="flex flex-col items-center justify-center py-16 text-gray-500 bg-slate-900/20 rounded-xl border border-dashed border-gray-800">
-        <UIcon name="i-heroicons-magnifying-glass" class="size-12 mb-4 opacity-10" />
+        <UIcon name="i-lucide-search" class="size-12 mb-4 opacity-10" />
         <p class="text-sm font-medium">No se encontraron pantallas.</p>
       </div>
     </template>

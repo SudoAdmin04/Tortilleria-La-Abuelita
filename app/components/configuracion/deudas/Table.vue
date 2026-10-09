@@ -86,20 +86,20 @@ const columnas: TableColumn<Debt>[] = [
       const menu: any[] = [
         {
           label: 'Editar',
-          icon: 'i-heroicons-pencil-square',
+          icon: 'i-lucide-square-pen',
           onSelect: () => emit('edit', record),
         },
       ]
       if (record.status === 'open') {
         menu.push({
           label: 'Liquidar',
-          icon: 'i-heroicons-check-badge',
+          icon: 'i-lucide-badge-check',
           onSelect: () => emit('settle', record),
         })
       }
       menu.push({
         label: 'Eliminar',
-        icon: 'i-heroicons-trash',
+        icon: 'i-lucide-trash-2',
         color: 'error' as const,
         onSelect: () => emit('delete', record.id),
       })
@@ -109,7 +109,7 @@ const columnas: TableColumn<Debt>[] = [
           content: { align: 'end' },
         }, {
           default: () => h(UButton, {
-            icon: 'i-heroicons-ellipsis-vertical',
+            icon: 'i-lucide-ellipsis-vertical',
             color: 'neutral',
             variant: 'ghost',
             size: 'xs',
@@ -175,7 +175,7 @@ const pageLabel = computed(() => {
         >
           <template #empty>
             <div class="flex flex-col items-center justify-center py-12 gap-3">
-              <UIcon name="i-heroicons-x-circle" class="size-8 text-white/30" />
+              <UIcon name="i-lucide-circle-x" class="size-8 text-white/30" />
               <p class="text-sm text-white/50 font-medium">No hay deudas que coincidan con los criterios.</p>
             </div>
           </template>

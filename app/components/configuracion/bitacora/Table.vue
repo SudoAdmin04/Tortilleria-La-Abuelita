@@ -93,7 +93,7 @@ const pageLabel = computed(() => {
     <template #header>
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-2">
-          <UIcon name="i-heroicons-clock" class="size-5 text-primary" />
+          <UIcon name="i-lucide-clock" class="size-5 text-primary" />
           <span class="text-sm font-semibold">Historial de Accesos</span>
           <UBadge v-if="data.length" size="sm" color="primary" variant="subtle">{{ totalItems }}</UBadge>
         </div>
@@ -109,7 +109,7 @@ const pageLabel = computed(() => {
       >
         <template #empty>
           <div v-if="!props.loading" class="flex flex-col items-center justify-center py-12 gap-3">
-            <UIcon name="i-heroicons-clock" class="size-8 text-neutral-400" />
+            <UIcon name="i-lucide-clock" class="size-8 text-neutral-400" />
             <p class="text-sm text-neutral-500 font-medium">No hay accesos que coincidan con los criterios.</p>
           </div>
         </template>

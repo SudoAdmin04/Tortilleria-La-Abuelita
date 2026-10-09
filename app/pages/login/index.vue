@@ -84,7 +84,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
         <UForm :schema="schema" :state="state" class="space-y-5" @submit="onSubmit">
           <UFormField label="Usuario" name="correo" class="font-medium">
-            <UInput v-model="state.email" icon="i-heroicons-envelope" size="lg" placeholder="administrador" class="w-full"/>
+            <UInput v-model="state.email" icon="i-lucide-mail" size="lg" placeholder="administrador" class="w-full"/>
           </UFormField>
 
           <UFormField name="password">
@@ -93,12 +93,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 <span class="font-medium pr-2">Contraseña</span>
               </div>
             </template>
-            <UInput v-model="state.password" type="password" icon="i-heroicons-lock-closed" size="lg" placeholder="••••••••" class="w-full"/>
+            <UInput v-model="state.password" type="password" icon="i-lucide-lock" size="lg" placeholder="••••••••" class="w-full"/>
           </UFormField>
 
           <UButton type="submit" block size="lg" :loading="loading" color="primary" variant="solid"
             class="rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
-            icon="i-heroicons-arrow-right-on-rectangle"
+            icon="i-lucide-log-in"
           >
             {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
           </UButton>
@@ -117,7 +117,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
         <div class="mt-6 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-700 flex gap-2 items-start">
           <UIcon
-            name="i-heroicons-shield-check"
+            name="i-lucide-shield-check"
             class="w-4 h-4 text-(--ui-primary) shrink-0 mt-0.5"
           />
           <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">

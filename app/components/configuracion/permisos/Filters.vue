@@ -58,7 +58,7 @@ const hasRole = computed(() => selectedRoleId.value != null);
       >
         <UInput
           v-model="search"
-          icon="i-heroicons-magnifying-glass"
+          icon="i-lucide-search"
           class="w-full sm:max-w-xs"
           placeholder="Buscar en las pantallas..."
           size="md"

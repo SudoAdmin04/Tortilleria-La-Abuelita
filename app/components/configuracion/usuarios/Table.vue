@@ -82,12 +82,12 @@ const columnas: TableColumn<User>[] = [
         [
           {
             label: 'Editar',
-            icon: 'i-heroicons-pencil-square',
+            icon: 'i-lucide-square-pen',
             onSelect: () => emit('edit', record),
           },
           {
             label: isToggling ? 'Procesando...' : (isActivo ? 'Desactivar' : 'Activar'),
-            icon: isActivo ? 'i-heroicons-no-symbol' : 'i-heroicons-check-circle',
+            icon: isActivo ? 'i-lucide-ban' : 'i-lucide-circle-check',
             color: isActivo ? ('error' as const) : ('success' as const),
             disabled: isToggling,
             onSelect: () => emit('toggle', record.id),
@@ -101,7 +101,7 @@ const columnas: TableColumn<User>[] = [
           content: { align: 'end' },
         }, {
           default: () => h(UButton, {
-            icon: 'i-heroicons-ellipsis-vertical',
+            icon: 'i-lucide-ellipsis-vertical',
             color: 'neutral',
             variant: 'ghost',
             size: 'xs',
@@ -169,7 +169,7 @@ const pageLabel = computed(() => {
         >
           <template #empty>
             <div class="flex flex-col items-center justify-center py-12 gap-3">
-              <UIcon name="i-heroicons-x-circle" class="size-8 text-white/30" />
+              <UIcon name="i-lucide-circle-x" class="size-8 text-white/30" />
               <p class="text-sm text-white/50 font-medium">No hay usuarios que coincidan con los criterios.</p>
             </div>
           </template>
