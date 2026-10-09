@@ -1,15 +1,25 @@
-import { getDashboard } from '~/services/reports.service'
-import type {
-  BudgetLine,
-  DashboardAccounts,
-  DashboardLiabilities,
-  DashboardReport,
-  DashboardTotals,
-  DistributionItem,
-  WaterfallStep,
-} from '~/types/dashboard'
-import { EMPTY_ACCOUNTS as FALLBACK_ACCOUNTS, EMPTY_TOTALS as FALLBACK_TOTALS } from '~/types/dashboard'
+import {
+  getCategoryBreakdown,
+  getDebtsSnapshot,
+  getOverview,
+  getSavingsSnapshot,
+  type CategoryBreakdown,
+  type DebtsSnapshot,
+  type Distribution,
+  type Granularity,
+  type IncomeVsBudget,
+  type Kpis,
+  type LedgerSummary,
+  type MetodoPago,
+  type Overview,
+  type RangeQuery,
+  type SavingsSnapshot,
+  type Waterfall,
+} from '~/services/dashboard.service'
+import { DEFAULT_FILTERS, type CuentaOpt } from '~/types/dashboard'
 import { monthYearLabel, num } from '~/utils/format'
+
+export type { Granularity, MetodoPago }
 
 export interface DashboardPeriod {
   year: number
@@ -22,37 +32,87 @@ export function useDashboardData() {
     year: now.getFullYear(),
     month: now.getMonth() + 1,
   }))
-  const search = useState<string>('dashboard-search', () => '')
-  const accountId = useState<string | undefined>('dashboard-account-id', () => undefined)
+  const search = useState<string>('dashboard-search', () => DEFAULT_FILTERS.search)
+  const accountId = useState<string | undefined>('dashboard-account-id', () => DEFAULT_FILTERS.accountId)
+  const granularity = useState<Granularity>('dashboard-granularity', () => DEFAULT_FILTERS.granularity)
+  const paymentMethod = useState<MetodoPago | undefined>('dashboard-payment-method', () => DEFAULT_FILTERS.paymentMethod)
+  const breakdownCategoryId = useState<string | undefined>('dashboard-breakdown-category', () => undefined)
 
-  const { data, pending, error, refresh } = useAsyncData<DashboardReport>(
-    'dashboard-report',
-    () => getDashboard({ year: period.value.year, month: period.value.month }),
-    { watch: [period] },
+  // ---- /dashboard/* (única fuente de datos del dashboard) ----
+  const rangeParams = computed<RangeQuery>(() => ({
+    year: period.value.year,
+    month: period.value.month,
+    granularity: granularity.value,
+    accountId: accountId.value,
+    paymentMethod: paymentMethod.value,
+  }))
+
+  const {
+    data: overview,
+    pending: overviewPending,
+    error: overviewError,
+    refresh: refreshOverviewBase,
+  } = useAsyncData<Overview>('dashboard-overview', () => getOverview(rangeParams.value), { watch: [rangeParams] })
+
+  const {
+    data: breakdown,
+    pending: breakdownPending,
+    refresh: refreshBreakdown,
+  } = useAsyncData<CategoryBreakdown>(
+    'dashboard-breakdown',
+    () => getCategoryBreakdown({ ...rangeParams.value, categoryId: breakdownCategoryId.value }),
+    { watch: [rangeParams, breakdownCategoryId] },
   )
 
-  const totals = computed<DashboardTotals>(() => ({ ...FALLBACK_TOTALS, ...((data.value?.totals ?? {}) as Partial<DashboardTotals>) }))
-  const accounts = computed<DashboardAccounts>(() => {
-    const raw = (data.value?.accounts ?? {}) as Partial<DashboardAccounts>
-    return { ...FALLBACK_ACCOUNTS, ...raw, items: raw.items ?? [] }
-  })
-  const liabilities = computed<DashboardLiabilities>(() => ({
-    payable: num((data.value?.liabilities as Record<string, unknown> | undefined)?.payable),
-    receivable: num((data.value?.liabilities as Record<string, unknown> | undefined)?.receivable),
-  }))
-  const netWorth = computed(() => num(data.value?.netWorth))
-  const pendingTransactions = computed(() => num(data.value?.pendingTransactions))
-  const distribution = computed<DistributionItem[]>(() => data.value?.distribution ?? [])
-  const incomeRubros = computed<BudgetLine[]>(() => data.value?.incomeRubros ?? [])
-  const expenseRubros = computed<BudgetLine[]>(() => data.value?.expenseRubros ?? [])
-  const steps = computed<WaterfallStep[]>(() => {
-    const wf = data.value?.waterfall as { steps?: WaterfallStep[] } | undefined
-    return wf?.steps ?? []
-  })
-  const primaryAccount = computed(() => accounts.value.items.find(a => a.isPrimary) ?? accounts.value.items[0] ?? null)
-  const hasMovements = computed(() => totals.value.income !== 0 || totals.value.expense !== 0)
+  const {
+    data: debts,
+    pending: debtsPending,
+    refresh: refreshDebts,
+  } = useAsyncData<DebtsSnapshot>(
+    'dashboard-debts',
+    () => getDebtsSnapshot(rangeParams.value),
+    { watch: [rangeParams] },
+  )
 
-  const periodLabel = computed(() => monthYearLabel(period.value.year, period.value.month))
+  const {
+    data: savings,
+    pending: savingsPending,
+    refresh: refreshSavings,
+  } = useAsyncData<SavingsSnapshot>(
+    'dashboard-savings',
+    () => getSavingsSnapshot(rangeParams.value),
+    { watch: [rangeParams] },
+  )
+
+  function refreshOverview() {
+    return Promise.all([refreshOverviewBase(), refreshBreakdown(), refreshDebts(), refreshSavings()])
+  }
+
+  function limpiarFiltros() {
+    granularity.value = DEFAULT_FILTERS.granularity
+    accountId.value = DEFAULT_FILTERS.accountId
+    paymentMethod.value = DEFAULT_FILTERS.paymentMethod
+    search.value = DEFAULT_FILTERS.search
+  }
+
+  const kpis = computed<Kpis | null>(() => overview.value?.kpis ?? null)
+  const liquidity = computed(() => kpis.value?.liquidity ?? null)
+  const expenseDistribution = computed<Distribution | null>(() => overview.value?.distribution ?? null)
+  const incomeVsBudget = computed<IncomeVsBudget | null>(() => overview.value?.incomeVsBudget ?? null)
+  const waterfall = computed<Waterfall | null>(() => overview.value?.waterfall ?? null)
+  const waterfallTotal = computed(() => num(waterfall.value?.total))
+  const incomeSummary = computed<LedgerSummary | null>(() => overview.value?.incomeSummary ?? null)
+  const expenseSummary = computed<LedgerSummary | null>(() => overview.value?.expenseSummary ?? null)
+
+  const fallbackLabel = computed(() => monthYearLabel(period.value.year, period.value.month))
+  const rangeLabel = computed(() => overview.value?.range.label || fallbackLabel.value)
+
+  const hasRealMovements = computed(() => num(kpis.value?.income.total) !== 0 || num(kpis.value?.expense.total) !== 0)
+
+  const accountOptions = computed<CuentaOpt[]>(() => [
+    { value: undefined, label: 'Todas las cuentas' },
+    ...(liquidity.value?.items ?? []).map(a => ({ value: a.id as string | undefined, label: a.name })),
+  ])
 
   function shiftMonth(delta: number) {
     const next = new Date(period.value.year, period.value.month - 1 + delta, 1)
@@ -67,22 +127,31 @@ export function useDashboardData() {
     period,
     search,
     accountId,
-    data,
-    pending,
-    error,
-    refresh,
-    totals,
-    accounts,
-    liabilities,
-    netWorth,
-    pendingTransactions,
-    distribution,
-    incomeRubros,
-    expenseRubros,
-    steps,
-    primaryAccount,
-    hasMovements,
-    periodLabel,
+    granularity,
+    paymentMethod,
+    breakdownCategoryId,
+    overview,
+    overviewPending,
+    overviewError,
+    refreshOverview,
+    limpiarFiltros,
+    kpis,
+    liquidity,
+    expenseDistribution,
+    incomeVsBudget,
+    waterfall,
+    waterfallTotal,
+    incomeSummary,
+    expenseSummary,
+    breakdown,
+    breakdownPending,
+    debts,
+    debtsPending,
+    savings,
+    savingsPending,
+    rangeLabel,
+    hasRealMovements,
+    accountOptions,
     prevMonth: () => shiftMonth(-1),
     nextMonth: () => shiftMonth(1),
     goCurrent,

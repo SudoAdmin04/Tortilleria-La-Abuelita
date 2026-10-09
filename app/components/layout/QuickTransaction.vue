@@ -60,7 +60,7 @@ async function save() {
     toast.add({ title: 'Transacción registrada', color: 'success' })
     open.value = false
     Object.assign(form, { type: 'expense', destinationAccountId: '', categoryId: '', amount: 0, concept: '', date: new Date().toISOString().slice(0, 10) })
-    await refreshNuxtData('dashboard-report')
+    await refreshNuxtData(['dashboard-overview', 'dashboard-breakdown', 'dashboard-debts', 'dashboard-savings'])
     emit('created')
   } catch (e) {
     toast.add({ title: 'Error', description: getApiMessage(e, 'No se pudo registrar'), color: 'error' })

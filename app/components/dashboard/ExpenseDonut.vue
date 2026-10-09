@@ -1,27 +1,34 @@
-
 <script setup lang="ts">
-import type { DistributionItem } from '~/types/dashboard'
-import { formatMoney } from '~/utils/format'
+import type { Distribution } from '~/services/dashboard.service'
+import { formatMoney, num } from '~/utils/format'
 
-const props = defineProps<{
-  distribution: DistributionItem[]
-  total: number
-  currency: string
-}>()
+const props = withDefaults(defineProps<{
+  data?: Distribution | null
+  currency?: string
+  loading?: boolean
+}>(), {
+  data: null,
+  currency: 'MXN',
+  loading: false,
+})
+
+const moneda = computed(() => props.currency || 'MXN')
 
 const CIRCUMFERENCE = 2 * Math.PI * 38
 const FALLBACK_COLORS = ['#4d8eff', '#4edea3', '#ff516a', '#adc6ff', '#fbbf24', '#c084fc']
 
+const total = computed(() => num(props.data?.total))
+
 const segments = computed(() => {
   let offset = 0
-  return props.distribution.map((item, i) => {
-    const percent = typeof item.percent === 'number' ? item.percent : 0
+  return (props.data?.items ?? []).map((item, i) => {
+    const percent = num(item.percent)
     const length = (percent / 100) * CIRCUMFERENCE
     const seg = {
       key: item.categoryId || item.name,
       name: item.name,
       percent: percent.toLocaleString('es-MX', { maximumFractionDigits: 1 }),
-      amount: item.amount,
+      amount: num(item.amount),
       color: item.color || FALLBACK_COLORS[i % FALLBACK_COLORS.length]!,
       length,
       offset,
@@ -33,9 +40,9 @@ const segments = computed(() => {
 </script>
 
 <template>
-  <UCard >
+  <UCard class="border border-white/10 hover:border-white/15">
     <template #header>
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-2">
         <div>
           <h2 class="font-display font-semibold">
             Distribución de Gastos
@@ -48,8 +55,15 @@ const segments = computed(() => {
       </div>
     </template>
 
-    <div v-if="segments.length === 0" class="py-8">
-      <UEmpty icon="i-lucide-chart-pie" title="Sin gastos este mes" description="Aún no hay movimientos registrados en el periodo." />
+    <div v-if="loading && segments.length === 0" class="flex flex-col items-center gap-4 py-6 animate-pulse">
+      <div class="size-48 rounded-full bg-white/5 ring-8 ring-white/10" />
+      <div class="grid grid-cols-2 gap-2 w-full">
+        <div v-for="n in 4" :key="n" class="h-8 rounded bg-white/5" />
+      </div>
+    </div>
+
+    <div v-else-if="segments.length === 0" class="py-8">
+      <UEmpty icon="i-lucide-chart-pie" title="Sin gastos en el periodo" description="Aún no hay movimientos registrados en el rango." />
     </div>
 
     <template v-else>
@@ -71,20 +85,20 @@ const segments = computed(() => {
         </svg>
         <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
           <span class="text-sm text-neutral-400">Total Egresos</span>
-          <span class="font-display font-bold text-lg">{{ formatMoney(total, currency) }}</span>
+          <span class="font-display font-bold text-lg tabular-nums">{{ formatMoney(total, moneda) }}</span>
+          <span class="text-xs text-neutral-500">100%</span>
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-2 pt-3 border-t border-white/5 text-sm">
-        <div v-for="seg in segments" :key="seg.key" class="flex items-center gap-2">
+        <div v-for="seg in segments" :key="seg.key" class="flex items-center gap-2 min-w-0">
           <span class="w-3 h-3 rounded shrink-0" :style="{ backgroundColor: seg.color }" />
           <div class="flex flex-col min-w-0">
             <span class="text-xs font-medium truncate">{{ seg.name }} ({{ seg.percent }}%)</span>
-            <span class="text-neutral-400 tabular-nums text-xs">{{ formatMoney(seg.amount, currency) }}</span>
+            <span class="text-neutral-400 tabular-nums text-xs">{{ formatMoney(seg.amount, moneda) }}</span>
           </div>
         </div>
       </div>
     </template>
   </UCard>
 </template>
-

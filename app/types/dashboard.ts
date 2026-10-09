@@ -1,67 +1,36 @@
-import type { components } from '~/types/api'
+import type { Granularity, MetodoPago } from '~/services/dashboard.service'
 
-export type DashboardReport = components['schemas']['DashboardResponseDto']
-export type BudgetLine = components['schemas']['BudgetLineResponseDto']
-export type DistributionItem = components['schemas']['DistributionItemResponseDto']
+export type { Granularity, MetodoPago }
 
-/** `totals` viene como objeto genérico: forma real verificada contra el backend. */
-export interface DashboardTotals {
-  income: number
-  incomeBudget: number
-  incomeVariance: number
-  incomeExecutionRate: number | null
-  expense: number
-  expenseBudget: number
-  expenseVariance: number
-  expenseExecutionRate: number | null
-  net: number
-  isDeficit: boolean
-  saved: number
-  debtPayments: number
-}
-
-export interface DashboardAccountItem {
-  id: string
-  name: string
-  type: string
-  isPrimary?: boolean
-  balance: number
-}
-
-/** `accounts` viene como objeto genérico: forma real verificada contra el backend. */
-export interface DashboardAccounts {
-  items: DashboardAccountItem[]
-  liquid: number
-  total: number
-}
-
-export interface DashboardLiabilities {
-  payable: number
-  receivable: number
-}
-
-/** Paso del waterfall: `type` es increase | decrease | total. */
-export interface WaterfallStep {
+export interface CuentaOpt {
+  value: string | undefined
   label: string
-  type: 'increase' | 'decrease' | 'total' | string
-  amount: number
-  start: number
-  end: number
 }
 
-export const EMPTY_TOTALS: DashboardTotals = {
-  income: 0,
-  incomeBudget: 0,
-  incomeVariance: 0,
-  incomeExecutionRate: null,
-  expense: 0,
-  expenseBudget: 0,
-  expenseVariance: 0,
-  expenseExecutionRate: null,
-  net: 0,
-  isDeficit: false,
-  saved: 0,
-  debtPayments: 0,
+export interface DashboardFilters {
+  granularity: Granularity
+  accountId?: string
+  paymentMethod?: MetodoPago
+  search: string
 }
 
-export const EMPTY_ACCOUNTS: DashboardAccounts = { items: [], liquid: 0, total: 0 }
+export const GRANULARIDAD_OPTS: { value: Granularity, label: string, dot: string }[] = [
+  { value: 'monthly', label: 'Mensual', dot: 'bg-green-500' },
+  { value: 'quarterly', label: 'Trimestral', dot: 'bg-violet-400' },
+  { value: 'annual', label: 'Anual', dot: 'bg-amber-400' },
+]
+
+export const METODO_PAGO_OPTS: { value: MetodoPago | undefined, label: string }[] = [
+  { value: undefined, label: 'Todos los métodos' },
+  { value: 'bank_transfer', label: 'Transferencia' },
+  { value: 'debit_card', label: 'Débito' },
+  { value: 'credit_card', label: 'Crédito' },
+  { value: 'cash', label: 'Efectivo' },
+]
+
+export const DEFAULT_FILTERS: DashboardFilters = {
+  granularity: 'monthly',
+  accountId: undefined,
+  paymentMethod: undefined,
+  search: '',
+}

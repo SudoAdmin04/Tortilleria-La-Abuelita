@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { getApiMessage } from '~/utils/api-error'
 import { formatMoney } from '~/utils/format'
@@ -7,26 +6,26 @@ const auth = useAuthStore()
 const dash = useDashboardData()
 
 const currency = computed(() => auth.user?.currency || 'MXN')
+const disponible = computed(() => dash.liquidity.value?.liquid ?? dash.liquidity.value?.total ?? 0)
+const netLabel = computed(() => dash.kpis.value?.net.label ?? (dash.kpis.value?.net.isDeficit ? 'Déficit' : 'Superávit'))
+const isDeficit = computed(() => dash.kpis.value?.net.isDeficit ?? false)
 
 function matchesSearch(name: string): boolean {
   const q = dash.search.value.trim().toLowerCase()
   return q === '' || name.toLowerCase().includes(q)
 }
 
-const filteredIncome = computed(() => dash.incomeRubros.value.filter(r => matchesSearch(r.name)))
-const filteredExpense = computed(() => dash.expenseRubros.value.filter(r => matchesSearch(r.name)))
-
-const expenseBadge = computed(() => {
-  const over = dash.expenseRubros.value.filter(r => r.status === 'exceeded' || r.status === 'unbudgeted').length
-  return over > 0 ? `${over} rubro(s) con sobregiro` : 'Ejecución bajo control'
-})
-
-const scopedAccounts = computed(() => ({
-  ...dash.accounts.value,
-  items: dash.accountId.value
-    ? dash.accounts.value.items.filter(a => a.id === dash.accountId.value)
-    : dash.accounts.value.items,
+const filteredIncome = computed(() => ({
+  ...(dash.incomeSummary.value ?? null),
+  rows: (dash.incomeSummary.value?.rows ?? []).filter(r => matchesSearch(r.name)),
 }))
+
+const filteredExpense = computed(() => ({
+  ...(dash.expenseSummary.value ?? null),
+  rows: (dash.expenseSummary.value?.rows ?? []).filter(r => matchesSearch(r.name)),
+}))
+
+const initialLoading = computed(() => dash.overviewPending.value && !dash.overview.value)
 </script>
 
 <template>
@@ -37,34 +36,47 @@ const scopedAccounts = computed(() => ({
           Resumen Financiero Ejecutivo
         </h1>
         <p class="text-sm text-slate-400 mt-0.5">
-          Liquidez mensual, ejecución presupuestaria y patrimonio · {{ dash.periodLabel }}
+          Control de liquidez mensual, ejecución presupuestaria y arqueo patrimonial · {{ dash.rangeLabel.value }}
         </p>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
         <UBadge color="neutral" variant="soft" size="lg">
-          Patrimonio: {{ formatMoney(dash.netWorth.value, currency) }}
+          Disponible: {{ formatMoney(disponible, currency) }}
         </UBadge>
-        <UBadge v-if="dash.pendingTransactions.value > 0" color="warning" variant="soft" size="lg">
-          {{ dash.pendingTransactions.value }} por conciliar
+        <UBadge :color="isDeficit ? 'error' : 'success'" variant="soft" size="lg">
+          {{ netLabel }}: {{ formatMoney(dash.kpis.value?.net.net, currency) }}
         </UBadge>
       </div>
     </div>
 
+    <DashboardFilters
+      v-model:granularity="dash.granularity.value"
+      v-model:account-id="dash.accountId.value"
+      v-model:payment-method="dash.paymentMethod.value"
+      v-model:search="dash.search.value"
+      :cuentas="dash.accountOptions.value.slice(1)"
+      :period-label="dash.rangeLabel.value"
+      @limpiar="dash.limpiarFiltros()"
+      @prev-period="dash.prevMonth()"
+      @next-period="dash.nextMonth()"
+      @go-current="dash.goCurrent()"
+    />
+
     <UAlert
-      v-if="dash.error.value"
+      v-if="dash.overviewError.value"
       color="error"
       variant="soft"
       title="No se pudo cargar el dashboard"
-      :description="getApiMessage(dash.error.value)"
+      :description="getApiMessage(dash.overviewError.value)"
     >
       <template #actions>
-        <UButton color="error" variant="solid" @click="dash.refresh()">
+        <UButton color="error" variant="solid" @click="dash.refreshOverview()">
           Reintentar
         </UButton>
       </template>
     </UAlert>
 
-    <div v-else-if="dash.pending.value && !dash.data.value" class="flex flex-col gap-4">
+    <div v-else-if="initialLoading" class="flex flex-col gap-4">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <USkeleton v-for="i in 4" :key="i" class="h-44" />
       </div>
@@ -73,33 +85,43 @@ const scopedAccounts = computed(() => ({
         <USkeleton class="h-96 lg:col-span-4" />
         <USkeleton class="h-96 lg:col-span-4" />
       </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <USkeleton class="h-72" />
+        <USkeleton class="h-72" />
+      </div>
     </div>
 
     <template v-else>
       <UEmpty
-        v-if="!dash.hasMovements.value"
+        v-if="!dash.hasRealMovements.value"
         icon="i-lucide-wallet"
-        title="Sin movimientos en {{ dash.periodLabel }}"
-        description="Registra tu primer movimiento o cambia de mes para ver el resumen ejecutivo."
+        :title="`Sin movimientos en ${dash.rangeLabel.value}`"
+        description="Registra tu primer movimiento o cambia de periodo para ver el resumen ejecutivo."
       />
 
-      <DashboardKpiCards :totals="dash.totals.value" :accounts="scopedAccounts" :currency="currency" />
+      <DashboardKpiCards
+        :kpis="dash.kpis.value"
+        :currency="currency"
+        :loading="dash.overviewPending.value"
+      />
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <DashboardExpenseDonut
-          :distribution="dash.distribution.value"
-          :total="dash.totals.value.expense"
+          :data="dash.expenseDistribution.value"
           :currency="currency"
+          :loading="dash.overviewPending.value"
           class="lg:col-span-4"
         />
         <DashboardIncomeBudgetBars
-          :rubros="dash.incomeRubros.value"
+          :data="dash.incomeVsBudget.value"
           :currency="currency"
+          :loading="dash.overviewPending.value"
           class="lg:col-span-4"
         />
         <DashboardWaterfallCard
-          :steps="dash.steps.value"
+          :data="dash.waterfall.value"
           :currency="currency"
+          :loading="dash.overviewPending.value"
           class="lg:col-span-4"
         />
       </div>
@@ -108,31 +130,38 @@ const scopedAccounts = computed(() => ({
         <DashboardLedgerTable
           title="Resumen Ingresos"
           icon="i-lucide-circle-arrow-down"
-          badge="Rubros de ingreso"
           mode="income"
-          :rows="filteredIncome"
-          total-label="Total Ingresos"
-          :total-budget="dash.totals.value.incomeBudget"
-          :total-actual="dash.totals.value.income"
-          :total-variance="dash.totals.value.incomeVariance"
+          :summary="filteredIncome"
           :currency="currency"
+          :loading="dash.overviewPending.value"
         />
         <DashboardLedgerTable
           title="Resumen Egresos"
           icon="i-lucide-circle-arrow-up"
-          :badge="expenseBadge"
           mode="expense"
-          :rows="filteredExpense"
-          total-label="Total Egresos"
-          :total-budget="dash.totals.value.expenseBudget"
-          :total-actual="dash.totals.value.expense"
-          :total-variance="dash.totals.value.expenseVariance"
+          :summary="filteredExpense"
           :currency="currency"
+          :loading="dash.overviewPending.value"
         />
       </div>
 
-      <DashboardRubroSpotlight :rubros="dash.expenseRubros.value" :currency="currency" />
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <DashboardCategoryBreakdownCard
+          :data="dash.breakdown.value"
+          :currency="currency"
+          :loading="dash.breakdownPending.value"
+        />
+        <DashboardDebtsSnapshotCard
+          :data="dash.debts.value"
+          :currency="currency"
+          :loading="dash.debtsPending.value"
+        />
+        <DashboardSavingsSnapshotCard
+          :data="dash.savings.value"
+          :currency="currency"
+          :loading="dash.savingsPending.value"
+        />
+      </div>
     </template>
   </div>
 </template>
-

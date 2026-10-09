@@ -5,7 +5,7 @@ import { listTransactions, type Transaction } from '~/services/transactions.serv
 import { downloadCsv, monthRange, transactionsToCsv } from '~/utils/report-csv'
 import { getApiMessage } from '~/utils/api-error'
 import { monthYearLabel } from '~/utils/format'
-import type { DashboardReport } from '~/types/dashboard'
+import type { Overview } from '~/services/dashboard.service'
 
 const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
@@ -49,10 +49,10 @@ const search = useState<string>('dashboard-search', () => '')
 const accountId = useState<string | undefined>('dashboard-account-id', () => undefined)
 
 
-const { data: dashboardReport } = useNuxtData<DashboardReport>('dashboard-report')
+const { data: dashboardOverview } = useNuxtData<Overview>('dashboard-overview')
 const accountOptions = computed<{ value: string | undefined, label: string }[]>(() => [
   { value: undefined, label: 'Todas las cuentas' },
-  ...((dashboardReport.value as any)?.accounts?.items ?? []).map((a: any) => ({ value: a.id, label: a.name })),
+  ...((dashboardOverview.value as Overview | null)?.kpis?.liquidity?.items ?? []).map(a => ({ value: a.id as string | undefined, label: a.name })),
 ])
 
 const showFilters = computed(() => route.path === '/dashboard')
