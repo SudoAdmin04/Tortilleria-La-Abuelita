@@ -4,28 +4,32 @@ import { useApi } from '~/composables/useApi'
 export type Account = components['schemas']['AccountResponseDto']
 export type CreateAccount = components['schemas']['CreateAccountDto']
 export type UpdateAccount = components['schemas']['UpdateAccountDto']
+export type AccountType = Account['type']
 
-/** GET /accounts — con `balance` calculado, ordenadas por principal y nombre. */
-export function listAccounts() {
-  return useApi().api<Account[]>('/accounts')
+function unwrap<T>(res: unknown): T[] {
+  if (Array.isArray(res)) return res as T[]
+  const items = (res as { items?: T[]; data?: T[] } | null | undefined)?.items
+    ?? (res as { data?: T[] } | null | undefined)?.data
+  return items ?? []
 }
 
-/** POST /accounts — nombre único por usuario. */
+export async function listAccounts(): Promise<Account[]> {
+  const res = await useApi().api<unknown>('/accounts')
+  return unwrap<Account>(res)
+}
+
 export function createAccount(payload: CreateAccount) {
   return useApi().api<Account>('/accounts', { method: 'POST', body: payload })
 }
 
-/** GET /accounts/:id */
 export function getAccount(id: string) {
   return useApi().api<Account>(`/accounts/${id}`)
 }
 
-/** PATCH /accounts/:id */
 export function updateAccount(id: string, payload: UpdateAccount) {
   return useApi().api<Account>(`/accounts/${id}`, { method: 'PATCH', body: payload })
 }
 
-/** DELETE /accounts/:id — 409 si tiene movimientos (desactivar en su lugar). */
 export function deleteAccount(id: string) {
   return useApi().api<void>(`/accounts/${id}`, { method: 'DELETE' })
 }

@@ -20,7 +20,6 @@ export interface RangeQuery {
   paymentMethod?: 'bank_transfer' | 'debit_card' | 'credit_card' | 'cash'
 }
 
-/** GET /dashboard/overview — carga inicial (KPIs + donut + barras + waterfall + tablas). */
 export function getOverview(params: RangeQuery = {}) {
   return useApi().api<Overview>('/dashboard/overview', { query: { ...params } })
 }

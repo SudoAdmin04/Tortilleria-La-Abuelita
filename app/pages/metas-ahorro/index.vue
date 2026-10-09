@@ -30,6 +30,40 @@ const historialGoalName = computed(() =>
 
 const periodLabel = computed(() => monthYearLabel(filter.year, filter.month))
 
+const stats = computed(() => [
+  {
+    label: 'Metas activas',
+    value: `${resumen.value.activas} / ${resumen.value.totalMetas}`,
+    sub: `${resumen.value.metasCompletadas} de ${resumen.value.metasConObjetivo} con objetivo completadas`,
+    icon: 'i-lucide-trophy',
+    tone: 'primary' as const,
+  },
+  {
+    label: 'Objetivo final total',
+    value: resumen.value.totalObjetivo > 0 ? formatMoney(resumen.value.totalObjetivo, currency.value) : '—',
+    sub: `Ahorrado: ${formatMoney(resumen.value.ahorradoConObjetivo, currency.value)}`,
+    icon: 'i-lucide-target',
+    tone: 'success' as const,
+    progress: resumen.value.totalObjetivo > 0 ? resumen.value.pctObjetivo : null,
+  },
+  {
+    label: 'Avance al objetivo',
+    value: formatExecution(resumen.value.pctObjetivo),
+    sub: resumen.value.totalObjetivo > 0
+      ? `Faltan ${formatMoney(resumen.value.faltanteObjetivo, currency.value)}`
+      : 'Define un targetAmount por meta',
+    icon: 'i-lucide-gauge',
+    tone: 'warning' as const,
+  },
+  {
+    label: `Aportado en ${periodLabel.value}`,
+    value: formatMoney(resumen.value.aportadoMes, currency.value),
+    sub: `Mensual: ${formatMoney(resumen.value.metaMes, currency.value)} · ${formatExecution(resumen.value.pctMes)}`,
+    icon: 'i-lucide-piggy-bank',
+    tone: 'neutral' as const,
+  },
+])
+
 let searchTimer: ReturnType<typeof setTimeout> | undefined
 
 watch([page, pageCount], () => {
@@ -127,40 +161,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       @create="openCreate"
     />
 
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <UCard class="border border-white/10">
-        <div class="flex flex-col gap-1">
-          <span class="text-xs text-white/50 font-medium">Metas activas</span>
-          <span class="text-xl font-bold text-white">{{ resumen.activas }} <span class="text-sm font-medium text-white/40">/ {{ resumen.totalMetas }}</span></span>
-          <span class="text-xs text-white/40">{{ resumen.metasCompletadas }} de {{ resumen.metasConObjetivo }} con objetivo completadas</span>
-        </div>
-      </UCard>
-      <UCard class="border border-white/10">
-        <div class="flex flex-col gap-1.5">
-          <span class="text-xs text-white/50 font-medium">Objetivo final total</span>
-          <span class="text-xl font-bold text-white">{{ resumen.totalObjetivo > 0 ? formatMoney(resumen.totalObjetivo, currency) : '—' }}</span>
-          <span class="text-xs text-white/40">Ahorrado: {{ formatMoney(resumen.ahorradoConObjetivo, currency) }}</span>
-          <UProgress v-if="resumen.totalObjetivo > 0" :model-value="Math.min(100, Math.max(0, Math.round(resumen.pctObjetivo ?? 0)))" :max="100" />
-          <span v-else class="text-xs text-white/40">Sin objetivo definido</span>
-        </div>
-      </UCard>
-      <UCard class="border border-white/10">
-        <div class="flex flex-col gap-1">
-          <span class="text-xs text-white/50 font-medium">Avance al objetivo</span>
-          <span class="text-xl font-bold text-white">{{ formatExecution(resumen.pctObjetivo) }}</span>
-          <span class="text-xs text-white/40">
-            {{ resumen.totalObjetivo > 0 ? `Faltan ${formatMoney(resumen.faltanteObjetivo, currency)}` : 'Define un targetAmount por meta' }}
-          </span>
-        </div>
-      </UCard>
-      <UCard class="border border-white/10">
-        <div class="flex flex-col gap-1">
-          <span class="text-xs text-white/50 font-medium">Aportado en {{ periodLabel }}</span>
-          <span class="text-xl font-bold text-white">{{ formatMoney(resumen.aportadoMes, currency) }}</span>
-          <span class="text-xs text-white/40">Mensual: {{ formatMoney(resumen.metaMes, currency) }} · {{ formatExecution(resumen.pctMes) }}</span>
-        </div>
-      </UCard>
-    </div>
+    <AppStatCards :stats="stats" :loading="loading" :columns="4" />
 
     <MetasAhorroList
       :data="items"

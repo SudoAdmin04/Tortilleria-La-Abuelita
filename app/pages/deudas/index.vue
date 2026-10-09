@@ -94,7 +94,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       </template>
     </AppToolbar>
 
-    <ConfiguracionDeudasTable
+    <DeudasTable
       :data="items"
       :loading="loading"
       :total="total"
@@ -106,7 +106,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       @delete="handleDelete"
     />
 
-    <ConfiguracionDeudasDrawer
+    <DeudasDrawer
       v-model:open="formDrawerOpen"
       :deuda="editingDeuda"
       @refresh="fetchPaginado"
