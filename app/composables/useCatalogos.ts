@@ -9,7 +9,7 @@ export const useCatalogos = () => {
 
   function optionsFor(kind?: Category['kind']) {
     const list = kind ? items.value.filter(c => c.kind === kind) : items.value
-    return list.map(c => ({ value: c.id, label: c.parentId ? `— ${c.name}` : c.name }))
+    return list.map(c => ({ value: c.id, label: c.parentId ? `${c.name}` : c.name }))
   }
 
   async function ensureLoaded() {

@@ -40,6 +40,21 @@ export function deleteTransaction(id: string) {
   return useApi().api<void>(`/transactions/${id}`, { method: 'DELETE' })
 }
 
+export type TransactionSummary = components['schemas']['TransactionSummaryResponseDto']
+
+export interface SummaryFilters {
+  from?: string
+  to?: string
+  paymentMethod?: 'bank_transfer' | 'debit_card' | 'credit_card' | 'cash'
+  categoryId?: string
+  accountId?: string
+  search?: string
+}
+
+export function getTransactionsSummary(filters: SummaryFilters = {}) {
+  return useApi().api<TransactionSummary>('/transactions/summary', { query: { ...filters } })
+}
+
 export function reconcileTransactions(ids: string[]) {
   return useApi().api<components['schemas']['ReconcileResponseDto']>('/transactions/reconcile', {
     method: 'POST',

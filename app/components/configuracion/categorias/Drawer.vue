@@ -29,7 +29,7 @@ watch(open, (isOpen) => {
   if (!isOpen) return
   if (props.categoria) {
     Object.assign(formState, {
-      name: props.categoria.displayName.replace(/^— /, ''),
+      name: props.categoria.displayName.replace(/^/, ''),
       kind: props.categoria.kind,
       parentId: props.categoria.parentId || undefined,
       color: props.categoria.color || '#3b82f6',

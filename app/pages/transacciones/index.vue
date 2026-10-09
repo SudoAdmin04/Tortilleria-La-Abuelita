@@ -5,7 +5,7 @@ import type { Transaction } from '~/services/transactions.service'
 
 useHead({ title: 'Transacciones' })
 
-const { items, total, loading, fetchPaginado, remove, conciliar, filter } = useTransacciones()
+const { items, total, loading, fetchPaginado, fetchResumen, summary, summaryLoading, remove, conciliar, filter } = useTransacciones()
 const auth = useAuthStore()
 const permisos = usePermisosStore()
 const currency = computed(() => auth.user?.currency || 'MXN')
@@ -21,12 +21,25 @@ const pageCount = ref(20)
 const cuentasOpts = ref<{ value: string; label: string }[]>([])
 const categoriasOpts = ref<{ value: string; label: string }[]>([])
 
+const conteos = computed(() => ({
+  total: summary.value?.totalCount ?? total.value,
+  income: summary.value?.income.count ?? items.value.filter(t => t.type === 'income').length,
+  expense: summary.value?.expense.count ?? items.value.filter(t => t.type === 'expense').length,
+  transfer: summary.value?.transfers.count ?? items.value.filter(t => t.type === 'transfer').length,
+}))
+
+const totalRegistros = computed(() => summary.value?.totalCount ?? total.value)
+
+function refreshAll() {
+  return Promise.all([fetchPaginado(), fetchResumen()])
+}
+
 let searchTimer: ReturnType<typeof setTimeout> | undefined
 
 watch([page, pageCount], () => {
   filter.pagina = page.value
   filter.registros = pageCount.value
-  fetchPaginado()
+  refreshAll()
 })
 
 watch(search, (v) => {
@@ -35,14 +48,14 @@ watch(search, (v) => {
     page.value = 1
     filter.pagina = 1
     filter.buscar = v?.trim() ? v.trim() : undefined
-    fetchPaginado()
+    refreshAll()
   }, 350)
 })
 
 function aplicarFiltros() {
   page.value = 1
   filter.pagina = 1
-  fetchPaginado()
+  refreshAll()
 }
 
 function limpiarFiltros() {
@@ -52,6 +65,9 @@ function limpiarFiltros() {
   filter.estado = undefined
   filter.cuentaId = undefined
   filter.categoriaId = undefined
+  filter.desde = undefined
+  filter.hasta = undefined
+  filter.metodoPago = undefined
   aplicarFiltros()
 }
 
@@ -84,7 +100,7 @@ async function loadCatalogos() {
   try {
     const [acc, cats] = await Promise.all([listAccounts(), listCategories(false)])
     cuentasOpts.value = toArray<any>(acc).map(a => ({ value: a.id, label: a.name }))
-    categoriasOpts.value = toArray<any>(cats).map(c => ({ value: c.id, label: c.parentId ? `— ${c.name}` : c.name }))
+    categoriasOpts.value = toArray<any>(cats).map(c => ({ value: c.id, label: c.parentId ? `${c.name}` : c.name }))
   } catch {
     cuentasOpts.value = []
     categoriasOpts.value = []
@@ -95,7 +111,7 @@ onMounted(async () => {
   filter.pagina = page.value
   filter.registros = pageCount.value
   filter.buscar = undefined
-  await Promise.all([fetchPaginado(), loadCatalogos()])
+  await Promise.all([refreshAll(), loadCatalogos()])
 })
 
 onUnmounted(() => clearTimeout(searchTimer))
@@ -106,10 +122,16 @@ onUnmounted(() => clearTimeout(searchTimer))
     <AppToolbar
       v-model:search="search"
       title="Transacciones"
-      :description="`Ingresos, egresos y traspasos · ${total} registros`"
+      :description="`Ingresos, egresos y traspasos · ${totalRegistros} registros`"
       search-placeholder="Buscar concepto..."
       :create-label="puedeCrear ? 'Registrar Movimiento' : undefined"
       @create="openCreate"
+    />
+
+    <TransaccionesStatsCards
+      :summary="summary"
+      :currency="currency"
+      :loading="summaryLoading && !summary"
     />
 
     <TransaccionesFilters
@@ -120,6 +142,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       v-model:search="search"
       :cuentas="cuentasOpts"
       :categorias="categoriasOpts"
+      :conteos="conteos"
       @filtrar="aplicarFiltros"
       @limpiar="limpiarFiltros"
     />
@@ -143,7 +166,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       :mov="editingTx"
       :cuentas="cuentasOpts"
       :categorias="categoriasOpts"
-      @refresh="fetchPaginado"
+      @refresh="refreshAll"
     />
   </div>
 </template>

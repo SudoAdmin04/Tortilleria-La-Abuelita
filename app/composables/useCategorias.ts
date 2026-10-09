@@ -13,7 +13,7 @@ function flattenTree(res: Category[] | CategoryTree[]): CategoriaRow[] {
     if (r?.children !== undefined) {
       flat.push({ ...(r as Category), displayName: r.name, isRubro: true })
       for (const c of (r.children || [])) {
-        flat.push({ ...(c as Category), displayName: `— ${c.name}`, isRubro: false })
+        flat.push({ ...(c as Category), displayName: `${c.name}`, isRubro: false })
       }
     } else {
       flat.push(toRow(r as Category))

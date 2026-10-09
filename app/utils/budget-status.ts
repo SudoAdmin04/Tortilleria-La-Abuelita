@@ -1,6 +1,5 @@
 import type { BadgeProps } from '@nuxt/ui'
 
-/** Estados de ejecución presupuestaria del backend. */
 export const BUDGET_STATUS_META: Record<string, { label: string, color: BadgeProps['color'] }> = {
   within: { label: 'En orden', color: 'success' },
   near: { label: 'Cerca del límite', color: 'warning' },

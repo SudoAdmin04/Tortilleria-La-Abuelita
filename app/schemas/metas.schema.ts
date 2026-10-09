@@ -32,7 +32,6 @@ export type EditSchema = z.output<typeof editSchema>
 
 const fechaContable = z.string().min(1, 'Requerido').regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato YYYY-MM-DD')
 
-/** POST /savings-goals/:id/deposits — sumar saldo (fromAccountId requerido). */
 export const depositoSchema = z.object({
   amount: z.coerce.number().min(0.01, 'Debe ser mayor a 0'),
   date: fechaContable,
@@ -40,7 +39,6 @@ export const depositoSchema = z.object({
   concept: z.string().max(200, 'Máximo 200 caracteres').optional(),
 })
 
-/** POST /savings-goals/:id/withdrawals — restar saldo (toAccountId opcional). */
 export const retiroSchema = z.object({
   amount: z.coerce.number().min(0.01, 'Debe ser mayor a 0'),
   date: fechaContable,

@@ -336,6 +336,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/transactions/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resumen de movimientos para cartas de stats
+         * @description Agrega los movimientos del usuario bajo los mismos filtros de alcance del listado (`from, to, accountId, categoryId, paymentMethod, search`) y devuelve `income` (ej. $20,100), `expense` (ej. $26,619), `net` (`ingresos - egresos`, ej. -$6,519 + `isDeficit/status`), `pending` (por conciliar), `reconciled`, `transfers` (excluidas del neto) y `debts` (`openCount/payable/receivable`, ej. Dinero Prestado $3,000). Si `from/to` son del mismo mes (o no se envían, mes actual) incluye `budget/variance/executionRate` contra `budgets`. Las transferencias nunca suman a ingresos/egresos.
+         */
+        get: operations["TransactionsController_getSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/transactions/reconcile": {
         parameters: {
             query?: never;
@@ -1970,6 +1990,119 @@ export interface components {
              * @example 2
              */
             pages: number;
+        };
+        SummaryPeriodDto: {
+            /**
+             * @description Fecha inicial aplicada (null = sin filtro).
+             * @example 2025-10-01
+             */
+            from: string | null;
+            /**
+             * @description Fecha final aplicada (null = sin filtro).
+             * @example 2025-10-31
+             */
+            to: string | null;
+            /**
+             * @description Etiqueta lista para la carta (ej. "Octubre 2025" o "Todos los movimientos").
+             * @example Octubre 2025
+             */
+            label: string;
+        };
+        SummaryBudgetLineDto: {
+            /**
+             * @description Monto total del grupo.
+             * @example 20100
+             */
+            total: number;
+            /**
+             * @description Número de movimientos del grupo.
+             * @example 3
+             */
+            count: number;
+            /**
+             * @description Presupuesto del periodo (0 si no hay o el rango no es un mes único).
+             * @example 20200
+             */
+            budget: number;
+            /**
+             * @description Diferencia `total - budget` (negativa = por debajo, positiva = por encima).
+             * @example -100
+             */
+            variance: number;
+            /**
+             * @description `total / budget * 100` (null si no hay presupuesto).
+             * @example 99.5
+             */
+            executionRate: number | null;
+        };
+        SummaryNetDto: {
+            /**
+             * @description Saldo neto `ingresos - egresos` (transferencias excluidas).
+             * @example -6519
+             */
+            total: number;
+            /**
+             * @description `true` si egresos > ingresos.
+             * @example true
+             */
+            isDeficit: boolean;
+            /**
+             * @description Etiqueta para la carta: `superavit`, `deficit` o `equilibrado`.
+             * @example deficit
+             */
+            status: Record<string, never>;
+        };
+        SummaryStatusDto: {
+            /**
+             * @description Monto total del grupo.
+             * @example 20100
+             */
+            total: number;
+            /**
+             * @description Número de movimientos del grupo.
+             * @example 3
+             */
+            count: number;
+        };
+        SummaryDebtsDto: {
+            /**
+             * @description Deudas/préstamos abiertos (sin filtrar por periodo).
+             * @example 1
+             */
+            openCount: number;
+            /**
+             * @description Monto por pagar (pasivos propios).
+             * @example 0
+             */
+            payable: number;
+            /**
+             * @description Monto por cobrar (dinero prestado, ej. $3,000 de la imagen).
+             * @example 3000
+             */
+            receivable: number;
+        };
+        TransactionSummaryResponseDto: {
+            /** @description Periodo filtrado. */
+            period: components["schemas"]["SummaryPeriodDto"];
+            /** @description Carta "Ingresos totales" (ej. $20,100, 3 transacciones, Ppto $20,200, Dif -$100). */
+            income: components["schemas"]["SummaryBudgetLineDto"];
+            /** @description Carta "Egresos totales" (ej. $26,619, 8 transacciones, Ppto $22,331, Dif +$4,288). */
+            expense: components["schemas"]["SummaryBudgetLineDto"];
+            /** @description Carta "Saldo neto mensual" (`ingresos - egresos`). */
+            net: components["schemas"]["SummaryNetDto"];
+            /** @description Carta "Por conciliar": movimientos aún `pending` dentro del filtro. */
+            pending: components["schemas"]["SummaryStatusDto"];
+            /** @description Movimientos ya conciliados dentro del filtro. */
+            reconciled: components["schemas"]["SummaryStatusDto"];
+            /** @description Transferencias entre cuentas propias (no suman a ingresos/egresos/neto). */
+            transfers: components["schemas"]["SummaryStatusDto"];
+            /** @description Carta "Deuda": pasivos/préstamos abiertos (ej. Dinero Prestado $3,000). */
+            debts: components["schemas"]["SummaryDebtsDto"];
+            /**
+             * @description Total de movimientos dentro del filtro (todos los tipos).
+             * @example 12
+             */
+            totalCount: number;
         };
         ReconcileResponseDto: {
             /**
@@ -5229,6 +5362,77 @@ export interface operations {
                         /** @example Movimiento registrado exitosamente */
                         message?: string;
                     } & components["schemas"]["TransactionResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TransactionsController_getSummary: {
+        parameters: {
+            query?: {
+                /** @description Fecha inicial inclusiva (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusiva (YYYY-MM-DD). */
+                to?: string;
+                /** @description Filtrar por medio de pago. */
+                paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+                /** @description Rubro o partida. Si es un rubro, incluye sus partidas. */
+                categoryId?: string;
+                /** @description Cuenta origen o destino. */
+                accountId?: string;
+                /** @description Búsqueda por texto en concepto, descripción o referencia. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resumen para las cartas de stats. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Resumen de movimientos obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["TransactionSummaryResponseDto"];
                 };
             };
             /** @description Solicitud incorrecta */

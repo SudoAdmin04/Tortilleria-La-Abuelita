@@ -5,16 +5,20 @@ import {
   deleteTransaction,
   getTransaction,
   reconcileTransactions,
+  getTransactionsSummary,
   type Transaction,
   type CreateTransaction,
   type UpdateTransaction,
   type TransactionFilters,
+  type TransactionSummary,
+  type SummaryFilters,
 } from '~/services/transactions.service'
 import { getApiMessage } from '~/utils/api-error'
 
-export type { Transaction, CreateTransaction, UpdateTransaction, TransactionFilters }
+export type { Transaction, CreateTransaction, UpdateTransaction, TransactionFilters, TransactionSummary, SummaryFilters }
 export type TipoMovimiento = 'income' | 'expense' | 'transfer'
 export type EstadoMovimiento = 'pending' | 'reconciled'
+export type MetodoPago = 'bank_transfer' | 'debit_card' | 'credit_card' | 'cash'
 
 export const useTransacciones = () => {
   const toast = useToast()
@@ -24,6 +28,8 @@ export const useTransacciones = () => {
   const error = ref<string | null>(null)
   const total = ref(0)
   const pages = ref(1)
+  const summary = ref<TransactionSummary | null>(null)
+  const summaryLoading = ref(false)
   const filter = reactive({
     pagina: 1,
     registros: 20,
@@ -32,7 +38,32 @@ export const useTransacciones = () => {
     estado: undefined as EstadoMovimiento | undefined,
     cuentaId: undefined as string | undefined,
     categoriaId: undefined as string | undefined,
+    desde: undefined as string | undefined,
+    hasta: undefined as string | undefined,
+    metodoPago: undefined as MetodoPago | undefined,
   })
+
+  function buildSummaryFilters(): SummaryFilters {
+    return {
+      from: filter.desde,
+      to: filter.hasta,
+      paymentMethod: filter.metodoPago,
+      accountId: filter.cuentaId,
+      categoryId: filter.categoriaId,
+      search: filter.buscar?.trim() ? filter.buscar.trim() : undefined,
+    }
+  }
+
+  async function fetchResumen() {
+    summaryLoading.value = true
+    try {
+      summary.value = await getTransactionsSummary(buildSummaryFilters())
+    } catch (e: unknown) {
+      error.value = getApiMessage(e, 'Error al obtener resumen')
+    } finally {
+      summaryLoading.value = false
+    }
+  }
 
   async function fetchPaginado() {
     loading.value = true
@@ -45,6 +76,9 @@ export const useTransacciones = () => {
         status: filter.estado,
         accountId: filter.cuentaId,
         categoryId: filter.categoriaId,
+        from: filter.desde,
+        to: filter.hasta,
+        paymentMethod: filter.metodoPago,
         search: filter.buscar?.trim() ? filter.buscar.trim() : undefined,
       })
       items.value = res.items ?? []
@@ -69,7 +103,7 @@ export const useTransacciones = () => {
     try {
       const r = await createTransaction(payload)
       toast.add({ title: 'Movimiento registrado', color: 'success', icon: 'i-lucide-circle-check' })
-      await fetchPaginado()
+      await Promise.all([fetchPaginado(), fetchResumen()])
       return r
     } catch (e: unknown) {
       toast.add({ title: 'Error', description: getApiMessage(e, 'Error al registrar movimiento'), color: 'error', icon: 'i-lucide-triangle-alert' })
@@ -81,7 +115,7 @@ export const useTransacciones = () => {
     try {
       const r = await updateTransaction(id, payload)
       toast.add({ title: 'Movimiento actualizado', color: 'success', icon: 'i-lucide-circle-check' })
-      await fetchPaginado()
+      await Promise.all([fetchPaginado(), fetchResumen()])
       return r
     } catch (e: unknown) {
       toast.add({ title: 'Error', description: getApiMessage(e, 'Error al actualizar'), color: 'error', icon: 'i-lucide-triangle-alert' })
@@ -93,7 +127,7 @@ export const useTransacciones = () => {
     try {
       const r = await reconcileTransactions([id])
       toast.add({ title: r.updated > 0 ? 'Movimiento conciliado' : 'Sin cambios', description: r.updated > 0 ? undefined : 'Ya estaba conciliado', color: 'success', icon: 'i-lucide-circle-check' })
-      await fetchPaginado()
+      await Promise.all([fetchPaginado(), fetchResumen()])
       return r
     } catch (e: unknown) {
       toast.add({ title: 'Error', description: getApiMessage(e, 'No se pudo conciliar'), color: 'error', icon: 'i-lucide-triangle-alert' })
@@ -105,11 +139,11 @@ export const useTransacciones = () => {
     try {
       await deleteTransaction(id)
       toast.add({ title: 'Movimiento eliminado', color: 'success', icon: 'i-lucide-circle-check' })
-      await fetchPaginado()
+      await Promise.all([fetchPaginado(), fetchResumen()])
     } catch (e: unknown) {
       toast.add({ title: 'Error', description: getApiMessage(e, 'No se pudo eliminar'), color: 'error', icon: 'i-lucide-triangle-alert' })
     }
   }
 
-  return { items, item, loading, error, total, pages, filter, fetchPaginado, fetchById, create, update, conciliar, remove }
+  return { items, item, loading, error, total, pages, filter, summary, summaryLoading, fetchPaginado, fetchResumen, fetchById, create, update, conciliar, remove }
 }
