@@ -186,9 +186,8 @@ onUnmounted(() => clearTimeout(searchTimer))
           <UButton
             v-if="hayFiltros"
             color="neutral"
-            variant="ghost"
+            variant="soft"
             size="xs"
-            icon="i-lucide-x"
             label="Limpiar filtros"
             class="shrink-0 text-white/60 hover:text-white"
             @click="limpiarFiltros"
@@ -207,10 +206,6 @@ onUnmounted(() => clearTimeout(searchTimer))
           @click="() => { filter.tipo = t.value as typeof filter.tipo; aplicarFiltros() }"
         >
           <span class="flex items-center gap-1.5">
-            <span
-              class="size-1.5 rounded-full"
-              :class="!t.value ? 'bg-sky-400' : t.value === 'cash' ? 'bg-emerald-400' : t.value === 'credit_card' ? 'bg-red-400' : 'bg-white/50'"
-            />
             {{ t.label }}
           </span>
         </UButton>

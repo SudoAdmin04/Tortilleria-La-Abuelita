@@ -97,7 +97,6 @@ const estadoItems = [
         @click="setTipo(t.value)"
       >
         <span class="flex items-center gap-1.5">
-          <span class="size-1.5 rounded-full" :class="t.dot" />
           {{ t.label }}
           <span v-if="t.count != null" class="tabular-nums opacity-80">({{ t.count }})</span>
         </span>

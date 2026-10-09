@@ -30,7 +30,7 @@ async function loadCatalogs() {
   try {
     const [acc, cat] = await Promise.all([listAccounts(), listCategories(false)])
     cuentasOpts.value = (acc as any[]).map(a => ({ value: a.id, label: a.name }))
-    categoriasOpts.value = (cat as any[]).map(c => ({ value: c.id, label: c.parentId ? `— ${c.name}` : c.name }))
+    categoriasOpts.value = (cat as any[]).map(c => ({ value: c.id, label: c.parentId ? `${c.name}` : c.name }))
     if (!form.accountId) form.accountId = cuentasOpts.value[0]?.value ?? ''
   } catch {}
   finally { catalogsLoading.value = false }

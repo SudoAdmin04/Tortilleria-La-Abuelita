@@ -72,7 +72,7 @@ const tipoIcon: Record<Account['type'], string> = {
           </div>
         </div>
         <div class="flex flex-col items-end gap-1 shrink-0">
-          <UBadge v-if="a.isPrimary" color="primary" variant="subtle" size="xs">Principal</UBadge>
+          <UBadge v-if="a.isPrimary" color="warning" variant="subtle" size="xs" icon="i-lucide-star">Principal</UBadge>
           <UBadge v-if="!a.isActive" color="neutral" variant="subtle" size="xs">Inactiva</UBadge>
         </div>
       </div>
