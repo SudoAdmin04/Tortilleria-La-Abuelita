@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { parseDate, type DateValue } from '@internationalized/date'
 import { createSchema, editSchema, type CreateSchema, type EditSchema } from '~/schemas/deudas.schema'
 import type { Debt, CreateDebt, UpdateDebt } from '~/services/debts.service'
 
@@ -11,6 +12,28 @@ const emit = defineEmits(['refresh'])
 
 const { create, update } = useDeudas()
 const isEditing = computed(() => !!props.deuda)
+const vencimientoOpen = ref(false)
+
+const vencimientoCal = computed<DateValue | undefined>({
+  get: () => {
+    const v = formState.dueDate?.trim()
+    if (!v) return undefined
+    try {
+      return parseDate(v)
+    } catch {
+      return undefined
+    }
+  },
+  set: (v) => {
+    formState.dueDate = v ? v.toString() : ''
+  },
+})
+
+function etiquetaVencimiento(v: string): string {
+  const partes = v.split('-')
+  if (partes.length >= 3) return `${partes[2]}/${partes[1]}/${partes[0]}`
+  return v
+}
 
 const schema = computed(() => (isEditing.value ? editSchema : createSchema))
 
@@ -62,17 +85,27 @@ const statusItems = [
   { value: 'paid', label: 'Liquidada' },
 ]
 
+function cleanText(v: unknown): string | undefined {
+  return typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined
+}
+
+function cleanDate(v: unknown): string | undefined {
+  return typeof v === 'string' && v.trim() !== '' ? v : undefined
+}
+
 const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
   const payload = event.data
   if (isEditing.value && props.deuda) {
     const body: UpdateDebt = {
       name: (payload as EditSchema).name,
       direction: (payload as EditSchema).direction,
-      principalAmount: (payload as EditSchema).principalAmount,
-      counterparty: (payload as EditSchema).counterparty || undefined,
-      reference: (payload as EditSchema).reference || undefined,
-      dueDate: (payload as EditSchema).dueDate || undefined,
-      notes: (payload as EditSchema).notes || undefined,
+      principalAmount: (payload as EditSchema).principalAmount != null
+        ? Number((payload as EditSchema).principalAmount)
+        : undefined,
+      counterparty: cleanText((payload as EditSchema).counterparty),
+      reference: cleanText((payload as EditSchema).reference),
+      dueDate: cleanDate((payload as EditSchema).dueDate),
+      notes: cleanText((payload as EditSchema).notes),
       status: (payload as EditSchema).status,
     }
     const r = await update(props.deuda.id, body)
@@ -82,10 +115,10 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
       name: (payload as CreateSchema).name,
       direction: (payload as CreateSchema).direction ?? 'payable',
       principalAmount: Number((payload as CreateSchema).principalAmount),
-      counterparty: (payload as CreateSchema).counterparty || undefined,
-      reference: (payload as CreateSchema).reference || undefined,
-      dueDate: (payload as CreateSchema).dueDate || undefined,
-      notes: (payload as CreateSchema).notes || undefined,
+      counterparty: cleanText((payload as CreateSchema).counterparty),
+      reference: cleanText((payload as CreateSchema).reference),
+      dueDate: cleanDate((payload as CreateSchema).dueDate),
+      notes: cleanText((payload as CreateSchema).notes),
     }
     const r = await create(body)
     if (!r) return
@@ -128,26 +161,28 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
                 Datos de la Deuda
               </h3>
               <div class="grid grid-cols-1 gap-4">
-                <UFormField label="Nombre" name="name">
+                <UFormField label="Nombre" name="name" required>
                   <UInput v-model="formState.name" placeholder="Ej. Préstamo auto" class="w-full" />
                 </UFormField>
-                <UFormField label="Dirección" name="direction">
-                  <USelectMenu
-                    v-model="formState.direction"
-                    :items="directionItems"
-                    value-key="value"
-                    label-key="label"
-                    class="w-full"
-                  />
-                </UFormField>
-                <UFormField label="Monto principal" name="principalAmount">
-                  <UInput v-model="formState.principalAmount" type="number" min="0.01" step="0.01" class="w-full" />
-                </UFormField>
                 <div class="grid grid-cols-2 gap-4">
-                  <UFormField label="Contraparte" name="counterparty">
+                  <UFormField label="Dirección" name="direction" required>
+                    <USelectMenu
+                      v-model="formState.direction"
+                      :items="directionItems"
+                      value-key="value"
+                      label-key="label"
+                      class="w-full"
+                    />
+                  </UFormField>
+                  <UFormField label="Monto principal" name="principalAmount" required>
+                    <UInput v-model="formState.principalAmount" type="number" min="0.01" step="0.01" class="w-full" />
+                  </UFormField>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <UFormField label="Contraparte" name="counterparty" hint="Banco o persona">
                     <UInput v-model="formState.counterparty" placeholder="Banco XYZ" class="w-full" />
                   </UFormField>
-                  <UFormField label="Referencia" name="reference">
+                  <UFormField label="Referencia" name="reference" hint="Contrato o folio">
                     <UInput v-model="formState.reference" placeholder="CRED-001" class="w-full" />
                   </UFormField>
                 </div>
@@ -163,7 +198,34 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
               </h3>
               <div class="grid grid-cols-1 gap-4">
                 <UFormField label="Vencimiento" name="dueDate">
-                  <UInput v-model="formState.dueDate" type="date" class="w-full" />
+                  <UPopover v-model:open="vencimientoOpen" :content="{ align: 'start' }">
+                    <UButton
+                      icon="i-lucide-calendar-days"
+                      color="neutral"
+                      variant="outline"
+                      class="w-full justify-start font-normal"
+                    >
+                      <span :class="formState.dueDate ? 'text-white' : 'text-white/40'">
+                        {{ formState.dueDate ? etiquetaVencimiento(formState.dueDate) : 'Seleccionar fecha...' }}
+                      </span>
+                    </UButton>
+                    <template #content>
+                      <div class="p-2">
+                        <UCalendar v-model="vencimientoCal" locale="es-MX" @update:model-value="() => { vencimientoOpen = false }" />
+                        <UButton
+                          v-if="formState.dueDate"
+                          label="Sin vencimiento"
+                          icon="i-lucide-calendar-x"
+                          variant="ghost"
+                          color="neutral"
+                          size="xs"
+                          block
+                          class="mt-1"
+                          @click="() => { formState.dueDate = ''; vencimientoOpen = false }"
+                        />
+                      </div>
+                    </template>
+                  </UPopover>
                 </UFormField>
                 <UFormField label="Notas" name="notes">
                   <UTextarea v-model="formState.notes" placeholder="Mensualidad los días 15" class="w-full" />

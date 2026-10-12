@@ -31,17 +31,7 @@ const closeDrawer = () => emit('update:modelValue', false)
         <div class="text-sm"><span class="text-neutral-500">Zona horaria:</span> <strong>{{ user?.timezone }}</strong></div>
         <div class="text-sm"><span class="text-neutral-500">Miembro desde:</span> <strong>{{ user?.createdAt ? new Date(user.createdAt).toLocaleDateString('es-MX') : '—' }}</strong></div>
       </div>
-
-      <USeparator class="my-4" />
-
-      <h3 class="font-semibold mb-2">Pantallas asignadas ({{ user?.permisos?.length || 0 }})</h3>
-      <ul class="space-y-1 text-sm">
-        <li v-for="p in user?.permisos || []" :key="p.screenId" class="flex items-center gap-2">
-          <UIcon :name="p.icon || 'i-lucide-layout-dashboard'" class="size-4 text-primary-500" />
-          <span>{{ p.screen }}</span>
-          <span class="text-neutral-400 text-xs">{{ p.path }}</span>
-        </li>
-      </ul>
+  
     </template>
     <template #footer>
       <div class="flex justify-end gap-2">

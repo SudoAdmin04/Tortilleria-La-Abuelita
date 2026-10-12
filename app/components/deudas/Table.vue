@@ -2,6 +2,7 @@
 import { h, computed, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import type { Debt } from '~/services/debts.service'
+import { isVencida } from '~/composables/useDeudas'
 import { formatMoney } from '~/utils/format'
 
 const UBadge = resolveComponent('UBadge')
@@ -14,6 +15,8 @@ const props = defineProps<{
   total: number
   loading: boolean
   currency?: string
+  puedeEditar?: boolean
+  puedeEliminar?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -22,40 +25,70 @@ const emit = defineEmits<{
   delete: [id: string]
 }>()
 
-const formatDate = (dateString: string | null) => {
-  if (!dateString) return '—'
-  return new Date(dateString).toLocaleDateString('es-MX', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
+const moneda = computed(() => props.currency || 'MXN')
+
+const directionLabel: Record<Debt['direction'], string> = {
+  payable: 'Yo debo',
+  receivable: 'Me deben',
+}
+
+function pctAmortizado(d: Debt): number {
+  if (!d.principalAmount) return 0
+  return Math.min(100, Math.max(0, Math.round((d.paidAmount / d.principalAmount) * 100)))
+}
+
+function etiquetaVencimiento(v: string | null): string {
+  if (!v) return '—'
+  const partes = v.split('-')
+  if (partes.length >= 3) return `${partes[2]}/${partes[1]}/${partes[0]}`
+  return v
 }
 
 const columnas: TableColumn<Debt>[] = [
   {
     accessorKey: 'name',
     header: 'Deuda',
-    cell: ({ row }) => h('div', { class: 'flex flex-col min-w-0' }, [
-      h('span', { class: 'text-sm font-semibold text-white truncate' }, row.original.name),
-      h('span', { class: 'text-xs text-white/50 truncate' }, `${row.original.counterparty || '—'} · ${row.original.direction === 'payable' ? 'Yo debo' : 'Me deben'}`),
-    ]),
+    cell: ({ row }) => {
+      const d = row.original
+      return h('div', { class: 'flex flex-col min-w-0' }, [
+        h('span', { class: 'text-sm font-semibold text-white truncate' }, d.name),
+        h('span', { class: 'text-xs text-white/50 truncate' }, `${d.counterparty || '—'} · ${directionLabel[d.direction]}`),
+      ])
+    },
   },
   {
     accessorKey: 'principalAmount',
-    header: 'Principal / Vivo',
-    cell: ({ row }) => h('div', { class: 'flex flex-col min-w-0' }, [
-      h('span', { class: 'text-sm font-semibold text-white' }, formatMoney(row.original.principalAmount, props.currency || 'MXN')),
-      h('span', { class: 'text-xs text-white/50' }, `Vivo: ${formatMoney(row.original.outstanding, props.currency || 'MXN')}`),
-    ]),
+    header: () => h('div', { class: 'text-right' }, 'Principal / Vivo'),
+    meta: { class: { td: 'text-right' } },
+    cell: ({ row }) => {
+      const d = row.original
+      return h('div', { class: 'flex flex-col items-end min-w-0' }, [
+        h('span', { class: 'text-sm font-semibold text-white whitespace-nowrap' }, formatMoney(d.principalAmount, moneda.value)),
+        h('span', { class: 'text-xs text-white/50 whitespace-nowrap' }, `Vivo: ${formatMoney(d.outstanding, moneda.value)}`),
+      ])
+    },
   },
   {
     accessorKey: 'paidAmount',
     header: 'Avance',
     cell: ({ row }) => {
-      const pct = row.original.principalAmount ? Math.round((row.original.paidAmount / row.original.principalAmount) * 100) : 0
+      const d = row.original
+      const pct = pctAmortizado(d)
       return h('div', { class: 'flex flex-col gap-1 min-w-28' }, [
-        h(UProgress, { value: Math.min(100, pct), size: 'xs' }),
+        h(UProgress, { modelValue: pct, max: 100, size: 'xs' }),
         h('span', { class: 'text-xs text-white/50' }, `${pct}% amortizado`),
+      ])
+    },
+  },
+  {
+    accessorKey: 'dueDate',
+    header: 'Vencimiento',
+    cell: ({ row }) => {
+      const d = row.original
+      const vencida = isVencida(d)
+      return h('div', { class: 'flex flex-col gap-1' }, [
+        h('span', { class: 'text-sm text-white/80 whitespace-nowrap' }, etiquetaVencimiento(d.dueDate)),
+        vencida ? h(UBadge, { color: 'error', variant: 'subtle', size: 'sm', class: 'font-semibold w-fit' }, () => 'Vencida') : null,
       ])
     },
   },
@@ -63,19 +96,15 @@ const columnas: TableColumn<Debt>[] = [
     accessorKey: 'status',
     header: 'Estado',
     cell: ({ row }) => {
-      const paid = row.original.status === 'paid'
-      return h(UBadge, {
-        color: paid ? 'success' : 'warning',
-        variant: 'subtle',
-        size: 'sm',
-        class: 'capitalize font-medium',
-      }, () => paid ? 'Liquidada' : 'Vigente')
+      const d = row.original
+      if (d.status === 'paid') {
+        return h(UBadge, { color: 'success', variant: 'subtle', size: 'sm', class: 'font-semibold w-fit' }, () => 'Liquidada')
+      }
+      if (isVencida(d)) {
+        return h(UBadge, { color: 'error', variant: 'subtle', size: 'sm', class: 'font-semibold w-fit' }, () => 'Vencida')
+      }
+      return h(UBadge, { color: 'warning', variant: 'subtle', size: 'sm', class: 'font-semibold w-fit' }, () => 'Vigente')
     },
-  },
-  {
-    accessorKey: 'dueDate',
-    header: 'Vencimiento',
-    cell: ({ row }) => h('span', formatDate(row.original.dueDate)),
   },
   {
     id: 'actions',
@@ -83,29 +112,29 @@ const columnas: TableColumn<Debt>[] = [
     meta: { class: { td: 'text-right' } },
     cell: ({ row }) => {
       const record = row.original
-      const menu: any[] = [
-        {
-          label: 'Editar',
-          icon: 'i-lucide-square-pen',
-          onSelect: () => emit('edit', record),
-        },
+      const dropdownItems = [
+        [
+          {
+            label: 'Editar',
+            icon: 'i-lucide-square-pen',
+            onSelect: () => emit('edit', record),
+            },
+          {
+            label: 'Liquidar',
+            icon: 'i-lucide-badge-check',
+            onSelect: () => emit('settle', record),
+          },
+          {
+            label: 'Eliminar',
+            icon: 'i-lucide-trash-2',
+            color: 'error' as const,
+            onSelect: () => emit('delete', record.id),
+          },
+        ],
       ]
-      if (record.status === 'open') {
-        menu.push({
-          label: 'Liquidar',
-          icon: 'i-lucide-badge-check',
-          onSelect: () => emit('settle', record),
-        })
-      }
-      menu.push({
-        label: 'Eliminar',
-        icon: 'i-lucide-trash-2',
-        color: 'error' as const,
-        onSelect: () => emit('delete', record.id),
-      })
       return h('div', { class: 'flex justify-end pr-1' }, [
         h(UDropdownMenu, {
-          items: [menu],
+          items: dropdownItems,
           content: { align: 'end' },
         }, {
           default: () => h(UButton, {

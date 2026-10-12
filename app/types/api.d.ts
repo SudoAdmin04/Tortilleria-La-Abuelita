@@ -812,6 +812,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/debts/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stats para cards de deudas
+         * @description Agregados para las 4 cards: `porPagar` (yo debo), `porCobrar` (me deben), `saldoVivoVigente` (total + principal) y `vencidas` (`dueDate < hoy`). Solo considera `status=open`; `outstanding = max(principal − pagado, 0)`.
+         */
+        get: operations["DebtsController_stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/debts/{id}": {
         parameters: {
             query?: never;
@@ -3215,6 +3235,69 @@ export interface components {
              * @example 2025-10-05T12:00:00.000Z
              */
             updatedAt: string;
+        };
+        DebtPayableStatsDto: {
+            /**
+             * @description Saldo vivo por pagar (yo debo) = Σ outstanding payable.
+             * @example 0
+             */
+            amount: number;
+            /**
+             * @description Cantidad de deudas por pagar vigentes.
+             * @example 0
+             */
+            count: number;
+        };
+        DebtReceivableStatsDto: {
+            /**
+             * @description Saldo vivo por cobrar (me deben) = Σ outstanding receivable.
+             * @example 3000
+             */
+            amount: number;
+            /**
+             * @description Cantidad de deudas por cobrar vigentes.
+             * @example 1
+             */
+            count: number;
+        };
+        DebtOutstandingStatsDto: {
+            /**
+             * @description Saldo vivo vigente total = payable + receivable.
+             * @example 3000
+             */
+            amount: number;
+            /**
+             * @description Principal vigente total = Σ principalAmount open.
+             * @example 3000
+             */
+            principal: number;
+            /**
+             * @description Total de deudas vigentes.
+             * @example 1
+             */
+            count: number;
+        };
+        DebtOverdueStatsDto: {
+            /**
+             * @description Deudas vencidas: open con dueDate < hoy.
+             * @example 1
+             */
+            count: number;
+            /**
+             * @description Total de vigentes (base del “de X vigentes”).
+             * @example 1
+             */
+            totalVigentes: number;
+        };
+        DebtStatsResponseDto: {
+            /** @description Card 1: Por pagar (yo debo). */
+            porPagar: components["schemas"]["DebtPayableStatsDto"];
+            /** @description Card 2: Por cobrar (me deben). */
+            porCobrar: components["schemas"]["DebtReceivableStatsDto"];
+            /** @description Card 3: Saldo vivo vigente + principal. */
+            saldoVivoVigente: components["schemas"]["DebtOutstandingStatsDto"];
+            /** @description Card 4: Vencidas. */
+            vencidas: components["schemas"]["DebtOverdueStatsDto"];
         };
         CreateDebtDto: {
             /**
@@ -7750,6 +7833,64 @@ export interface operations {
                         /** @example Deuda creada exitosamente */
                         message?: string;
                     } & components["schemas"]["DebtResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DebtsController_stats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Stats de deudas vigentes. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Estadísticas de deudas obtenidas exitosamente */
+                        message?: string;
+                    } & components["schemas"]["DebtStatsResponseDto"];
                 };
             };
             /** @description Solicitud incorrecta */
