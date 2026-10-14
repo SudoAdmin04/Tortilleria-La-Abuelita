@@ -8,10 +8,14 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (import.meta.server) {
     const cookieToken = useCookie('auth_token')
-    if (to.path !== "/login" && !cookieToken.value) {
+    // `auth_flag` es la cookie liviana que sobrevive al límite de 4KB
+    // (el JWT con permisos embebidos el navegador lo descarta).
+    const flag = useCookie('auth_flag')
+    const hasSession = !!cookieToken.value || flag.value === '1'
+    if (to.path !== "/login" && !hasSession) {
       return navigateTo("/login")
     }
-    if (to.path === "/login" && cookieToken.value) {
+    if (to.path === "/login" && hasSession) {
       return navigateTo("/")
     }
     return

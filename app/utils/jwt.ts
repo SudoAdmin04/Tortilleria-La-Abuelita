@@ -40,3 +40,16 @@ export function extractPermisosFromToken(token: string | null | undefined): Perm
   const list = payload?.permisos
   return Array.isArray(list) ? (list as PermisoToken[]) : []
 }
+
+/** Expiración (`exp`, segundos epoch) del JWT, o `null` si no se puede leer. */
+export function getTokenExpiry(token: string | null | undefined): number | null {
+  const payload = decodeJwtPayload<{ exp?: unknown }>(token)
+  return typeof payload?.exp === 'number' ? payload.exp : null
+}
+
+/** `true` si el token está ausente, ilegible o expirado (con margen de `leewaySec`). */
+export function isTokenExpired(token: string | null | undefined, leewaySec = 30): boolean {
+  const exp = getTokenExpiry(token)
+  if (exp == null) return true
+  return exp * 1000 <= Date.now() + leewaySec * 1000
+}

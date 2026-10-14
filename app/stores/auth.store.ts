@@ -2,7 +2,24 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { components } from '~/types/api'
 import { usePermisosStore } from './permisos.store'
-import { extractPermisosFromToken } from '~/utils/jwt'
+import { extractPermisosFromToken, isTokenExpired } from '~/utils/jwt'
+
+/** Opciones únicas de la cookie para que SSR y cliente lean/escriban la misma. */
+export const AUTH_COOKIE_OPTS = { maxAge: 60 * 60 * 24 * 7, sameSite: 'lax' as const, path: '/' } as const
+/**
+ * Cookie liviana (~1 byte) que sobrevive al límite de 4KB.
+ * El `auth_token` JWT trae `permisos` embebidos (~4.8KB) y el navegador lo
+ * descarta; este flag solo indica al middleware SSR que hay sesión
+ * (el token real vive en Pinia + localStorage y viaja en el header).
+ */
+export const AUTH_FLAG_COOKIE = 'auth_flag'
+
+/**
+ * Single-flight del refresh: todas las peticiones 401 concurrentes comparten
+ * la misma promesa. Sin esto, N refreshes en paralelo + un `logout()` de un
+ * perdedor borran los tokens frescos de los demás (cascada de 401).
+ */
+let refreshPromise: Promise<boolean> | null = null
 
 export type AuthResponse = components['schemas']['AuthResponseDto']
 export type UserSession = components['schemas']['UserResponseDto']
@@ -23,7 +40,10 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       if (token.value) {
         localStorage.setItem('auth_token', token.value)
-        try { useCookie('auth_token').value = token.value } catch {}
+        // Best-effort: el navegador puede descartarla por tamaño (>4KB),
+        // pero se intenta para el SSR. El flag sí sobrevive siempre.
+        try { useCookie('auth_token', AUTH_COOKIE_OPTS).value = token.value } catch {}
+        try { useCookie(AUTH_FLAG_COOKIE, AUTH_COOKIE_OPTS).value = '1' } catch {}
       }
       if (refreshToken.value) localStorage.setItem('auth_refresh_token', refreshToken.value)
       if (user.value) localStorage.setItem('auth_user', JSON.stringify(user.value))
@@ -50,10 +70,11 @@ export const useAuthStore = defineStore('auth', () => {
       const t = localStorage.getItem('auth_token')
       if (t) {
         token.value = t
-        try { useCookie('auth_token').value = t } catch {}
+        try { useCookie('auth_token', AUTH_COOKIE_OPTS).value = t } catch {}
+        try { useCookie(AUTH_FLAG_COOKIE, AUTH_COOKIE_OPTS).value = '1' } catch {}
       } else {
         try {
-          const ct = useCookie('auth_token').value as unknown as string | null
+          const ct = useCookie('auth_token', AUTH_COOKIE_OPTS).value as unknown as string | null
           if (ct) token.value = ct
         } catch {}
       }
@@ -148,20 +169,35 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function refreshSession(): Promise<boolean> {
-    const currentRefreshToken = refreshToken.value || (typeof localStorage !== 'undefined' ? localStorage.getItem('auth_refresh_token') : null)
-    if (!currentRefreshToken) return false
-    try {
-      const config = useRuntimeConfig()
-      const res = await $fetch<AuthResponse>(`${config.public.apiUrl}/auth/refresh`, {
-        method: 'POST',
-        body: { refresh_token: currentRefreshToken } satisfies RefreshDto,
-      })
-      setSession(res)
-      return true
-    } catch {
-      logout()
-      return false
-    }
+    if (refreshPromise) return refreshPromise
+    refreshPromise = (async () => {
+      const currentRefreshToken = refreshToken.value || (typeof localStorage !== 'undefined' ? localStorage.getItem('auth_refresh_token') : null)
+      if (!currentRefreshToken) return false
+      try {
+        const config = useRuntimeConfig()
+        const res = await $fetch<AuthResponse>(`${config.public.apiUrl}/auth/refresh`, {
+          method: 'POST',
+          body: { refresh_token: currentRefreshToken } satisfies RefreshDto,
+        })
+        if (!res?.access_token) return false
+        setSession(res)
+        return true
+      } catch {
+        // No se hace logout aquí: el llamador (api.ts) decide una sola vez.
+        return false
+      } finally {
+        refreshPromise = null
+      }
+    })()
+    return refreshPromise
+  }
+
+  /** Refresca solo si el access ya expiró (evita ráfagas de refresh). */
+  async function ensureValidSession(): Promise<boolean> {
+    if (token.value && !isTokenExpired(token.value)) return true
+    if (!token.value) loadFromStorage()
+    if (token.value && !isTokenExpired(token.value)) return true
+    return refreshSession()
   }
 
   function logout() {
@@ -173,7 +209,8 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('auth_token')
       localStorage.removeItem('auth_refresh_token')
       localStorage.removeItem('auth_user')
-      useCookie('auth_token').value = null
+      useCookie('auth_token', AUTH_COOKIE_OPTS).value = null
+      useCookie(AUTH_FLAG_COOKIE, AUTH_COOKIE_OPTS).value = null
     } catch {}
     permisosStore.reset()
     navigateTo('/login')
@@ -190,6 +227,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     fetchProfile,
     refreshSession,
+    ensureValidSession,
     loadFromStorage,
     initAuth,
     logout,

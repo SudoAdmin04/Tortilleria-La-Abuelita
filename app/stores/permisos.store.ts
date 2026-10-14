@@ -66,6 +66,30 @@ function isConfigPath(to: string): boolean {
   return to === CONFIG_ROOT || to.startsWith(`${CONFIG_ROOT}/`)
 }
 
+/** Ruta con segmentos dinámicos estilo Nuxt (`[id]`) o express (`:id`). */
+function isDynamicPath(path: string): boolean {
+  return path.includes('[') || path.split('/').some(s => s.startsWith(':'))
+}
+
+/**
+ * ¿La ruta real `path` cae bajo el patrón guardado `pattern`?
+ * Un segmento `[id]` / `:id` del patrón acepta cualquier segmento no vacío.
+ * Ej: patrón `/presupuestos/[id]` casa con `/presupuestos/abc-123`.
+ */
+function matchRoute(pattern: string, path: string): boolean {
+  // Se ignoran los segmentos vacíos del `/` inicial: si no, el primer par
+  // ('', '') cae en `!r` y ninguna ruta dinámica casa jamás.
+  const pSeg = pattern.split('/').filter(s => s !== '')
+  const rSeg = path.split('/').filter(s => s !== '')
+  if (pSeg.length !== rSeg.length) return false
+  return pSeg.every((s, i) => {
+    const r = rSeg[i]
+    if (!r) return false
+    if ((s.startsWith('[') && s.endsWith(']')) || s.startsWith(':')) return true
+    return s === r
+  })
+}
+
 // Convertidor recursivo a formato NavigationMenuItem de Nuxt UI
 function toNavigationItem(item: any): NavigationMenuItem {
   return {
@@ -85,11 +109,12 @@ export const usePermisosStore = defineStore('permisos', () => {
 
   const ids = computed(() => new Set(legibles.value.map(p => p.screenId)))
 
-  // Menú Principal
+  // Menú Principal (las rutas dinámicas como `/presupuestos/[id]` no son navegables: se excluyen)
   const mainParents = computed(() => {
     const parents = legibles.value
       .filter((p) => {
         const to = normalizePath(p.path)
+        if (!to || isDynamicPath(to)) return false
         return to === CONFIG_ROOT || !isConfigPath(to)
       })
       .filter(p => p.parentId == null || !ids.value.has(p.parentId))
@@ -200,16 +225,32 @@ export const usePermisosStore = defineStore('permisos', () => {
 
   function loadFromToken(providedToken?: string | null): boolean {
     try {
-      let t = providedToken ?? null
-      if (!t) {
-        try { t = useCookie('auth_token').value as unknown as string | null } catch {}
+      // Si se pasa token explícito, es prioritario (viene del login/refresh).
+      if (providedToken) {
+        const permisos = extractPermisosFromToken(providedToken)
+        if (permisos.length) {
+          setPantallas(permisos)
+          return true
+        }
       }
-      if (!t && typeof localStorage !== 'undefined') t = localStorage.getItem('auth_token')
-      const permisos = extractPermisosFromToken(t)
-      if (permisos.length) {
-        setPantallas(permisos)
-        return true
+      // localStorage primero: la cookie `auth_token` se trunca (>4KB) y
+      // un valor parcial haría fallar el decode sin intentar la otra fuente.
+      if (typeof localStorage !== 'undefined') {
+        const stored = localStorage.getItem('auth_token')
+        const permisos = extractPermisosFromToken(stored)
+        if (permisos.length) {
+          setPantallas(permisos)
+          return true
+        }
       }
+      try {
+        const ct = useCookie<string | null>('auth_token').value
+        const permisos = extractPermisosFromToken(ct)
+        if (permisos.length) {
+          setPantallas(permisos)
+          return true
+        }
+      } catch {}
     } catch {}
     return false
   }
@@ -222,7 +263,12 @@ export const usePermisosStore = defineStore('permisos', () => {
   function findByPath(ruta: string): PantallaBackend | undefined {
     const normalized = normalizePath(ruta)
     if (!normalized) return undefined
-    return pantallas.value.find(p => normalizePath(p.path) === normalized)
+    // 1) Coincidencia exacta primero: `/presupuestos/calendario` debe resolver a
+    //    su propia pantalla y no al patrón `/presupuestos/[id]`.
+    const exact = pantallas.value.find(p => normalizePath(p.path) === normalized)
+    if (exact) return exact
+    // 2) Patrones dinámicos (`[id]`, `:id`).
+    return pantallas.value.find(p => matchRoute(normalizePath(p.path), normalized))
   }
 
   const ALIAS: Record<string, AccionPermiso> = {

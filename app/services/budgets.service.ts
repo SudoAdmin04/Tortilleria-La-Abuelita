@@ -7,14 +7,29 @@ export type UpdateBudget = components['schemas']['UpdateBudgetDto']
 export type BudgetAdjustment = components['schemas']['BudgetAdjustmentResponseDto']
 export type CopyBudgets = components['schemas']['CopyBudgetsDto']
 export type CopyBudgetsResult = components['schemas']['CopyBudgetsResponseDto']
+export type BudgetStats = components['schemas']['BudgetStatsResponseDto']
+export type BudgetComparison = components['schemas']['BudgetComparisonResponseDto']
+export type BudgetComparisonItem = components['schemas']['BudgetComparisonItemDto']
 
 export interface MonthQuery {
   year: number
   month: number
 }
 
-export function listBudgets(params: MonthQuery) {
-  return useApi().api<Budget[]>('/budgets', { query: { ...params } })
+/**
+ * El backend unifica las respuestas de lista como `{ message, items: [...] }`
+ * (ver TransformInterceptor). Desenvuelve al arreglo real.
+ */
+function unwrapList<T>(res: any): T[] {
+  if (Array.isArray(res)) return res as T[]
+  if (Array.isArray(res?.items)) return res.items as T[]
+  if (Array.isArray(res?.data)) return res.data as T[]
+  return []
+}
+
+export async function listBudgets(params: MonthQuery): Promise<Budget[]> {
+  const res = await useApi().api<any>('/budgets', { query: { ...params } })
+  return unwrapList<Budget>(res)
 }
 
 export function createBudget(payload: CreateBudget) {
@@ -37,10 +52,20 @@ export function copyBudgets(payload: CopyBudgets) {
   return useApi().api<CopyBudgetsResult>('/budgets/copy', { method: 'POST', body: payload })
 }
 
-export function recentAdjustments(days = 14) {
-  return useApi().api<BudgetAdjustment[]>('/budgets/adjustments/recent', { query: { days } })
+export async function recentAdjustments(days = 14): Promise<BudgetAdjustment[]> {
+  const res = await useApi().api<any>('/budgets/adjustments/recent', { query: { days } })
+  return unwrapList<BudgetAdjustment>(res)
 }
 
-export function budgetHistory(id: string) {
-  return useApi().api<BudgetAdjustment[]>(`/budgets/${id}/adjustments`)
+export async function budgetHistory(id: string): Promise<BudgetAdjustment[]> {
+  const res = await useApi().api<any>(`/budgets/${id}/adjustments`)
+  return unwrapList<BudgetAdjustment>(res)
+}
+
+export function getBudgetStats(params: MonthQuery) {
+  return useApi().api<BudgetStats>('/budgets/stats', { query: { ...params } })
+}
+
+export function getBudgetComparison(params: MonthQuery) {
+  return useApi().api<BudgetComparison>('/budgets/comparison', { query: { ...params } })
 }

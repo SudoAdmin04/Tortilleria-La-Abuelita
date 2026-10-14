@@ -84,6 +84,8 @@ const menuUi = {
           :items="navItems"
           orientation="vertical"
           :collapsed="isCollapsed"
+          tooltip
+          popover
           :ui="menuUi"
           class="w-full flex-1"
         />
