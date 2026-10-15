@@ -116,6 +116,7 @@ const initials = computed(() =>
 )
 const avatarMenu = computed(() => [
   [{ label: userName.value, slot: 'account', disabled: true }],
+  [{ label: 'Perfil de Usuario', icon: 'i-lucide-user-round', onSelect: () => navigateTo('/perfil') }],
   [{ label: 'Cerrar Sesión', icon: 'i-lucide-log-out', color: 'error' as const, onSelect: () => authStore.logout() }],
 ])
 </script>

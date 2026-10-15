@@ -6,7 +6,6 @@ const CONFIG_PATH = '/configuracion'
 
 const authStore = useAuthStore()
 const { mainNavItems } = useMenu()
-const isProfileDrawerOpen = ref(false)
 
 const collapsed = defineModel<boolean>('collapsed', { default: false })
 
@@ -16,7 +15,7 @@ const userEmail = computed(() => currentUser.value?.email || '')
 const userRole = computed(() => currentUser.value?.role || (currentUser.value?.isAdmin ? 'Admin' : ''))
 
 const handleLogout = () => authStore.logout()
-const handleProfile = () => { isProfileDrawerOpen.value = true }
+const handleProfile = () => navigateTo('/perfil')
 
 const userMenuItems = computed(() => [
   [{ label: userDisplayName.value, slot: 'account', disabled: true }],
@@ -138,6 +137,4 @@ const menuUi = {
       </div>
     </template>
   </UDashboardSidebar>
-
-  <LayoutPerfil v-model="isProfileDrawerOpen" />
 </template>

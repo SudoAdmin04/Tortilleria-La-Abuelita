@@ -504,6 +504,58 @@ export interface paths {
         patch: operations["TransactionsController_update"];
         trace?: never;
     };
+    "/api/budgets/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vista del calendario (Day/Week/Month)
+         * @description Devuelve los presupuestos agendados que solapan `[from, to]` con `isMultiDay/spanDays` para barras continuas (ej. Nuxt Conf 20-22), `visibleStart/visibleEnd/visibleDays` recortados al rango (barras parciales) y el mapa `days` (día → ids) para pintar cada casilla como Google Calendar. Sin `from/to` usa el mes actual. Filtra con `categoryId` y `kind`.
+         */
+        get: operations["BudgetCalendarController_findByRange"];
+        put?: never;
+        /**
+         * Agendar un presupuesto (1 día o multidía)
+         * @description Agenda un presupuesto en el calendario usando `startDate/endDate` (ambas inclusive). `endDate = startDate` = 1 día (ej. Anna’s birthday); posterior = barra multidía (ej. Nuxt Conf). `title` por defecto = nombre de la categoría; `budgetId` vincula opcionalmente el techo mensual; `color` por defecto = categoría.
+         */
+        post: operations["BudgetCalendarController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/budgets/calendar/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obtener un evento
+         * @description Devuelve el evento con su categoría y `spanDays`.
+         */
+        get: operations["BudgetCalendarController_findOne"];
+        put?: never;
+        post?: never;
+        /**
+         * Eliminar un evento
+         * @description Borrado físico (no toca `budgets` ni `categories`).
+         */
+        delete: operations["BudgetCalendarController_remove"];
+        options?: never;
+        head?: never;
+        /**
+         * Mover/editar un evento
+         * @description Actualización parcial: arrastra cambiando `startDate/endDate` (revalida `endDate ≥ startDate`), o edita título, monto, color, notas y vínculos.
+         */
+        patch: operations["BudgetCalendarController_update"];
+        trace?: never;
+    };
     "/api/budgets": {
         parameters: {
             query?: never;
@@ -654,58 +706,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/api/budgets/calendar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Vista del calendario (Day/Week/Month)
-         * @description Devuelve los presupuestos agendados que solapan `[from, to]` con `isMultiDay/spanDays` para barras continuas (ej. Nuxt Conf 20-22), `visibleStart/visibleEnd/visibleDays` recortados al rango (barras parciales) y el mapa `days` (día → ids) para pintar cada casilla como Google Calendar. Sin `from/to` usa el mes actual. Filtra con `categoryId` y `kind`.
-         */
-        get: operations["BudgetCalendarController_findByRange"];
-        put?: never;
-        /**
-         * Agendar un presupuesto (1 día o multidía)
-         * @description Agenda un presupuesto en el calendario usando `startDate/endDate` (ambas inclusive). `endDate = startDate` = 1 día (ej. Anna’s birthday); posterior = barra multidía (ej. Nuxt Conf). `title` por defecto = nombre de la categoría; `budgetId` vincula opcionalmente el techo mensual; `color` por defecto = categoría.
-         */
-        post: operations["BudgetCalendarController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/budgets/calendar/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Obtener un evento
-         * @description Devuelve el evento con su categoría y `spanDays`.
-         */
-        get: operations["BudgetCalendarController_findOne"];
-        put?: never;
-        post?: never;
-        /**
-         * Eliminar un evento
-         * @description Borrado físico (no toca `budgets` ni `categories`).
-         */
-        delete: operations["BudgetCalendarController_remove"];
-        options?: never;
-        head?: never;
-        /**
-         * Mover/editar un evento
-         * @description Actualización parcial: arrastra cambiando `startDate/endDate` (revalida `endDate ≥ startDate`), o edita título, monto, color, notas y vínculos.
-         */
-        patch: operations["BudgetCalendarController_update"];
         trace?: never;
     };
     "/api/savings-goals": {
@@ -2824,6 +2824,204 @@ export interface components {
              */
             reference?: string;
         };
+        CalendarEventResponseDto: {
+            /** @example a7b8c9d0-e1f2-3456-abcd-567890123456 */
+            id: string;
+            /** @example Nuxt Conf */
+            title: string;
+            /** @example 3000 */
+            amount: number;
+            /**
+             * Format: date
+             * @example 2026-10-20
+             */
+            startDate: string;
+            /**
+             * Format: date
+             * @example 2026-10-22
+             */
+            endDate: string;
+            /**
+             * @description `true` si cruza más de un día (barra continua).
+             * @example true
+             */
+            isMultiDay: boolean;
+            /**
+             * @description Días totales del evento (fin − inicio + 1).
+             * @example 3
+             */
+            spanDays: number;
+            /**
+             * @description Inicio recortado al rango pedido (para barras parciales en vista mes).
+             * @example 2026-10-20
+             */
+            visibleStart: string;
+            /**
+             * @description Fin recortado al rango pedido.
+             * @example 2026-10-22
+             */
+            visibleEnd: string;
+            /**
+             * @description Días del evento dentro del rango (para pintar cada casilla).
+             * @example [
+             *       "2026-10-20",
+             *       "2026-10-21",
+             *       "2026-10-22"
+             *     ]
+             */
+            visibleDays: string[];
+            /**
+             * @description Color efectivo (override o categoría).
+             * @example #3b82f6
+             */
+            color: string | null;
+            /** @example true */
+            isAllDay: boolean;
+            category: {
+                id?: string;
+                name?: string;
+                kind?: string;
+                color?: string | null;
+                icon?: string | null;
+            };
+            /**
+             * @description Presupuesto mensual vinculado.
+             * @example null
+             */
+            budgetId: string | null;
+            /**
+             * @description Notas.
+             * @example Boletos + hotel
+             */
+            notes: string | null;
+        };
+        CalendarRangeResponseDto: {
+            range: {
+                from?: string;
+                to?: string;
+            };
+            /** @description Eventos que solapan el rango. */
+            events: components["schemas"]["CalendarEventResponseDto"][];
+            /**
+             * @description Mapa día → ids de eventos (para pintar cada casilla como Google Calendar).
+             * @example {
+             *       "2026-10-20": [
+             *         "a7b8c9d0-e1f2-3456-abcd-567890123456"
+             *       ]
+             *     }
+             */
+            days: Record<string, never>;
+            /**
+             * @description Cantidad de eventos en el rango.
+             * @example 5
+             */
+            count: number;
+            /**
+             * @description Suma de montos de los eventos del rango.
+             * @example 18500
+             */
+            totalAmount: number;
+        };
+        CreateCalendarEventDto: {
+            /**
+             * Format: uuid
+             * @description Categoría del presupuesto (de ahí salen kind/color/icono si no se sobreescriben).
+             * @example c3d4e5f6-a7b8-9012-cdef-123456789012
+             */
+            categoryId: string;
+            /**
+             * Format: uuid
+             * @description Presupuesto mensual vinculado (trazabilidad con el techo del mes). Opcional.
+             */
+            budgetId?: string;
+            /**
+             * @description Título visible en la casilla. Por defecto el nombre de la categoría.
+             * @example Nuxt Conf
+             */
+            title?: string;
+            /**
+             * @description Monto asignado al evento (≥ 0).
+             * @example 3000
+             */
+            amount: number;
+            /**
+             * Format: date
+             * @description Fecha inicio (YYYY-MM-DD, inclusive).
+             * @example 2026-10-20
+             */
+            startDate: string;
+            /**
+             * Format: date
+             * @description Fecha fin (YYYY-MM-DD, inclusive). Igual a inicio = 1 día; posterior = barra multidía.
+             * @example 2026-10-22
+             */
+            endDate: string;
+            /**
+             * @description Notas internas.
+             * @example Boletos + hotel
+             */
+            notes?: string;
+            /**
+             * @description Color hex de la barra. Por defecto el de la categoría.
+             * @example #3b82f6
+             */
+            color?: string;
+            /**
+             * @description Evento de día completo (estilo Anna’s birthday).
+             * @default true
+             */
+            isAllDay: boolean;
+        };
+        UpdateCalendarEventDto: {
+            /**
+             * Format: uuid
+             * @description Categoría del presupuesto (de ahí salen kind/color/icono si no se sobreescriben).
+             * @example c3d4e5f6-a7b8-9012-cdef-123456789012
+             */
+            categoryId?: string;
+            /**
+             * Format: uuid
+             * @description Presupuesto mensual vinculado (trazabilidad con el techo del mes). Opcional.
+             */
+            budgetId?: string;
+            /**
+             * @description Título visible en la casilla. Por defecto el nombre de la categoría.
+             * @example Nuxt Conf
+             */
+            title?: string;
+            /**
+             * @description Monto asignado al evento (≥ 0).
+             * @example 3000
+             */
+            amount?: number;
+            /**
+             * Format: date
+             * @description Fecha inicio (YYYY-MM-DD, inclusive).
+             * @example 2026-10-20
+             */
+            startDate?: string;
+            /**
+             * Format: date
+             * @description Fecha fin (YYYY-MM-DD, inclusive). Igual a inicio = 1 día; posterior = barra multidía.
+             * @example 2026-10-22
+             */
+            endDate?: string;
+            /**
+             * @description Notas internas.
+             * @example Boletos + hotel
+             */
+            notes?: string;
+            /**
+             * @description Color hex de la barra. Por defecto el de la categoría.
+             * @example #3b82f6
+             */
+            color?: string;
+            /**
+             * @description Evento de día completo (estilo Anna’s birthday).
+             * @default true
+             */
+            isAllDay: boolean;
+        };
         BudgetResponseDto: {
             /**
              * @description UUID del presupuesto.
@@ -3108,204 +3306,6 @@ export interface components {
              * @example Ajuste por inflación de despensa
              */
             reason?: string;
-        };
-        CalendarEventResponseDto: {
-            /** @example a7b8c9d0-e1f2-3456-abcd-567890123456 */
-            id: string;
-            /** @example Nuxt Conf */
-            title: string;
-            /** @example 3000 */
-            amount: number;
-            /**
-             * Format: date
-             * @example 2026-10-20
-             */
-            startDate: string;
-            /**
-             * Format: date
-             * @example 2026-10-22
-             */
-            endDate: string;
-            /**
-             * @description `true` si cruza más de un día (barra continua).
-             * @example true
-             */
-            isMultiDay: boolean;
-            /**
-             * @description Días totales del evento (fin − inicio + 1).
-             * @example 3
-             */
-            spanDays: number;
-            /**
-             * @description Inicio recortado al rango pedido (para barras parciales en vista mes).
-             * @example 2026-10-20
-             */
-            visibleStart: string;
-            /**
-             * @description Fin recortado al rango pedido.
-             * @example 2026-10-22
-             */
-            visibleEnd: string;
-            /**
-             * @description Días del evento dentro del rango (para pintar cada casilla).
-             * @example [
-             *       "2026-10-20",
-             *       "2026-10-21",
-             *       "2026-10-22"
-             *     ]
-             */
-            visibleDays: string[];
-            /**
-             * @description Color efectivo (override o categoría).
-             * @example #3b82f6
-             */
-            color: string | null;
-            /** @example true */
-            isAllDay: boolean;
-            category: {
-                id?: string;
-                name?: string;
-                kind?: string;
-                color?: string | null;
-                icon?: string | null;
-            };
-            /**
-             * @description Presupuesto mensual vinculado.
-             * @example null
-             */
-            budgetId: string | null;
-            /**
-             * @description Notas.
-             * @example Boletos + hotel
-             */
-            notes: string | null;
-        };
-        CalendarRangeResponseDto: {
-            range: {
-                from?: string;
-                to?: string;
-            };
-            /** @description Eventos que solapan el rango. */
-            events: components["schemas"]["CalendarEventResponseDto"][];
-            /**
-             * @description Mapa día → ids de eventos (para pintar cada casilla como Google Calendar).
-             * @example {
-             *       "2026-10-20": [
-             *         "a7b8c9d0-e1f2-3456-abcd-567890123456"
-             *       ]
-             *     }
-             */
-            days: Record<string, never>;
-            /**
-             * @description Cantidad de eventos en el rango.
-             * @example 5
-             */
-            count: number;
-            /**
-             * @description Suma de montos de los eventos del rango.
-             * @example 18500
-             */
-            totalAmount: number;
-        };
-        CreateCalendarEventDto: {
-            /**
-             * Format: uuid
-             * @description Categoría del presupuesto (de ahí salen kind/color/icono si no se sobreescriben).
-             * @example c3d4e5f6-a7b8-9012-cdef-123456789012
-             */
-            categoryId: string;
-            /**
-             * Format: uuid
-             * @description Presupuesto mensual vinculado (trazabilidad con el techo del mes).
-             */
-            budgetId?: string;
-            /**
-             * @description Título visible en la casilla. Por defecto el nombre de la categoría.
-             * @example Nuxt Conf
-             */
-            title?: string;
-            /**
-             * @description Monto asignado al evento (≥ 0).
-             * @example 3000
-             */
-            amount: number;
-            /**
-             * Format: date
-             * @description Fecha inicio (YYYY-MM-DD, inclusive).
-             * @example 2026-10-20
-             */
-            startDate: string;
-            /**
-             * Format: date
-             * @description Fecha fin (YYYY-MM-DD, inclusive). Igual a inicio = 1 día; posterior = barra multidía.
-             * @example 2026-10-22
-             */
-            endDate: string;
-            /**
-             * @description Notas internas.
-             * @example Boletos + hotel
-             */
-            notes?: string;
-            /**
-             * @description Color hex de la barra. Por defecto el de la categoría.
-             * @example #3b82f6
-             */
-            color?: string;
-            /**
-             * @description Evento de día completo (estilo Anna’s birthday).
-             * @default true
-             */
-            isAllDay: boolean;
-        };
-        UpdateCalendarEventDto: {
-            /**
-             * Format: uuid
-             * @description Categoría del presupuesto (de ahí salen kind/color/icono si no se sobreescriben).
-             * @example c3d4e5f6-a7b8-9012-cdef-123456789012
-             */
-            categoryId?: string;
-            /**
-             * Format: uuid
-             * @description Presupuesto mensual vinculado (trazabilidad con el techo del mes).
-             */
-            budgetId?: string;
-            /**
-             * @description Título visible en la casilla. Por defecto el nombre de la categoría.
-             * @example Nuxt Conf
-             */
-            title?: string;
-            /**
-             * @description Monto asignado al evento (≥ 0).
-             * @example 3000
-             */
-            amount?: number;
-            /**
-             * Format: date
-             * @description Fecha inicio (YYYY-MM-DD, inclusive).
-             * @example 2026-10-20
-             */
-            startDate?: string;
-            /**
-             * Format: date
-             * @description Fecha fin (YYYY-MM-DD, inclusive). Igual a inicio = 1 día; posterior = barra multidía.
-             * @example 2026-10-22
-             */
-            endDate?: string;
-            /**
-             * @description Notas internas.
-             * @example Boletos + hotel
-             */
-            notes?: string;
-            /**
-             * @description Color hex de la barra. Por defecto el de la categoría.
-             * @example #3b82f6
-             */
-            color?: string;
-            /**
-             * @description Evento de día completo (estilo Anna’s birthday).
-             * @default true
-             */
-            isAllDay: boolean;
         };
         SavingsGoalResponseDto: {
             /**
@@ -6968,6 +6968,322 @@ export interface operations {
             };
         };
     };
+    BudgetCalendarController_findByRange: {
+        parameters: {
+            query?: {
+                /** @description Inicio del rango visible (YYYY-MM-DD). Por defecto el día 1 del mes actual. */
+                from?: string;
+                /** @description Fin del rango visible (YYYY-MM-DD, inclusive). Por defecto el último día del mes actual. Máx. 366 días de rango. */
+                to?: string;
+                /** @description Filtrar por categoría (rubro o partida). Opcional. */
+                categoryId?: string;
+                /** @description Filtrar por tipo de categoría. */
+                kind?: "income" | "expense" | "savings" | "debt";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Eventos del rango con mapa por día. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Calendario obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["CalendarRangeResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BudgetCalendarController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCalendarEventDto"];
+            };
+        };
+        responses: {
+            /** @description Evento creado. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Evento creado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["CalendarEventResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BudgetCalendarController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del evento. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Evento encontrado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Evento obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["CalendarEventResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BudgetCalendarController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del evento. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Evento eliminado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Evento eliminado exitosamente */
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BudgetCalendarController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del evento. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCalendarEventDto"];
+            };
+        };
+        responses: {
+            /** @description Evento actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Evento actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["CalendarEventResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     BudgetsController_findAll: {
         parameters: {
             query: {
@@ -7560,322 +7876,6 @@ export interface operations {
                         message?: string;
                         items?: components["schemas"]["BudgetAdjustmentResponseDto"][];
                     };
-                };
-            };
-            /** @description Solicitud incorrecta */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description No autorizado / Token JWT inválido */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Conflicto con recurso existente */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Error interno del servidor */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    BudgetCalendarController_findByRange: {
-        parameters: {
-            query?: {
-                /** @description Inicio del rango visible (YYYY-MM-DD). Por defecto el día 1 del mes actual. */
-                from?: string;
-                /** @description Fin del rango visible (YYYY-MM-DD, inclusive). Por defecto el último día del mes actual. Máx. 366 días de rango. */
-                to?: string;
-                /** @description Filtrar por categoría (rubro o partida). */
-                categoryId?: string;
-                /** @description Filtrar por tipo de categoría. */
-                kind?: "income" | "expense" | "savings" | "debt";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Eventos del rango con mapa por día. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example Calendario obtenido exitosamente */
-                        message?: string;
-                    } & components["schemas"]["CalendarRangeResponseDto"];
-                };
-            };
-            /** @description Solicitud incorrecta */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description No autorizado / Token JWT inválido */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Conflicto con recurso existente */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Error interno del servidor */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    BudgetCalendarController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateCalendarEventDto"];
-            };
-        };
-        responses: {
-            /** @description Evento creado. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example Evento creado exitosamente */
-                        message?: string;
-                    } & components["schemas"]["CalendarEventResponseDto"];
-                };
-            };
-            /** @description Solicitud incorrecta */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description No autorizado / Token JWT inválido */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Conflicto con recurso existente */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Error interno del servidor */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    BudgetCalendarController_findOne: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description UUID del evento. */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Evento encontrado. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example Evento obtenido exitosamente */
-                        message?: string;
-                    } & components["schemas"]["CalendarEventResponseDto"];
-                };
-            };
-            /** @description Solicitud incorrecta */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description No autorizado / Token JWT inválido */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Conflicto con recurso existente */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Error interno del servidor */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    BudgetCalendarController_remove: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description UUID del evento. */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Evento eliminado. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example Evento eliminado exitosamente */
-                        message?: string;
-                    };
-                };
-            };
-            /** @description Solicitud incorrecta */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description No autorizado / Token JWT inválido */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Conflicto con recurso existente */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Error interno del servidor */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    BudgetCalendarController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description UUID del evento. */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateCalendarEventDto"];
-            };
-        };
-        responses: {
-            /** @description Evento actualizado. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example Evento actualizado exitosamente */
-                        message?: string;
-                    } & components["schemas"]["CalendarEventResponseDto"];
                 };
             };
             /** @description Solicitud incorrecta */
