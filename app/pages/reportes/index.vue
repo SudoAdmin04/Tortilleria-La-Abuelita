@@ -60,7 +60,7 @@ onMounted(() => r.fetchReportes())
         <UButton to="/reportes/analiticas" color="neutral" variant="outline" size="sm" icon="i-lucide-chart-no-axes-combined">
           Analíticas
         </UButton>
-        <UButton to="/reportes/presupuesto" color="neutral" variant="outline" size="sm" icon="i-lucide-wallet">
+        <UButton to="/reportes/presupuestos" color="neutral" variant="outline" size="sm" icon="i-lucide-wallet">
           Presupuesto
         </UButton>
       </template>
