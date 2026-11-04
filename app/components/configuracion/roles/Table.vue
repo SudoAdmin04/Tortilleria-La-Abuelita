@@ -34,8 +34,8 @@ const columnas: TableColumn<Role>[] = [
     accessorKey: 'name',
     header: 'Rol',
     cell: ({ row }) => h('div', { class: 'flex flex-col min-w-0' }, [
-      h('span', { class: 'text-sm font-semibold text-white truncate' }, row.original.name),
-      h('span', { class: 'text-xs text-white/50 truncate' }, row.original.description || 'Sin descripción'),
+      h('span', { class: 'text-sm font-semibold text-highlighted truncate' }, row.original.name),
+      h('span', { class: 'text-xs text-muted truncate' }, row.original.description || 'Sin descripción'),
     ]),
   },
   {
@@ -111,7 +111,7 @@ const columnas: TableColumn<Role>[] = [
             variant: 'ghost',
             size: 'xs',
             loading: isToggling,
-            class: 'text-white/60 hover:text-white hover:bg-white/10 rounded-lg',
+            class: 'text-muted hover:text-highlighted hover:bg-elevated rounded-lg',
             'aria-label': 'Acciones',
           }),
         }),
@@ -143,17 +143,17 @@ const pageLabel = computed(() => {
 <template>
   <div class="flex flex-col gap-4 w-full">
     <UCard
-      class="border border-white/10 overflow-hidden"
+      class="border border-default overflow-hidden"
       :ui="{
-        header: 'py-3.5 px-5 border-b border-white/10 bg-white/[0.02]',
+        header: 'py-3.5 px-5 border-b border-default bg-elevated/60',
         body: 'p-0 overflow-x-auto',
-        footer: 'py-3 px-5 border-t border-white/10 bg-white/[0.01]',
+        footer: 'py-3 px-5 border-t border-default bg-elevated/60',
       }"
     >
       <template #header>
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-3">
-            <span class="text-sm font-bold text-white tracking-wide">Gestión de Roles</span>
+            <span class="text-sm font-bold text-highlighted tracking-wide">Gestión de Roles</span>
           </div>
           <UBadge v-if="totalItems" size="sm" color="primary" variant="subtle" class="px-2.5 font-semibold">
             {{ totalItems }} {{ totalItems === 1 ? 'Rol' : 'Roles' }}
@@ -169,12 +169,12 @@ const pageLabel = computed(() => {
           :loading="props.loading"
           sticky
           class="w-full"
-          :ui="{ tr: 'hover:bg-white/[0.01] transition-colors duration-150 cursor-pointer'}"
+          :ui="{ tr: 'hover:bg-elevated/50 transition-colors duration-150 cursor-pointer'}"
         >
           <template #empty>
             <div class="flex flex-col items-center justify-center py-12 gap-3">
-              <UIcon name="i-lucide-circle-x" class="size-8 text-white/30" />
-              <p class="text-sm text-white/50 font-medium">No hay roles que coincidan con los criterios.</p>
+              <UIcon name="i-lucide-circle-x" class="size-8 text-dimmed" />
+              <p class="text-sm text-muted font-medium">No hay roles que coincidan con los criterios.</p>
             </div>
           </template>
         </UTable>
@@ -182,12 +182,12 @@ const pageLabel = computed(() => {
 
       <template #footer>
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          <span class="text-white/60 font-medium">
+          <span class="text-muted font-medium">
             {{ pageLabel }}
           </span>
           <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
-              <span class="text-white/40">Filas por página:</span>
+              <span class="text-muted">Filas por página:</span>
               <USelect
                 v-model="itemsPerPage"
                 :items="pageCountOptions"

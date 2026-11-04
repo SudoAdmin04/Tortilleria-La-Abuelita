@@ -26,9 +26,9 @@ if (import.meta.client) {
 
 <template>
   <div class="flex flex-col items-center justify-center gap-2 py-16 text-center">
-    <UIcon v-if="firstTo" name="i-lucide-loader-circle" class="size-6 animate-spin text-neutral-400" />
-    <UIcon v-else name="i-lucide-shield-off" class="size-6 text-neutral-400" />
-    <p class="text-sm text-neutral-400">
+    <UIcon v-if="firstTo" name="i-lucide-loader-circle" class="size-6 animate-spin text-muted" />
+    <UIcon v-else name="i-lucide-shield-off" class="size-6 text-muted" />
+    <p class="text-sm text-muted">
       {{ firstTo ? 'Redirigiendo a la primera opción disponible…' : 'Sin opciones de configuración asignadas.' }}
     </p>
   </div>

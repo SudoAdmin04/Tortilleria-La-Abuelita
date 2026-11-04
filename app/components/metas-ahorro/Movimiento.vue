@@ -79,20 +79,20 @@ const onSave = async (event: FormSubmitEvent<DepositoSchema | RetiroSchema>) => 
     <template #content>
       <div class="flex flex-col w-150 h-full">
 
-        <div class="bg-white/[0.02] p-6 pb-4 flex flex-col gap-4 shrink-0 border-b border-neutral-700">
+        <div class="bg-elevated/60 p-6 pb-4 flex flex-col gap-4 shrink-0 border-b border-default">
           <div class="flex justify-between items-center gap-4">
             <div class="flex items-center gap-3">
               <div
                 class="flex items-center justify-center p-2 rounded-lg shrink-0"
-                :class="esAporte ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'"
+                :class="esAporte ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'"
               >
                 <UIcon :name="esAporte ? 'i-lucide-plus-circle' : 'i-lucide-minus-circle'" class="size-6" />
               </div>
               <div>
-                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">
+                <h3 class="text-lg font-semibold text-highlighted">
                   {{ esAporte ? 'Aportar a la meta' : 'Retirar de la meta' }}
                 </h3>
-                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                <p class="text-xs text-muted">
                   {{ props.goal?.name ?? 'Meta' }}{{ esAporte ? ' · suma saldo y mueve dinero a la reserva' : ' · resta saldo (no puede excederlo)' }}
                 </p>
               </div>
@@ -146,7 +146,7 @@ const onSave = async (event: FormSubmitEvent<DepositoSchema | RetiroSchema>) => 
           </UForm>
         </div>
 
-        <div class="bg-white/[0.02] flex shrink-0 justify-end gap-3 px-4 py-4 border-t border-neutral-700">
+        <div class="bg-elevated/60 flex shrink-0 justify-end gap-3 px-4 py-4 border-t border-default">
           <UButton type="button" color="neutral" variant="outline" label="Cancelar" @click="() => { open = false }" />
           <UButton
             type="submit"

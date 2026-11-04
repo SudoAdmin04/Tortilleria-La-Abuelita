@@ -50,7 +50,7 @@ watch(id, v => p.fetchDetalle(v))
       <div class="flex-1 min-w-40">
 
         <h1 class="font-display text-2xl font-semibold">{{ titulo }}</h1>
-        <p class="text-sm text-slate-400">{{ periodo }}</p>
+        <p class="text-sm text-muted">{{ periodo }}</p>
       </div>
       <UButton icon="i-lucide-square-pen" label="Ajustar" @click="openEdit" />
       <UButton icon="i-lucide-trash-2" color="error" variant="outline" label="Eliminar" @click="handleDelete" />
@@ -63,20 +63,20 @@ watch(id, v => p.fetchDetalle(v))
 
     <template v-else-if="p.item.value">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <UCard class="border border-white/10">
-          <p class="text-xs text-slate-400">Límite mensual</p>
+        <UCard class="border border-default">
+          <p class="text-xs text-muted">Límite mensual</p>
           <p class="text-2xl font-bold">{{ formatMoney(p.item.value.amount, currency) }}</p>
-          <p class="text-xs text-white/40 mt-1">{{ p.item.value.category?.kind }}</p>
+          <p class="text-xs text-muted mt-1">{{ p.item.value.category?.kind }}</p>
         </UCard>
-        <UCard class="border border-white/10">
-          <p class="text-xs text-slate-400">Categoría</p>
+        <UCard class="border border-default">
+          <p class="text-xs text-muted">Categoría</p>
           <p class="text-lg font-semibold">{{ p.item.value.category?.name }}</p>
-          <p class="text-xs text-white/40 mt-1 font-mono">{{ p.item.value.categoryId }}</p>
+          <p class="text-xs text-muted mt-1 font-mono">{{ p.item.value.categoryId }}</p>
         </UCard>
-        <UCard class="border border-white/10">
-          <p class="text-xs text-slate-400">Actualizado</p>
+        <UCard class="border border-default">
+          <p class="text-xs text-muted">Actualizado</p>
           <p class="text-lg font-semibold">{{ formatDate(String(p.item.value.updatedAt)) }}</p>
-          <p class="text-xs text-white/40 mt-1">Creado {{ formatDate(String(p.item.value.createdAt)) }}</p>
+          <p class="text-xs text-muted mt-1">Creado {{ formatDate(String(p.item.value.createdAt)) }}</p>
         </UCard>
       </div>
 

@@ -32,19 +32,19 @@ const configEntry = computed<NavigationMenuItem[]>(() => {
 })
 
 const menuUi = {
-  list: 'flex flex-col gap-2 w-full',
+  list: 'flex flex-col gap-1.5 w-full',
   item: 'w-full',
   link: [
     'group relative flex items-center gap-2 w-full text-sm transition-all duration-150',
     'rounded-xl',
     'border-s-3 border-s-transparent',
-    'text-white/70 hover:bg-white/5 hover:text-primary-200 hover:border-s-primary-200',
-    'data-[active=true]:bg-neutral-800/90 data-[active=true]:text-white data-[active=true]:font-semibold data-[active=true]:border-s-primary data-[active=true]:border-t-white/20 data-[active=true]:shadow-md',
-    'aria-[current=page]:bg-primary-900/20 aria-[current=page]:text-white aria-[current=page]:font-semibold aria-[current=page]:border-s-primary aria-[current=page]:border-t-white/20 aria-[current=page]:shadow-md'
+    'text-muted hover:bg-elevated hover:text-primary hover:border-s-primary/50',
+    'data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-semibold data-[active=true]:border-s-primary data-[active=true]:shadow-sm',
+    'aria-[current=page]:bg-primary/10 aria-[current=page]:text-primary aria-[current=page]:font-semibold aria-[current=page]:border-s-primary aria-[current=page]:shadow-sm'
   ].join(' '),
-  linkLeadingIcon: 'size-5 shrink-0 text-white/60 group-hover:text-primary-200 group-data-[active=true]:text-primary group-aria-[current=page]:text-white transition-colors',
+  linkLeadingIcon: 'size-5 shrink-0 text-muted group-hover:text-primary group-data-[active=true]:text-primary group-aria-[current=page]:text-primary transition-colors',
   linkLabel: 'truncate',
-  linkTrailingIcon: 'size-4 shrink-0 text-white/40 group-hover:text-white/70 group-data-[active=true]:text-primary group-aria-[current=page]:text-primary',
+  linkTrailingIcon: 'size-4 shrink-0 text-dimmed group-hover:text-primary group-data-[active=true]:text-primary group-aria-[current=page]:text-primary transition-colors',
 }
 </script>
 
@@ -53,7 +53,7 @@ const menuUi = {
     id="principal"
     v-model:collapsed="collapsed"
     collapsible
-    class="bg-neutral-900 border-r border-white/5"
+    class="bg-default border-e border-default"
   >
     <template #header="{ collapsed: isCollapsed, collapse }">
       <div
@@ -61,7 +61,7 @@ const menuUi = {
         :class="isCollapsed ? 'flex-col justify-center gap-2' : 'justify-between'"
       >
         <div v-if="!isCollapsed" class="flex min-w-0 flex-1 items-center justify-start">
-          <img src="/img/Logo.png" alt="Capital Flow" class="h-10 w-auto object-contain" />
+          <img src="/img/Logo.png" alt="Capital Flow" class="h-20 w-auto object-contain" />
         </div>
 
         <UButton
@@ -70,7 +70,7 @@ const menuUi = {
           color="neutral"
           square
           size="xs"
-          class="text-white/40 hover:text-white hover:bg-white/5"
+          class="text-dimmed hover:text-primary hover:bg-elevated"
           :aria-label="isCollapsed ? 'Expandir menú principal' : 'Contraer menú principal'"
           @click="collapse(!isCollapsed)"
         />
@@ -103,7 +103,7 @@ const menuUi = {
     </template>
 
     <template #footer="{ collapsed: isCollapsed }">
-      <div class="w-full border-t border-white/10">
+      <div class="w-full border-t border-default">
         <UDropdownMenu
           v-if="!isCollapsed"
           :items="userMenuItems"
@@ -113,23 +113,23 @@ const menuUi = {
           <UButton
             color="neutral"
             variant="ghost"
-            class="w-full flex items-center justify-between p-2 hover:bg-white/5 rounded-lg text-left"
+            class="w-full flex items-center justify-between p-2 hover:bg-elevated rounded-lg text-left"
           >
             <div class="flex items-center gap-3 min-w-0">
               <UAvatar :alt="userDisplayName" size="md" />
               <div class="flex flex-col min-w-0">
-                <span class="text-sm font-semibold truncate text-white">{{ userDisplayName }}</span>
-                <span class="text-xs text-white/50 truncate">{{ userEmail }}</span>
-                <span v-if="userRole" class="text-[11px] text-[#b6c1e9] truncate">{{ userRole }}</span>
+                <span class="text-sm font-semibold truncate text-highlighted">{{ userDisplayName }}</span>
+                <span class="text-xs text-muted truncate">{{ userEmail }}</span>
+                <span v-if="userRole" class="text-[11px] text-primary truncate">{{ userRole }}</span>
               </div>
             </div>
-            <UIcon name="i-lucide-ellipsis-vertical" class="size-5 text-white/40 shrink-0" />
+            <UIcon name="i-lucide-ellipsis-vertical" class="size-5 text-dimmed shrink-0" />
           </UButton>
         </UDropdownMenu>
 
         <div v-else class="w-full flex justify-center">
           <UDropdownMenu :items="userMenuItems" :content="{ align: 'start', side: 'right' }">
-            <UButton color="neutral" variant="ghost" class="p-1 rounded-full hover:bg-white/10">
+            <UButton color="neutral" variant="ghost" class="p-1 rounded-full hover:bg-elevated">
               <UAvatar :alt="userDisplayName" size="sm" />
             </UButton>
           </UDropdownMenu>

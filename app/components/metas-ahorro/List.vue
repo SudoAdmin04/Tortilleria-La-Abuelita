@@ -51,11 +51,11 @@ const columnas: TableColumn<GoalProgress>[] = [
       ].join('')
       const children: any[] = [
         h('div', { class: 'flex items-center gap-2 min-w-0' }, [
-          h('span', { class: 'text-sm font-semibold text-white truncate' }, g.name),
+          h('span', { class: 'text-sm font-semibold text-highlighted truncate' }, g.name),
           completada ? h(UBadge, { color: 'success', variant: 'subtle', size: 'sm' }, () => 'Completada') : null,
           g.isActive ? null : h(UBadge, { color: 'neutral', variant: 'subtle', size: 'sm' }, () => 'Inactiva'),
         ]),
-        h('span', { class: 'text-xs text-white/50 truncate' }, sub),
+        h('span', { class: 'text-xs text-muted truncate' }, sub),
       ]
       return h('div', { class: 'flex flex-col min-w-0 gap-0.5' }, children)
     },
@@ -66,8 +66,8 @@ const columnas: TableColumn<GoalProgress>[] = [
     cell: ({ row }) => {
       const p = row.original
       return h('div', { class: 'flex flex-col min-w-0' }, [
-        h('span', { class: 'text-sm font-semibold text-white' }, `${formatMoney(p.contributed, moneda.value)} de ${formatMoney(p.monthlyTarget, moneda.value)}`),
-        h('span', { class: 'text-xs text-white/50' }, `Faltan ${formatMoney(p.remaining, moneda.value)}`),
+        h('span', { class: 'text-sm font-semibold text-highlighted' }, `${formatMoney(p.contributed, moneda.value)} de ${formatMoney(p.monthlyTarget, moneda.value)}`),
+        h('span', { class: 'text-xs text-muted' }, `Faltan ${formatMoney(p.remaining, moneda.value)}`),
       ])
     },
   },
@@ -107,7 +107,7 @@ const columnas: TableColumn<GoalProgress>[] = [
       const faltante = target != null ? Math.max(target - aportado, 0) : null
 
       return h('div', { class: 'flex flex-col gap-1 min-w-36' }, [
-        h('span', { class: 'text-sm font-semibold text-white' },
+        h('span', { class: 'text-sm font-semibold text-highlighted' },
           target != null
             ? `${formatMoney(aportado, moneda.value)} de ${formatMoney(target, moneda.value)}`
             : formatMoney(aportado, moneda.value)),
@@ -122,10 +122,10 @@ const columnas: TableColumn<GoalProgress>[] = [
                 class: 'font-semibold w-fit',
               }, () => formatExecution(rawPct)),
           target != null && !completada
-            ? h('span', { class: 'text-xs text-white/50' }, `Faltan ${formatMoney(faltante, moneda.value)}`)
+            ? h('span', { class: 'text-xs text-muted' }, `Faltan ${formatMoney(faltante, moneda.value)}`)
             : null,
           target == null
-            ? h('span', { class: 'text-xs text-white/50' }, 'Sin objetivo total')
+            ? h('span', { class: 'text-xs text-muted' }, 'Sin objetivo total')
             : null,
         ]),
       ])
@@ -176,7 +176,7 @@ const columnas: TableColumn<GoalProgress>[] = [
             color: 'neutral',
             variant: 'soft',
             size: 'xs',
-            class: 'text-white/60 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg',
+            class: 'text-muted hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg',
             'aria-label': `Aportar a ${record.goal.name}`,
             onClick: (e: Event) => { e.stopPropagation(); emit('deposit', record.goal.id) },
           })
@@ -187,7 +187,7 @@ const columnas: TableColumn<GoalProgress>[] = [
             color: 'neutral',
             variant: 'soft',
             size: 'xs',
-            class: 'text-white/60 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg',
+            class: 'text-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 rounded-lg',
             'aria-label': `Retirar de ${record.goal.name}`,
             onClick: (e: Event) => { e.stopPropagation(); emit('withdraw', record.goal.id) },
           })
@@ -201,7 +201,7 @@ const columnas: TableColumn<GoalProgress>[] = [
             color: 'neutral',
             variant: 'ghost',
             size: 'xs',
-            class: 'text-white/60 hover:text-white hover:bg-white/10 rounded-lg',
+            class: 'text-muted hover:text-highlighted hover:bg-elevated rounded-lg',
             'aria-label': 'Acciones',
           }),
         }),
@@ -233,17 +233,17 @@ const pageLabel = computed(() => {
 <template>
   <div class="flex flex-col gap-4 w-full">
     <UCard
-      class="border border-white/10 overflow-hidden"
+      class="border border-default overflow-hidden"
       :ui="{
-        header: 'py-3.5 px-5 border-b border-white/10 bg-white/[0.02]',
+        header: 'py-3.5 px-5 border-b border-default bg-elevated/60',
         body: 'p-0 overflow-x-auto',
-        footer: 'py-3 px-5 border-t border-white/10 bg-white/[0.01]',
+        footer: 'py-3 px-5 border-t border-default bg-elevated/60',
       }"
     >
       <template #header>
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-3">
-            <span class="text-sm font-bold text-white tracking-wide">Gestión de Metas de Ahorro</span>
+            <span class="text-sm font-bold text-highlighted tracking-wide">Gestión de Metas de Ahorro</span>
           </div>
           <UBadge v-if="totalItems" size="sm" color="primary" variant="subtle" class="px-2.5 font-semibold">
             {{ totalItems }} {{ totalItems === 1 ? 'Meta' : 'Metas' }}
@@ -259,12 +259,12 @@ const pageLabel = computed(() => {
           :loading="props.loading"
           sticky
           class="w-full"
-          :ui="{ tr: 'hover:bg-white/[0.01] transition-colors duration-150 cursor-pointer'}"
+          :ui="{ tr: 'hover:bg-elevated/50 transition-colors duration-150 cursor-pointer'}"
         >
           <template #empty>
             <div class="flex flex-col items-center justify-center py-12 gap-3">
-              <UIcon name="i-lucide-circle-x" class="size-8 text-white/30" />
-              <p class="text-sm text-white/50 font-medium">No hay metas que coincidan con los criterios.</p>
+              <UIcon name="i-lucide-circle-x" class="size-8 text-dimmed" />
+              <p class="text-sm text-muted font-medium">No hay metas que coincidan con los criterios.</p>
             </div>
           </template>
         </UTable>
@@ -272,12 +272,12 @@ const pageLabel = computed(() => {
 
       <template #footer>
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          <span class="text-white/60 font-medium">
+          <span class="text-muted font-medium">
             {{ pageLabel }}
           </span>
           <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
-              <span class="text-white/40">Filas por página:</span>
+              <span class="text-muted">Filas por página:</span>
               <USelect
                 v-model="itemsPerPage"
                 :items="pageCountOptions"

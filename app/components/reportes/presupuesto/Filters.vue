@@ -27,8 +27,8 @@ function today() {
 </script>
 
 <template>
-  <UCard class="border border-white/10" :ui="{ body: 'p-4 flex flex-wrap items-center gap-2' }">
-    <span class="text-xs font-semibold uppercase tracking-widest text-white/45">Periodo</span>
+  <UCard class="border border-default" :ui="{ body: 'p-4 flex flex-wrap items-center gap-2' }">
+    <span class="text-xs font-semibold uppercase tracking-widest text-muted">Periodo</span>
     <USelectMenu v-model="month" :items="monthItems" value-key="value" label-key="label" class="w-36" aria-label="Mes" @update:model-value="emit('filtrar')" />
     <USelectMenu v-model="year" :items="yearItems" value-key="value" label-key="label" class="w-28" aria-label="Año" @update:model-value="emit('filtrar')" />
     <UButton label="Hoy" color="neutral" variant="outline" size="sm" @click="today" />

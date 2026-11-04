@@ -110,7 +110,7 @@ onMounted(async () => {
 
     <AppStatCards :stats="stats" :loading="cal.loading.value && !cal.range.value" :columns="3" />
 
-    <UCard class="border border-white/10" :ui="{ body: 'p-4 flex flex-wrap items-center gap-2' }">
+    <UCard class="border border-default" :ui="{ body: 'p-4 flex flex-wrap items-center gap-2' }">
       <UInput v-model="fDay" type="number" :min="1" :max="maxDay" class="w-24" aria-label="Día" @change="aplicarSalto" />
       <USelectMenu v-model="fMonth" :items="monthItems" value-key="value" label-key="label" class="w-36" aria-label="Mes" @update:model-value="aplicarSalto" />
       <USelectMenu v-model="fYear" :items="yearItems" value-key="value" label-key="label" class="w-28" aria-label="Año" @update:model-value="aplicarSalto" />
@@ -138,24 +138,24 @@ onMounted(async () => {
         />
       </div>
 
-      <UCard class="border border-white/10 h-fit" :ui="{ header: 'py-3.5 px-5 border-b border-white/10 bg-white/[0.02]', body: 'p-4 flex flex-col gap-2' }">
+      <UCard class="border border-default h-fit" :ui="{ header: 'py-3.5 px-5 border-b border-default bg-elevated/60', body: 'p-4 flex flex-col gap-2' }">
         <template #header>
           <div class="flex items-center justify-between">
-            <span class="text-sm font-bold text-white">Eventos del {{ cal.selectedDay.value }}</span>
+            <span class="text-sm font-bold text-highlighted">Eventos del {{ cal.selectedDay.value }}</span>
             <UButton size="xs" icon="i-lucide-plus" variant="ghost" @click="openCreate(cal.selectedDay.value)" />
           </div>
         </template>
         <template #default>
           <button
             v-for="e in cal.dayEvents.value" :key="e.id"
-            class="rounded-xl border border-white/10 border-l-4 bg-white/[0.02] px-3 py-2 text-left hover:bg-white/[0.05]"
+            class="rounded-xl border border-default border-l-4 bg-elevated/60 px-3 py-2 text-left hover:bg-elevated"
             :style="e.color ? { borderLeftColor: e.color } : {}"
             @click="openEdit(e)"
           >
-            <p class="text-sm font-semibold text-white truncate">{{ e.title }}</p>
-            <p class="text-xs text-white/50">{{ e.category.name }} · {{ formatMoney(e.amount, currency) }}</p>
+            <p class="text-sm font-semibold text-highlighted truncate">{{ e.title }}</p>
+            <p class="text-xs text-muted">{{ e.category.name }} · {{ formatMoney(e.amount, currency) }}</p>
           </button>
-          <p v-if="!cal.dayEvents.value.length" class="text-sm text-white/40 text-center py-6">Sin eventos este día.</p>
+          <p v-if="!cal.dayEvents.value.length" class="text-sm text-muted text-center py-6">Sin eventos este día.</p>
         </template>
       </UCard>
     </div>

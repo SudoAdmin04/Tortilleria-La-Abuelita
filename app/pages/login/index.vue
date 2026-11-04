@@ -19,16 +19,16 @@ const state = reactive({
   remember: false
 })
 
-const logo = computed(() => {
-  return colorMode.value === 'dark'
-    ? 'img/logo.png'
-    : 'img/logo.png'
-})
-
 const loading = ref(false)
 const toast = useToast()
 const authStore = useAuthStore()
 const colorMode = useColorMode()
+
+const logo = computed(() => {
+  return colorMode.value === 'dark'
+    ? 'img/LogoLogin.png'
+    : 'img/LogoLogin.png'
+})
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   loading.value = true
@@ -58,18 +58,25 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-  <div class="min-h-screen w-full flex relative bg-grid-aura [--tw-grid-color:rgba(59,130,246,0.35)] dark:[--tw-grid-color:rgba(59,130,246,0.25)]">
-    <div class="fixed inset-0">
-      <div class="absolute inset-0 bg-grid-neutral-100 dark:bg-grid-neutral-800 opacity-30" />
+  <div class="min-h-screen w-full flex relative overflow-hidden login-shell">
+    <div class="absolute inset-0 login-grid opacity-70" aria-hidden="true" />
+    <div class="absolute inset-0 login-vignette" aria-hidden="true" />
+
+    <div class="absolute top-4 right-4 z-20">
+      <UColorModeButton
+        color="neutral"
+        variant="ghost"
+        class="text-white/80 hover:text-white hover:bg-white/10"
+      />
     </div>
 
     <div class="w-full flex flex-col justify-center items-center px-6 sm:px-12 lg:px-16 py-12 relative z-10">
-      <UCard class="w-full max-w-md bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md border border-white/20 dark:border-neutral-700/30 shadow-2xl ring-0"
+      <UCard class="w-full max-w-md bg-white/90 dark:bg-neutral-900/75 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-2xl ring-0"
         :ui="{ body: 'p-8', header: 'border-b border-white/10 dark:border-neutral-700/20' }"
       >
         <div class="_space-y-6 flex flex-row gap-4 justify-center pb-4">
           <div class="flex justify-center">
-            <img :src="logo" alt="Logo" class="h-40 w-auto object-contain ">
+            <img :src="logo" alt="Logo" class="h-50 w-auto object-contain">
           </div>
         </div>
 
@@ -136,33 +143,3 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     </div>
   </div>
 </template>
-
-<style>
-.bg-grid-aura {
-  background-size: 40px 40px;
-  background-image:
-    linear-gradient(to right, var(--tw-grid-color) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--tw-grid-color) 1px, transparent 1px);
-}
-
-.bg-grid-aura::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, transparent 0%, var(--bg-fallback) 100%);
-  pointer-events: none;
-}
-
-:root { --bg-fallback: #f8fafc; }
-.dark { --bg-fallback: #0f172a; }
-
-.bg-grid-neutral-100 {
-  background-image: linear-gradient(to right, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
-}
-
-.dark .bg-grid-neutral-800 {
-  background-image: linear-gradient(to right, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
-}
-</style>

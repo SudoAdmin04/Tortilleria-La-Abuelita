@@ -35,7 +35,7 @@ const toggle = () => { open.value = !open.value }
 const rowBase = 'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full text-left'
 const leafClass = computed(() => props.variant === 'submenu'
   ? 'hover:bg-muted text-muted'
-  : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/5')
+  : 'text-toned hover:bg-neutral-100 dark:hover:bg-white/5')
 const activeClass = computed(() => props.variant === 'submenu'
   ? 'bg-primary/10 text-primary font-semibold'
   : 'bg-primary-50 dark:bg-primary-500/10 text-primary-700 dark:text-primary-300 font-semibold')

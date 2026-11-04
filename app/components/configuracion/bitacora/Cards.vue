@@ -30,8 +30,8 @@ function horaCorta(iso: string): string {
     </div>
 
     <div v-else-if="!items.length" class="flex flex-col items-center justify-center py-10 gap-3 rounded-xl border border-dashed border-gray-300 dark:border-gray-800">
-      <UIcon name="i-lucide-clock" class="size-8 text-neutral-400" />
-      <p class="text-sm text-neutral-500 font-medium">Sin accesos recientes.</p>
+      <UIcon name="i-lucide-clock" class="size-8 text-muted" />
+      <p class="text-sm text-muted font-medium">Sin accesos recientes.</p>
     </div>
 
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
@@ -54,15 +54,15 @@ function horaCorta(iso: string): string {
           </UBadge>
         </div>
 
-        <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+        <p class="text-xs text-muted truncate">
           {{ item.usuario.correo }}
         </p>
 
-        <p class="text-xs text-neutral-600 dark:text-neutral-300 line-clamp-2 min-h-8">
+        <p class="text-xs text-toned line-clamp-2 min-h-8">
           {{ item.descripcion }}
         </p>
 
-        <div class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+        <div class="flex items-center gap-1.5 text-xs text-muted">
           <UIcon name="i-lucide-calendar-days" class="size-4 shrink-0" />
           <span>{{ fechaCorta(item.fechaCreacion) }}</span>
           <span class="text-neutral-300 dark:text-neutral-600">•</span>

@@ -34,7 +34,7 @@ const columns: TableColumn<BitacoraAcceso>[] = [
     header: 'Correo Electrónico',
     cell: ({ row }) => h(
       'span',
-      { class: 'text-sm text-neutral-600 dark:text-neutral-300' },
+      { class: 'text-sm text-toned' },
       row.original.usuario.correo
     )
   },
@@ -52,7 +52,7 @@ const columns: TableColumn<BitacoraAcceso>[] = [
     header: 'Descripción',
     cell: ({ row }) => h(
       'span',
-      { class: 'text-sm text-neutral-600 dark:text-neutral-300 max-w-md block truncate' },
+      { class: 'text-sm text-toned max-w-md block truncate' },
       row.original.descripcion
     )
   },
@@ -109,8 +109,8 @@ const pageLabel = computed(() => {
       >
         <template #empty>
           <div v-if="!props.loading" class="flex flex-col items-center justify-center py-12 gap-3">
-            <UIcon name="i-lucide-clock" class="size-8 text-neutral-400" />
-            <p class="text-sm text-neutral-500 font-medium">No hay accesos que coincidan con los criterios.</p>
+            <UIcon name="i-lucide-clock" class="size-8 text-muted" />
+            <p class="text-sm text-muted font-medium">No hay accesos que coincidan con los criterios.</p>
           </div>
         </template>
       </UTable>
@@ -118,7 +118,7 @@ const pageLabel = computed(() => {
 
     <template #footer>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400">{{ pageLabel }}</span>
+        <span class="text-xs font-medium text-muted">{{ pageLabel }}</span>
 
         <div class="flex items-center gap-2">
           <USelect v-model="itemsPerPage" :items="pageCountOptions" class="w-20" />

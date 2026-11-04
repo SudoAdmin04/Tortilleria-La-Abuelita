@@ -68,7 +68,7 @@ onMounted(() => { if (!user.value) void refreshProfile() })
           <h1 class="font-display text-2xl font-semibold tracking-tight">
             Perfil de Usuario
           </h1>
-          <p class="text-sm text-slate-400 mt-0.5">
+          <p class="text-sm text-muted mt-0.5">
             Datos de tu sesión en {{ user?.currency || 'MXN' }} · {{ user?.timezone || 'America/Monterrey' }}
           </p>
         </div>
@@ -115,7 +115,7 @@ onMounted(() => { if (!user.value) void refreshProfile() })
               <UBadge color="primary" variant="soft" icon="i-lucide-shield">{{ displayRole }}</UBadge>
               <UBadge v-if="user?.roleId != null" color="neutral" variant="soft">Role ID: #{{ user.roleId }}</UBadge>
             </div>
-            <p class="mt-1 flex items-center gap-1.5 text-sm text-slate-400">
+            <p class="mt-1 flex items-center gap-1.5 text-sm text-muted">
               <UIcon name="i-lucide-mail" class="size-4" />
               {{ user?.email || '—' }}
             </p>
@@ -134,10 +134,10 @@ onMounted(() => { if (!user.value) void refreshProfile() })
             <template #header>
               <div class="flex items-center justify-between gap-3 flex-wrap">
                 <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-id-card" class="w-5 h-5 text-white" />
+                  <UIcon name="i-lucide-id-card" class="w-5 h-5 text-highlighted" />
                   <div>
                     <h3 class="text-sm font-semibold">Información General y Credenciales</h3>
-                    <p class="text-xs text-slate-400">Datos de identificación fiscal y operativa del usuario</p>
+                    <p class="text-xs text-muted">Datos de identificación fiscal y operativa del usuario</p>
                   </div>
                 </div>
                 <UBadge color="success" variant="soft" icon="i-lucide-badge-check">Cuenta Verificada</UBadge>
@@ -161,7 +161,7 @@ onMounted(() => { if (!user.value) void refreshProfile() })
             <div class="mt-4">
               <div class="flex items-center justify-between gap-2 flex-wrap">
                 <label class="text-sm font-medium">ID de Cuenta del Sistema (UUID Universal)</label>
-                <span class="text-xs text-slate-400">Identificador inmutable para transacciones API</span>
+                <span class="text-xs text-muted">Identificador inmutable para transacciones API</span>
               </div>
               <div class="flex gap-2 mt-1">
                 <UInput :model-value="user?.id || ''" icon="i-lucide-key-round" readonly :ui="{ base: 'font-mono text-xs' }" class="w-full" />
@@ -173,16 +173,16 @@ onMounted(() => { if (!user.value) void refreshProfile() })
 
             <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
-                <p class="text-sm text-neutral-500">Rol en el Sistema</p>
+                <p class="text-sm text-muted">Rol en el Sistema</p>
                 <p class="font-semibold flex items-center gap-2">{{ displayRole }} <UIcon name="i-lucide-shield-check" class="size-4 text-primary" /></p>
-                <p class="text-xs text-slate-400 mt-0.5">{{ user?.isAdmin ? 'Acceso Total e Irrestricto' : 'Acceso según permisos del rol' }}</p>
+                <p class="text-xs text-muted mt-0.5">{{ user?.isAdmin ? 'Acceso Total e Irrestricto' : 'Acceso según permisos del rol' }}</p>
               </div>
               <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
-                <p class="text-sm text-neutral-500">Estado de Cuenta</p>
+                <p class="text-sm text-muted">Estado de Cuenta</p>
                 <p class="font-semibold" :class="user?.isActive === false ? 'text-error' : 'text-success'">
                   {{ user?.isActive === false ? 'Inactiva' : 'Activa y Operativa' }}
                 </p>
-                <p class="text-xs text-slate-400 mt-0.5">{{ user?.isActive === false ? 'Con restricciones de acceso' : 'Sin restricciones de retiro o débito' }}</p>
+                <p class="text-xs text-muted mt-0.5">{{ user?.isActive === false ? 'Con restricciones de acceso' : 'Sin restricciones de retiro o débito' }}</p>
               </div>
             </div>
           </UCard>
@@ -191,13 +191,13 @@ onMounted(() => { if (!user.value) void refreshProfile() })
             <template #header>
               <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-globe" class="w-5 h-5 text-white" />
+                  <UIcon name="i-lucide-globe" class="w-5 h-5 text-highlighted" />
                   <div>
                     <h3 class="text-sm font-semibold">Preferencias Regionales y de Moneda</h3>
-                    <p class="text-xs text-slate-400">Configuración de divisa de consolidación y estándares cronológicos</p>
+                    <p class="text-xs text-muted">Configuración de divisa de consolidación y estándares cronológicos</p>
                   </div>
                 </div>
-                <UIcon name="i-lucide-sliders-horizontal" class="size-5 text-slate-400" />
+                <UIcon name="i-lucide-sliders-horizontal" class="size-5 text-muted" />
               </div>
             </template>
 
@@ -205,7 +205,7 @@ onMounted(() => { if (!user.value) void refreshProfile() })
               <div>
                 <label class="text-sm font-medium">Moneda Principal de la Cuenta</label>
                 <UInput :model-value="currencyLabel" icon="i-lucide-coins" readonly class="w-full mt-1" />
-                <p class="text-xs text-slate-400 mt-1">Los balances globales se recalculan al tipo de cambio interbancario.</p>
+                <p class="text-xs text-muted mt-1">Los balances globales se recalculan al tipo de cambio interbancario.</p>
               </div>
               <div>
                 <label class="text-sm font-medium">Zona Horaria Local</label>
@@ -223,7 +223,7 @@ onMounted(() => { if (!user.value) void refreshProfile() })
                 <UInput model-value="1,234,567.89 (Coma de miles, punto decimal)" icon="i-lucide-hash" disabled class="w-full mt-1" />
               </div>
             </div>
-            <p class="text-xs text-slate-400 mt-3">Formato y separadores solo visuales: el backend solo guarda moneda y zona horaria del perfil.</p>
+            <p class="text-xs text-muted mt-3">Formato y separadores solo visuales: el backend solo guarda moneda y zona horaria del perfil.</p>
           </UCard>
         </div>
 
@@ -231,25 +231,25 @@ onMounted(() => { if (!user.value) void refreshProfile() })
           <UCard>
             <template #header>
               <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-activity" class="w-5 h-5 text-white" />
+                <UIcon name="i-lucide-activity" class="w-5 h-5 text-highlighted" />
                 <h3 class="text-sm font-semibold">Resumen de cuenta</h3>
               </div>
             </template>
             <dl class="grid grid-cols-1 gap-3 text-sm">
-              <div class="flex justify-between gap-2"><dt class="text-neutral-500">Miembro desde</dt><dd class="font-semibold">{{ memberSince }}</dd></div>
-              <div class="flex justify-between gap-2"><dt class="text-neutral-500">Actualizado</dt><dd class="font-semibold">{{ updatedLabel }}</dd></div>
-              <div class="flex justify-between gap-2"><dt class="text-neutral-500">Estado</dt><dd class="font-semibold" :class="user?.isActive === false ? 'text-error' : 'text-success'">{{ user?.isActive === false ? 'Inactivo' : 'Activa' }}</dd></div>
+              <div class="flex justify-between gap-2"><dt class="text-muted">Miembro desde</dt><dd class="font-semibold">{{ memberSince }}</dd></div>
+              <div class="flex justify-between gap-2"><dt class="text-muted">Actualizado</dt><dd class="font-semibold">{{ updatedLabel }}</dd></div>
+              <div class="flex justify-between gap-2"><dt class="text-muted">Estado</dt><dd class="font-semibold" :class="user?.isActive === false ? 'text-error' : 'text-success'">{{ user?.isActive === false ? 'Inactivo' : 'Activa' }}</dd></div>
             </dl>
           </UCard>
 
           <UCard>
             <template #header>
               <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-lock" class="w-5 h-5 text-white" />
+                <UIcon name="i-lucide-lock" class="w-5 h-5 text-highlighted" />
                 <h3 class="text-sm font-semibold">Sesión</h3>
               </div>
             </template>
-            <p class="text-xs text-slate-400">Cierra tu sesión en este dispositivo. Tendrás que volver a iniciar sesión.</p>
+            <p class="text-xs text-muted">Cierra tu sesión en este dispositivo. Tendrás que volver a iniciar sesión.</p>
             <UButton color="error" variant="soft" icon="i-lucide-log-out" block class="mt-3" @click="authStore.logout()">
               Cerrar Sesión
             </UButton>

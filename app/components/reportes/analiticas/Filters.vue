@@ -32,13 +32,13 @@ function today() {
 </script>
 
 <template>
-  <UCard class="border border-white/10" :ui="{ body: 'p-4 flex flex-wrap items-center gap-2' }">
-    <span class="text-xs font-semibold uppercase tracking-widest text-white/45">Cierre</span>
+  <UCard class="border border-default" :ui="{ body: 'p-4 flex flex-wrap items-center gap-2' }">
+    <span class="text-xs font-semibold uppercase tracking-widest text-muted">Cierre</span>
     <USelectMenu v-model="month" :items="monthItems" value-key="value" label-key="label" class="w-36" aria-label="Mes de cierre" @update:model-value="emit('filtrar')" />
     <USelectMenu v-model="year" :items="yearItems" value-key="value" label-key="label" class="w-28" aria-label="Año de cierre" @update:model-value="emit('filtrar')" />
-    <span class="text-xs font-semibold uppercase tracking-widest text-white/45 ml-2">Historial</span>
+    <span class="text-xs font-semibold uppercase tracking-widest text-muted ml-2">Historial</span>
     <USelectMenu v-model="months" :items="monthsItems" value-key="value" label-key="label" class="w-32" aria-label="Meses de historial" @update:model-value="emit('filtrar')" />
-    <span class="text-xs font-semibold uppercase tracking-widest text-white/45 ml-2">Meta ahorro</span>
+    <span class="text-xs font-semibold uppercase tracking-widest text-muted ml-2">Meta ahorro</span>
     <USelectMenu v-model="target" :items="targetItems" value-key="value" label-key="label" class="w-24" aria-label="Meta de ahorro" @update:model-value="emit('filtrar')" />
     <UButton label="Hoy" color="neutral" variant="outline" size="sm" @click="today" />
     <UButton label="Actualizar" color="neutral" variant="outline" size="sm" icon="i-lucide-refresh-cw" :loading="props.loading" @click="emit('filtrar')" />

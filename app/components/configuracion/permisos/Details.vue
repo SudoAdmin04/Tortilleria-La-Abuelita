@@ -222,7 +222,7 @@ function handlePermissionChange(
     <template v-else>
       <div
         v-if="props.noRoleSelected"
-        class="flex items-center px-4 py-3 rounded-xl border border-dashed border-gray-800 bg-slate-900/20 text-gray-400"
+        class="flex items-center px-4 py-3 rounded-xl border border-dashed border-default bg-elevated/50 text-muted"
       >
         <UIcon name="i-lucide-info" class="size-5 shrink-0" />
         <p class="text-xs">
@@ -246,7 +246,7 @@ function handlePermissionChange(
                   {{ item.children.length }} Sub-pantallas
                 </UBadge>
               </div>
-              <p class="text-xs text-gray-400 mt-0.5">
+              <p class="text-xs text-muted mt-0.5">
                 {{ item.isParent ? "Grupo de Pantallas" : "Pantalla Individual" }}
                 • {{ getCountPermisos(item.id) }} permisos activos
               </p>
@@ -322,7 +322,7 @@ function handlePermissionChange(
       </UCard>
 
       <div v-if="structuredData.length === 0"
-        class="flex flex-col items-center justify-center py-16 text-gray-500 bg-slate-900/20 rounded-xl border border-dashed border-gray-800">
+        class="flex flex-col items-center justify-center py-16 text-muted bg-elevated/50 rounded-xl border border-dashed border-default">
         <UIcon name="i-lucide-search" class="size-12 mb-4 opacity-10" />
         <p class="text-sm font-medium">No se encontraron pantallas.</p>
       </div>

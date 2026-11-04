@@ -17,8 +17,8 @@ const moneda = computed(() => props.currency || 'MXN')
 
 <template>
   <UCard
-    class="border border-white/10 overflow-hidden h-full"
-    :ui="{ header: 'py-3.5 px-5 border-b border-white/10 bg-white/[0.02]', body: 'p-4 flex flex-col gap-2' }"
+    class="border border-default overflow-hidden h-full"
+    :ui="{ header: 'py-3.5 px-5 border-b border-default bg-elevated/60', body: 'p-4 flex flex-col gap-2' }"
   >
     <template #header>
       <div class="flex items-center justify-between gap-4">
@@ -26,7 +26,7 @@ const moneda = computed(() => props.currency || 'MXN')
           <h2 class="font-display font-semibold">
             Alertas
           </h2>
-          <p class="text-sm text-neutral-400">
+          <p class="text-sm text-muted">
             Sobregiros y rubros sin presupuesto
           </p>
         </div>
@@ -49,7 +49,7 @@ const moneda = computed(() => props.currency || 'MXN')
           :description="`Real ${formatMoney(a.actual, moneda)} vs ppto ${a.budget == null ? '—' : formatMoney(a.budget, moneda)} · Exceso ${formatMoney(a.overspend, moneda)}`"
         />
       </div>
-      <p v-else class="text-sm text-white/40 text-center py-6">
+      <p v-else class="text-sm text-muted text-center py-6">
         Sin alertas en el periodo.
       </p>
     </template>

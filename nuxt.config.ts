@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
-  
+ 
   devServer: {
     host: '[IP_ADDRESS]',
     port: 5002,
@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Capital Flow — Finanzas Personales',
+      title: 'Tortilleria La Abuelita',
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
       htmlAttrs: { lang: 'es' },
@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     },
   },
 
-  colorMode: { preference: 'dark' },
+  colorMode: { preference: 'dark', fallback: 'dark' },
 
   routeRules: {
     '/': { redirect: '/dashboard' },

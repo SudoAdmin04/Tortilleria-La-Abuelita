@@ -50,7 +50,7 @@ async function onSubmit() {
         <h1 class="text-xl font-semibold">
           Crear cuenta
         </h1>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-muted">
           Se siembra tu catálogo base de categorías
         </p>
       </div>
@@ -102,7 +102,7 @@ async function onSubmit() {
     </UForm>
 
     <template #footer>
-      <p class="text-sm text-center text-gray-500">
+      <p class="text-sm text-center text-muted">
         ¿Ya tienes cuenta?
         <NuxtLink to="/login" class="text-primary font-medium">
           Inicia sesión

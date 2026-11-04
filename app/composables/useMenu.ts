@@ -4,7 +4,7 @@ import { usePermisosStore } from '~/stores/permisos.store'
 
 const CONFIG_ROOT = '/configuracion'
 const FALLBACK_ICON = 'i-lucide-layout-dashboard'
-const MAIN_ORDER = ['/dashboard', '/transacciones', '/presupuestos', '/analiticas', '/cuentas', '/configuracion']
+const MAIN_ORDER = ['/dashboard', '/transacciones', '/presupuestos', '/reportes', '/cuentas', '/ventas', '/compras', '/produccion', '/productos', '/insumos', '/inventario', '/proveedores', '/analiticas', '/configuracion']
 
 function normalizePath(p: string | null | undefined): string {
   const s = (p ?? '').trim()

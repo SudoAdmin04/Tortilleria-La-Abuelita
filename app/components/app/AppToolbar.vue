@@ -32,12 +32,12 @@ const showCreate = computed(() => !!(props.createLabel || slots.create))
         <div v-if="hasHeader" class="flex items-center gap-2">
           <span class="w-1 self-stretch rounded-full bg-primary shrink-0" />
 
-          <div v-if="props.icon" class="flex items-center justify-center p-2 rounded-lg bg-primary-50 dark:bg-primary-950/50 text-primary-500 shrink-0">
+          <div v-if="props.icon" class="flex items-center justify-center p-2 rounded-lg bg-primary-50 dark:bg-primary-950/50 text-primary shrink-0">
             <UIcon :name="props.icon" class="size-6" />
           </div>
           <div>
             <h1 v-if="props.title" class="font-display text-2xl font-semibold">{{ props.title }}</h1>
-            <p v-if="props.description" class="text-sm text-slate-400">{{ props.description }}</p>
+            <p v-if="props.description" class="text-sm text-muted">{{ props.description }}</p>
           </div>
         </div>
         <div v-else-if="!hideSearch" class="flex items-center gap-2 w-full sm:w-auto">

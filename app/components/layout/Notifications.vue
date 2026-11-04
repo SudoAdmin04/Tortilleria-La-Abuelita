@@ -35,7 +35,7 @@ function abrir(n: Notification) {
 
         <div class="max-h-72 overflow-y-auto space-y-2 pr-1">
           <div v-if="loading && !notificaciones.length" class="flex items-center justify-center py-6">
-            <UIcon name="i-lucide-loader-circle" class="size-5 animate-spin text-primary-400" />
+            <UIcon name="i-lucide-loader-circle" class="size-5 animate-spin text-primary" />
           </div>
           <template v-else>
             <div
@@ -49,9 +49,9 @@ function abrir(n: Notification) {
                 <span class="text-xs font-semibold truncate">{{ item.title }}</span>
                 <UBadge v-if="!item.isRead" size="xs" color="primary" variant="solid">Nuevo</UBadge>
               </div>
-              <p class="text-xs text-neutral-500 line-clamp-2">{{ item.body }}</p>
+              <p class="text-xs text-muted line-clamp-2">{{ item.body }}</p>
             </div>
-            <div v-if="!notificaciones.length" class="py-6 text-center text-sm text-neutral-400">
+            <div v-if="!notificaciones.length" class="py-6 text-center text-sm text-muted">
               Sin notificaciones
             </div>
           </template>

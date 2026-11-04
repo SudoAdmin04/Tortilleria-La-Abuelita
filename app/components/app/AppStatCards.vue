@@ -24,11 +24,11 @@ const gridClass = computed(() => props.columns === 3
   : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4')
 
 const iconBox: Record<StatTone, string> = {
-  primary: 'bg-primary-500/10 text-primary-400',
-  success: 'bg-emerald-500/10 text-emerald-400',
-  warning: 'bg-amber-500/10 text-amber-400',
-  danger: 'bg-red-500/10 text-red-400',
-  neutral: 'bg-white/5 text-white/60',
+  primary: 'bg-primary-500/10 text-primary',
+  success: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  danger: 'bg-red-500/10 text-red-600 dark:text-red-400',
+  neutral: 'bg-elevated text-muted',
 }
 
 const barFill: Record<StatTone, string> = {
@@ -36,7 +36,7 @@ const barFill: Record<StatTone, string> = {
   success: 'bg-emerald-500',
   warning: 'bg-amber-500',
   danger: 'bg-red-500',
-  neutral: 'bg-white/50',
+  neutral: 'bg-inverted/40',
 }
 
 const toneOf = (s: StatItem): StatTone => s.tone ?? 'neutral'
@@ -46,14 +46,14 @@ const barWidth = (s: StatItem) => `${Math.min(100, Math.max(0, Math.round(s.prog
 <template>
   <div :class="gridClass">
     <template v-if="loading">
-      <UCard v-for="n in props.stats.length || columns" :key="n" class="border border-white/10" :ui="{ body: 'p-5' }">
+      <UCard v-for="n in props.stats.length || columns" :key="n" class="border border-default" :ui="{ body: 'p-5' }">
         <div class="flex flex-col gap-3 animate-pulse">
           <div class="flex items-center justify-between">
-            <div class="h-3 w-24 rounded bg-white/10" />
-            <div class="size-9 rounded-xl bg-white/10" />
+            <div class="h-3 w-24 rounded bg-elevated" />
+            <div class="size-9 rounded-xl bg-elevated" />
           </div>
-          <div class="h-7 w-2/3 rounded bg-white/10" />
-          <div class="h-3 w-1/2 rounded bg-white/10" />
+          <div class="h-7 w-2/3 rounded bg-elevated" />
+          <div class="h-3 w-1/2 rounded bg-elevated" />
         </div>
       </UCard>
     </template>
@@ -62,11 +62,11 @@ const barWidth = (s: StatItem) => `${Math.min(100, Math.max(0, Math.round(s.prog
       v-for="s in props.stats"
       v-else
       :key="s.label"
-      class="border border-white/10 transition-colors duration-200 hover:border-white/20"
+      class="border border-default transition-colors duration-200 hover:border-accented"
       :ui="{ body: 'p-5 flex flex-col gap-3' }"
     >
       <div class="flex items-center justify-between gap-3">
-        <span class="text-[11px] font-semibold uppercase tracking-widest text-white/45 truncate">
+        <span class="text-[11px] font-semibold uppercase tracking-widest text-muted truncate">
           {{ s.label }}
         </span>
         <span
@@ -77,15 +77,15 @@ const barWidth = (s: StatItem) => `${Math.min(100, Math.max(0, Math.round(s.prog
         </span>
       </div>
 
-      <span class="text-2xl font-bold tracking-tight text-white truncate">
+      <span class="text-2xl font-bold tracking-tight text-highlighted truncate">
         {{ s.value }}
       </span>
 
-      <span v-if="s.sub" class="text-xs text-white/40 truncate -mt-1.5">
+      <span v-if="s.sub" class="text-xs text-muted truncate -mt-1.5">
         {{ s.sub }}
       </span>
 
-      <div v-if="s.progress != null" class="h-1 rounded-full bg-white/10 overflow-hidden">
+      <div v-if="s.progress != null" class="h-1 rounded-full bg-elevated overflow-hidden">
         <div class="h-full rounded-full transition-[width] duration-500" :class="barFill[toneOf(s)]" :style="{ width: barWidth(s) }" />
       </div>
     </UCard>

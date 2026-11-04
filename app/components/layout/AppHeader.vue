@@ -122,16 +122,16 @@ const avatarMenu = computed(() => [
 </script>
 
 <template>
-  <UDashboardNavbar class="py-2 bg-white dark:bg-neutral-900">
+  <UDashboardNavbar class="py-2 bg-default">
     <template #left>
       <UDashboardNavbarToggle class="lg:hidden" />
 
       <div v-if="currentPageMeta" class="flex items-center gap-3">
-        <div class="flex-shrink-0 w-10 h-10 rounded-sm flex items-center justify-center bg-primary/20 dark:bg-primary-400/20">
-          <UIcon :name="currentPageMeta.icon" class="w-7 h-7 text-primary-400" />
+        <div class="flex-shrink-0 w-10 h-10 rounded-sm flex items-center justify-center bg-primary/10 ring-1 ring-inset ring-primary/15">
+          <UIcon :name="currentPageMeta.icon" class="w-7 h-7 text-primary" />
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
+          <h1 class="text-2xl font-bold text-highlighted">
             {{ currentPageMeta.title }}
           </h1>
         </div>
@@ -203,6 +203,8 @@ const avatarMenu = computed(() => [
         </UButton>
 
         <LayoutNotifications v-model:open="notificationsOpen" />
+
+        <UColorModeButton color="neutral" variant="ghost" />
 
         <USeparator orientation="vertical" class="h-8" color="primary" />
 

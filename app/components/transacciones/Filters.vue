@@ -40,7 +40,7 @@ const tipoTabs = computed(() => [
   { value: undefined as string | undefined, label: 'Todos', count: props.conteos?.total, dot: 'bg-sky-400' },
   { value: 'income', label: 'Ingresos', count: props.conteos?.income, dot: 'bg-emerald-400' },
   { value: 'expense', label: 'Egresos', count: props.conteos?.expense, dot: 'bg-red-400' },
-  { value: 'transfer', label: 'Traspasos', count: props.conteos?.transfer, dot: 'bg-white/50' },
+  { value: 'transfer', label: 'Traspasos', count: props.conteos?.transfer, dot: 'bg-inverted/40' },
 ])
 
 function setTipo(v: string | undefined) {
@@ -58,17 +58,17 @@ const estadoItems = [
 
 <template>
   <UCard
-    class="border border-white/10"
+    class="border border-default"
     :ui="{
-      header: 'py-3 px-4 sm:px-5 border-b border-white/10 bg-white/[0.02]',
+      header: 'py-3 px-4 sm:px-5 border-b border-default bg-elevated/60',
       body: 'p-4 sm:p-5 flex flex-col gap-4',
     }"
   >
     <template #header>
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-2 min-w-0">
-          <UIcon name="i-lucide-list-filter" class="size-4 text-white/50 shrink-0" />
-          <span class="text-sm font-bold text-white tracking-wide truncate">Filtros</span>
+          <UIcon name="i-lucide-list-filter" class="size-4 text-muted shrink-0" />
+          <span class="text-sm font-bold text-highlighted tracking-wide truncate">Filtros</span>
           <UBadge v-if="filtrosActivos > 0" color="primary" variant="subtle" size="sm" class="font-semibold shrink-0">
             {{ filtrosActivos }} activo{{ filtrosActivos === 1 ? '' : 's' }}
           </UBadge>
@@ -80,13 +80,13 @@ const estadoItems = [
           size="xs"
           icon="i-lucide-x"
           label="Limpiar filtros"
-          class="shrink-0 text-white/60 hover:text-white"
+          class="shrink-0 text-muted hover:text-highlighted"
           @click="emit('limpiar')"
         />
       </div>
     </template>
 
-    <div class="flex flex-wrap items-center gap-1.5 rounded-xl bg-white/[0.03] border border-white/5 p-1.5 w-fit max-w-full">
+    <div class="flex flex-wrap items-center gap-1.5 rounded-xl bg-elevated/60 border border-muted p-1.5 w-fit max-w-full">
       <UButton
         v-for="t in tipoTabs"
         :key="t.label"

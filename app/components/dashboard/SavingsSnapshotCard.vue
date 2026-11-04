@@ -38,7 +38,7 @@ const done = computed(() => totalTarget.value > 0 && totalSaved.value >= totalTa
 </script>
 
 <template>
-  <UCard class="border border-white/10 hover:border-white/15 flex flex-col">
+  <UCard class="border border-default hover:border-accented flex flex-col">
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2">
@@ -53,9 +53,9 @@ const done = computed(() => totalTarget.value > 0 && totalSaved.value >= totalTa
     </template>
 
     <div v-if="loading && !data" class="flex flex-col gap-3 animate-pulse">
-      <div class="h-4 w-2/3 rounded bg-white/10" />
-      <div class="h-2 rounded-full bg-white/10" />
-      <div class="h-3 w-1/2 rounded bg-white/10" />
+      <div class="h-4 w-2/3 rounded bg-elevated" />
+      <div class="h-2 rounded-full bg-elevated" />
+      <div class="h-3 w-1/2 rounded bg-elevated" />
     </div>
 
     <div v-else-if="!hero && totalSaved === 0" class="py-8">
@@ -65,18 +65,18 @@ const done = computed(() => totalTarget.value > 0 && totalSaved.value >= totalTa
     <div v-else class="flex flex-col gap-3">
       <div>
         <div class="flex items-center justify-between gap-2">
-          <span class="font-semibold text-neutral-100 truncate">{{ hero?.name ?? 'Ahorro' }}</span>
-          <span class="font-display font-bold text-lg tabular-nums text-green-300 shrink-0">{{ formatMoney(hero?.contributed ?? totalSaved, moneda) }}</span>
+          <span class="font-semibold text-highlighted truncate">{{ hero?.name ?? 'Ahorro' }}</span>
+          <span class="font-display font-bold text-lg tabular-nums text-green-600 dark:text-green-300 shrink-0">{{ formatMoney(hero?.contributed ?? totalSaved, moneda) }}</span>
         </div>
         <UProgress :model-value="heroPct" :max="100" color="success" class="mt-2" />
-        <div class="flex items-center justify-between text-xs text-neutral-400 mt-1.5">
+        <div class="flex items-center justify-between text-xs text-muted mt-1.5">
           <span>Presupuesto: {{ formatMoney(hero?.monthlyTarget ?? totalTarget, moneda) }}</span>
-          <span class="font-medium text-green-300">{{ formatExecution(hero?.percent) }} depositado</span>
+          <span class="font-medium text-green-600 dark:text-green-300">{{ formatExecution(hero?.percent) }} depositado</span>
         </div>
       </div>
 
       <div v-if="methods.length > 0">
-        <p class="text-[11px] font-semibold uppercase tracking-widest text-neutral-500 mb-2">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
           Métodos de pago vinculados
         </p>
         <div class="flex flex-wrap gap-1.5">
@@ -95,8 +95,8 @@ const done = computed(() => totalTarget.value > 0 && totalSaved.value >= totalTa
 
     <template #footer>
       <div class="flex items-center justify-between text-xs gap-2">
-        <span class="text-neutral-400 shrink-0">Reserva acumulada</span>
-        <span class="tabular-nums font-bold text-green-300">{{ formatMoney(totalSaved, moneda) }} / mes</span>
+        <span class="text-muted shrink-0">Reserva acumulada</span>
+        <span class="tabular-nums font-bold text-green-600 dark:text-green-300">{{ formatMoney(totalSaved, moneda) }} / mes</span>
       </div>
     </template>
   </UCard>

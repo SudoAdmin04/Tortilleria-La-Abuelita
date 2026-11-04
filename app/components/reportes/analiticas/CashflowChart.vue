@@ -43,28 +43,28 @@ const bars = computed(() => {
 </script>
 
 <template>
-  <UCard class="border border-white/10 hover:border-white/15">
+  <UCard class="border border-default hover:border-accented">
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <div>
           <h2 class="font-display font-semibold">
             Flujo mensual
           </h2>
-          <p class="text-sm text-neutral-400">
+          <p class="text-sm text-muted">
             Ingresos vs egresos por periodo
           </p>
         </div>
         <div class="flex items-center gap-3 text-xs shrink-0">
-          <span class="flex items-center gap-1 text-primary-300"><span class="w-2.5 h-2.5 rounded-sm bg-primary-500 inline-block" /> Ingresos</span>
-          <span class="flex items-center gap-1 text-red-300"><span class="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block" /> Egresos</span>
+          <span class="flex items-center gap-1 text-primary"><span class="w-2.5 h-2.5 rounded-sm bg-primary-500 inline-block" /> Ingresos</span>
+          <span class="flex items-center gap-1 text-red-600 dark:text-red-300"><span class="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block" /> Egresos</span>
         </div>
       </div>
     </template>
 
     <div v-if="loading && bars.length === 0" class="h-56 flex items-end justify-around gap-2 pt-3 pb-2 px-1 animate-pulse">
       <div v-for="n in 6" :key="n" class="flex gap-1 items-end h-full">
-        <div class="w-3.5 rounded bg-white/10 h-2/3" />
-        <div class="w-3.5 rounded bg-white/10 h-1/2" />
+        <div class="w-3.5 rounded bg-elevated h-2/3" />
+        <div class="w-3.5 rounded bg-elevated h-1/2" />
       </div>
     </div>
 
@@ -74,7 +74,7 @@ const bars = computed(() => {
 
     <div v-else class="h-56 flex items-stretch justify-between gap-1.5 pt-3 pb-2 px-1">
       <div v-for="bar in bars" :key="bar.key" class="flex-1 flex flex-col items-center min-w-0">
-        <span class="text-[11px] tabular-nums truncate" :class="bar.positive ? 'text-green-300' : 'text-rose-300'">
+        <span class="text-[11px] tabular-nums truncate" :class="bar.positive ? 'text-green-600 dark:text-green-300' : 'text-rose-600 dark:text-rose-300'">
           {{ bar.positive ? '+' : '−' }}{{ formatCompact(Math.abs(bar.net), moneda) }}
         </span>
         <div class="flex-1 flex items-end justify-center gap-1 w-full min-h-0 mt-1">
@@ -89,7 +89,7 @@ const bars = computed(() => {
             :title="`Egresos: ${formatMoney(bar.expense, moneda)}`"
           />
         </div>
-        <span class="text-[11px] text-neutral-400 mt-1 truncate w-full text-center">{{ bar.label }}</span>
+        <span class="text-[11px] text-muted mt-1 truncate w-full text-center">{{ bar.label }}</span>
       </div>
     </div>
   </UCard>

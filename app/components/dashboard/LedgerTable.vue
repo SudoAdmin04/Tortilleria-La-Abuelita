@@ -32,10 +32,10 @@ const defaultBadge = computed(() => {
 })
 
 const columns: TableColumn<LedgerRow>[] = [
-  { accessorKey: 'name', header: 'Categoría', meta: {class: { th:'text-neutral-200' } } },
-  { accessorKey: 'budget', header: 'Presupuesto', meta: { class: { th: 'text-right text-neutral-200', td: 'text-right' } } },
-  { accessorKey: 'actual', header: 'Monto Real', meta: { class: { th: 'text-right text-neutral-200', td: 'text-right' } } },
-  { accessorKey: 'variance', header: props.mode === 'income' ? 'Desviación' : 'Estado', meta: { class: { th: 'text-right text-neutral-200', td: 'text-right' } } },
+  { accessorKey: 'name', header: 'Categoría', meta: {class: { th:'text-toned' } } },
+  { accessorKey: 'budget', header: 'Presupuesto', meta: { class: { th: 'text-right text-toned', td: 'text-right' } } },
+  { accessorKey: 'actual', header: 'Monto Real', meta: { class: { th: 'text-right text-toned', td: 'text-right' } } },
+  { accessorKey: 'variance', header: props.mode === 'income' ? 'Desviación' : 'Estado', meta: { class: { th: 'text-right text-toned', td: 'text-right' } } },
 ]
 
 function varianceLabel(row: LedgerRow): string {
@@ -46,7 +46,7 @@ function varianceLabel(row: LedgerRow): string {
 </script>
 
 <template>
-  <UCard class="border border-white/10 hover:border-white/15" :ui="{ body: 'p-0 sm:p-0' }">
+  <UCard class="border border-default hover:border-accented" :ui="{ body: 'p-0 sm:p-0' }">
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2">
@@ -62,8 +62,8 @@ function varianceLabel(row: LedgerRow): string {
 
     <div v-if="loading && rows.length === 0" class="flex flex-col gap-1 p-4 animate-pulse">
       <div v-for="n in 4" :key="n" class="flex items-center justify-between py-2">
-        <div class="h-3 w-28 rounded bg-white/10" />
-        <div class="h-3 w-40 rounded bg-white/10" />
+        <div class="h-3 w-28 rounded bg-elevated" />
+        <div class="h-3 w-40 rounded bg-elevated" />
       </div>
     </div>
 
@@ -75,23 +75,23 @@ function varianceLabel(row: LedgerRow): string {
         </span>
       </template>
       <template #budget-cell="{ row }">
-        <span class="tabular-nums text-neutral-400">{{ formatMoney(row.original.budget, moneda) }}</span>
+        <span class="tabular-nums text-muted">{{ formatMoney(row.original.budget, moneda) }}</span>
       </template>
       <template #actual-cell="{ row }">
-        <span class="tabular-nums font-light" :class="mode === 'income' ? 'text-green-300' : ''">{{ formatMoney(row.original.actual, moneda) }}</span>
+        <span class="tabular-nums font-light" :class="mode === 'income' ? 'text-green-600 dark:text-green-300' : ''">{{ formatMoney(row.original.actual, moneda) }}</span>
       </template>
       <template #variance-cell="{ row }">
         <UBadge v-if="mode === 'expense'" :color="budgetStatusMeta(row.original.status).color" variant="soft" size="sm">
           {{ varianceLabel(row.original) }}
         </UBadge>
-        <span v-else class="tabular-nums font-light" :class="num(row.original.variance) >= 0 ? 'text-green-300' : 'text-rose-300'">
+        <span v-else class="tabular-nums font-light" :class="num(row.original.variance) >= 0 ? 'text-green-600 dark:text-green-300' : 'text-rose-600 dark:text-rose-300'">
           {{ formatVariance(row.original.variance, moneda) }}
         </span>
       </template>
       <template #empty>
         <div class="flex flex-col items-center justify-center py-10 gap-2">
-          <UIcon name="i-lucide-inbox" class="size-7 text-white/25" />
-          <p class="text-sm text-white/45 font-medium">Sin movimientos en el periodo.</p>
+          <UIcon name="i-lucide-inbox" class="size-7 text-dimmed" />
+          <p class="text-sm text-muted font-medium">Sin movimientos en el periodo.</p>
         </div>
       </template>
     </UTable>
@@ -100,9 +100,9 @@ function varianceLabel(row: LedgerRow): string {
       <div class="flex items-center justify-between text-sm font-semibold gap-2">
         <span class="shrink-0">{{ mode === 'income' ? 'Total Ingresos' : 'Total Egresos' }}</span>
         <div class="flex items-center gap-4 tabular-nums min-w-0">
-          <span class="text-neutral-400">{{ formatMoney(summary?.totalBudget, moneda) }}</span>
-          <span :class="mode === 'income' ? 'text-green-300' : 'text-rose-300'">{{ formatMoney(summary?.totalActual, moneda) }}</span>
-          <span :class="num(summary?.totalVariance) >= 0 ? 'text-green-300' : 'text-rose-300'">{{ formatVariance(summary?.totalVariance, moneda) }}</span>
+          <span class="text-muted">{{ formatMoney(summary?.totalBudget, moneda) }}</span>
+          <span :class="mode === 'income' ? 'text-green-600 dark:text-green-300' : 'text-rose-600 dark:text-rose-300'">{{ formatMoney(summary?.totalActual, moneda) }}</span>
+          <span :class="num(summary?.totalVariance) >= 0 ? 'text-green-600 dark:text-green-300' : 'text-rose-600 dark:text-rose-300'">{{ formatVariance(summary?.totalVariance, moneda) }}</span>
         </div>
       </div>
     </template>

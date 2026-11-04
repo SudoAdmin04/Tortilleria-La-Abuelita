@@ -9,19 +9,64 @@
   --color-corporate-accent: var(--color-accent);
 }
 
+/**
+ * Paleta de marca (#97332d).
+ * Va con `static` para que Tailwind emita todos los tonos: Nuxt UI los
+ * resuelve en runtime con `var(--color-brand-*)` (ver app.config.ts).
+ * El tono 500 es el color principal; el 400 se usa en modo oscuro.
+ */
+@theme static {
+  --color-brand-50: #fcf6f5;
+  --color-brand-100: #f7e5e4;
+  --color-brand-200: #efcbc8;
+  --color-brand-300: #df9a95;
+  --color-brand-400: #ca574e;
+  --color-brand-500: #97332d;
+  --color-brand-600: #7a2a24;
+  --color-brand-700: #62221d;
+  --color-brand-800: #511c18;
+  --color-brand-900: #431714;
+  --color-brand-950: #2b0f0d;
+}
+
 :root {
   --ui-radius: 0.180rem;
+
+  /* Fondo del login con el color principal. */
+  --login-bg-from: #a83a33;
+  --login-bg-to: #6d2420;
+  --login-grid-line: rgba(255, 255, 255, 0.18);
+}
+
+.dark {
+  --login-bg-from: #7a2a24;
+  --login-bg-to: #260d0b;
+  --login-grid-line: rgba(255, 255, 255, 0.12);
 }
 
 @layer base {
   .u-card {
     border-radius: 0rem;
   }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    color-scheme: light dark;
+  }
+
+  body {
+    min-height: 100vh;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--ui-primary) 25%, transparent);
+  }
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+  scrollbar-color: var(--ui-border-accented) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -34,22 +79,27 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.4);
+  background-color: var(--ui-border-accented);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(148, 163, 184, 0.7);
+  background-color: var(--ui-border-inverted);
 }
 
-.dark * {
-  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+/* Fondo animado del login (líneas + degradado en color principal). */
+.login-shell {
+  background-color: var(--ui-primary);
+  background-image: radial-gradient(circle at 50% 15%, var(--login-bg-from) 0%, var(--ui-primary) 45%, var(--login-bg-to) 100%);
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.15);
+.login-grid {
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, var(--login-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--login-grid-line) 1px, transparent 1px);
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+.login-vignette {
+  background: radial-gradient(circle at 50% 45%, transparent 0%, rgba(0, 0, 0, 0.35) 100%);
 }

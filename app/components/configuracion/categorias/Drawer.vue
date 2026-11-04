@@ -94,17 +94,17 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
     <template #content>
       <div class="flex flex-col w-150 h-full ">
 
-        <div class="bg-white/[0.02] p-6 pb-4 flex flex-col gap-4 shrink-0 border-b border-neutral-700">
+        <div class="bg-elevated/60 p-6 pb-4 flex flex-col gap-4 shrink-0 border-b border-default">
           <div class="flex justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-              <div class="flex items-center justify-center p-2 rounded-lg bg-primary-50 dark:bg-primary-950/50 text-primary-500 shrink-0">
+              <div class="flex items-center justify-center p-2 rounded-lg bg-primary-50 dark:bg-primary-950/50 text-primary shrink-0">
                 <UIcon name="i-lucide-tag" class="size-6" />
               </div>
               <div>
-                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">
+                <h3 class="text-lg font-semibold text-highlighted">
                   {{ isEditing ? 'Editar Categoría' : 'Registrar Nueva Categoría' }}
                 </h3>
-                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                <p class="text-xs text-muted">
                   {{ isEditing ? 'Actualiza los datos de la categoría' : 'Crea un rubro o una partida (máx. 2 niveles)' }}
                 </p>
               </div>
@@ -161,7 +161,7 @@ const onSave = async (event: FormSubmitEvent<CreateSchema | EditSchema>) => {
           </UForm>
         </div>
 
-        <div class="bg-white/[0.02] flex shrink-0 justify-end gap-3 px-4 py-4 border-t border-neutral-700">
+        <div class="bg-elevated/60 flex shrink-0 justify-end gap-3 px-4 py-4 border-t border-default">
           <UButton type="button" color="neutral" variant="outline" label="Cancelar" @click="() => { open = false }" />
           <UButton type="submit" form="categoria-form" color="primary" variant="solid" :label="isEditing ? 'Guardar Cambios' : 'Registrar Categoría'" />
         </div>

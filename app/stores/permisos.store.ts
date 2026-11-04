@@ -25,11 +25,14 @@ const FALLBACK_ICON = 'i-lucide-layout-dashboard'
 const CONFIG_ROOT = '/configuracion'
 const SYNTHETIC_CONFIG_ID = -1
 
-const MAIN_ORDER = ['/dashboard', '/transacciones', '/presupuestos', '/analiticas', '/cuentas', '/configuracion']
-const MODULE_ORDER = ['finanzas', 'administracion', 'seguridad', 'sistema', 'configuracion', 'general']
+const MAIN_ORDER = ['/dashboard', '/transacciones', '/presupuestos', '/reportes', '/cuentas', '/ventas', '/compras', '/produccion', '/productos', '/insumos', '/inventario', '/proveedores', '/analiticas', '/configuracion']
+const MODULE_ORDER = ['finanzas', 'operacion', 'inventario', 'administracion', 'seguridad', 'sistema', 'configuracion', 'general']
 
 const MODULE_LABELS: Record<string, string> = {
   finanzas: 'Finanzas',
+  operacion: 'Operación',
+  operación: 'Operación',
+  inventario: 'Inventario',
   administracion: 'Administración',
   administración: 'Administración',
   admin: 'Administración',

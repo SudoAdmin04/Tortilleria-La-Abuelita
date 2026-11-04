@@ -40,25 +40,25 @@ const segments = computed(() => {
 </script>
 
 <template>
-  <UCard class="border border-white/10 hover:border-white/15">
+  <UCard class="border border-default hover:border-accented">
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <div>
           <h2 class="font-display font-semibold">
             Distribución de gastos
           </h2>
-          <p class="text-sm text-neutral-400">
+          <p class="text-sm text-muted">
             Participación por rubro del mes
           </p>
         </div>
-        <UIcon name="i-lucide-chart-pie" class="size-5 text-neutral-400" />
+        <UIcon name="i-lucide-chart-pie" class="size-5 text-muted" />
       </div>
     </template>
 
     <div v-if="loading && segments.length === 0" class="flex flex-col items-center gap-4 py-6 animate-pulse">
-      <div class="size-48 rounded-full bg-white/5 ring-8 ring-white/10" />
+      <div class="size-48 rounded-full bg-elevated ring-8 ring-default" />
       <div class="grid grid-cols-2 gap-2 w-full">
-        <div v-for="n in 4" :key="n" class="h-8 rounded bg-white/5" />
+        <div v-for="n in 4" :key="n" class="h-8 rounded bg-elevated" />
       </div>
     </div>
 
@@ -69,7 +69,7 @@ const segments = computed(() => {
     <template v-else>
       <div class="relative flex items-center justify-center my-4">
         <svg class="w-48 h-48 -rotate-90" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="38" fill="transparent" stroke="#1c1f29" :stroke-width="12" />
+          <circle cx="50" cy="50" r="38" fill="transparent" stroke="var(--ui-bg-accented)" :stroke-width="12" />
           <circle
             v-for="seg in segments"
             :key="seg.key"
@@ -84,18 +84,18 @@ const segments = computed(() => {
           />
         </svg>
         <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-          <span class="text-sm text-neutral-400">Total egresos</span>
+          <span class="text-sm text-muted">Total egresos</span>
           <span class="font-display font-bold text-lg tabular-nums">{{ formatMoney(total, moneda) }}</span>
-          <span class="text-xs text-neutral-500">100%</span>
+          <span class="text-xs text-muted">100%</span>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 pt-3 border-t border-white/5 text-sm">
+      <div class="grid grid-cols-2 gap-2 pt-3 border-t border-muted text-sm">
         <div v-for="seg in segments" :key="seg.key" class="flex items-center gap-2 min-w-0">
           <span class="w-3 h-3 rounded shrink-0" :style="{ backgroundColor: seg.color }" />
           <div class="flex flex-col min-w-0">
             <span class="text-xs font-medium truncate">{{ seg.name }} ({{ seg.percent }}%)</span>
-            <span class="text-neutral-400 tabular-nums text-xs">{{ formatMoney(seg.amount, moneda) }}</span>
+            <span class="text-muted tabular-nums text-xs">{{ formatMoney(seg.amount, moneda) }}</span>
           </div>
         </div>
       </div>

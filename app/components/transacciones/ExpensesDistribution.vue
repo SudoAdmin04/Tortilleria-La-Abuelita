@@ -58,19 +58,19 @@ function formattedPercent(index: number): string {
 
 <template>
   <UCard
-    class="bg-neutral-900/80 border border-white/10 rounded-xl shadow-xl overflow-hidden"
+    class="bg-default border border-default rounded-xl shadow-xl overflow-hidden"
     :ui="{
-      header: 'py-3.5 px-5 border-b border-white/10 bg-white/[0.02]',
+      header: 'py-3.5 px-5 border-b border-default bg-elevated/60',
       body: 'p-5 flex flex-col gap-5',
-      footer: 'py-3 px-5 border-t border-white/10 bg-white/[0.01]',
+      footer: 'py-3 px-5 border-t border-default bg-elevated/60',
     }"
   >
     <template #header>
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3 min-w-0">
           <div class="flex flex-col min-w-0">
-            <h3 class="text-sm font-bold text-white tracking-wide truncate">Distribución de Gastos</h3>
-            <p class="text-xs text-white/50 truncate">Participación porcentual de los egresos</p>
+            <h3 class="text-sm font-bold text-highlighted tracking-wide truncate">Distribución de Gastos</h3>
+            <p class="text-xs text-muted truncate">Participación porcentual de los egresos</p>
           </div>
         </div>
 
@@ -82,28 +82,28 @@ function formattedPercent(index: number): string {
 
     <template v-if="loading && items.length === 0">
       <div class="flex flex-col gap-4 animate-pulse">
-        <div class="h-3 rounded-full bg-white/10 w-full" />
+        <div class="h-3 rounded-full bg-elevated w-full" />
         <div v-for="n in 4" :key="n" class="flex items-center justify-between py-1">
           <div class="flex items-center gap-2.5">
-            <div class="size-3 rounded-full bg-white/10" />
-            <div class="h-3.5 w-32 rounded bg-white/10" />
+            <div class="size-3 rounded-full bg-elevated" />
+            <div class="h-3.5 w-32 rounded bg-elevated" />
           </div>
-          <div class="h-3.5 w-24 rounded bg-white/10" />
+          <div class="h-3.5 w-24 rounded bg-elevated" />
         </div>
       </div>
     </template>
 
     <template v-else-if="items.length === 0">
       <div class="flex flex-col items-center justify-center py-10 gap-2.5 text-center">
-        <div class="size-10 rounded-full bg-white/5 flex items-center justify-center text-white/30">
+        <div class="size-10 rounded-full bg-elevated flex items-center justify-center text-dimmed">
           <UIcon name="i-lucide-chart-pie" class="size-5" />
         </div>
-        <p class="text-xs text-white/50 font-medium">Sin egresos registrados en este periodo.</p>
+        <p class="text-xs text-muted font-medium">Sin egresos registrados en este periodo.</p>
       </div>
     </template>
 
     <template v-else>
-      <div class="flex h-4 w-full overflow-hidden rounded-full bg-white/5 p-0.5 border border-white/10 gap-0.5">
+      <div class="flex h-4 w-full overflow-hidden rounded-full bg-elevated p-0.5 border border-default gap-0.5">
         <div
           v-for="(it, i) in items"
           :key="it.categoryId || it.name || i"
@@ -117,19 +117,19 @@ function formattedPercent(index: number): string {
         <li
           v-for="(it, i) in items"
           :key="it.categoryId || it.name || i"
-          class="flex items-center justify-between gap-3 text-xs py-1.5 px-2 rounded-lg hover:bg-white/5 transition-colors"
+          class="flex items-center justify-between gap-3 text-xs py-1.5 px-2 rounded-lg hover:bg-elevated transition-colors"
         >
           <div class="flex items-center gap-2.5 min-w-0">
             <span
               class="size-2 rounded-full shrink-0 shadow-sm"
               :style="{ backgroundColor: colorOf(i) }"
             />
-            <span class="truncate font-semibold text-white/90">{{ it.name }}</span>
+            <span class="truncate font-semibold text-highlighted">{{ it.name }}</span>
           </div>
 
           <div class="flex items-center gap-2 shrink-0 tabular-nums">
-            <span class="font-bold text-white">{{ formatMoney(it.amount, moneda) }}</span>
-            <span class="text-[11px] font-medium text-white/40 min-w-11 text-right">
+            <span class="font-bold text-highlighted">{{ formatMoney(it.amount, moneda) }}</span>
+            <span class="text-[11px] font-medium text-muted min-w-11 text-right">
               ({{ formattedPercent(i) }}%)
             </span>
           </div>
@@ -139,9 +139,9 @@ function formattedPercent(index: number): string {
 
     <template #footer>
       <div class="flex items-center justify-between gap-3 text-xs">
-        <span class="text-white/50 truncate flex items-center gap-1.5">
-          <UIcon name="i-lucide-calculator" class="size-3.5 text-white/40 shrink-0" />
-          Presupuesto: <strong class="text-white/80 font-semibold">{{ formatMoney(budgetTotal, moneda) }}</strong>
+        <span class="text-muted truncate flex items-center gap-1.5">
+          <UIcon name="i-lucide-calculator" class="size-3.5 text-muted shrink-0" />
+          Presupuesto: <strong class="text-toned font-semibold">{{ formatMoney(budgetTotal, moneda) }}</strong>
         </span>
 
         <UBadge
@@ -154,7 +154,7 @@ function formattedPercent(index: number): string {
           {{ isOver ? 'Exceso: ' : 'Ahorro: ' }}{{ formatVariance(variance, moneda) }}
         </UBadge>
 
-        <span v-else class="text-white/30 italic text-[11px]">Sin datos</span>
+        <span v-else class="text-dimmed italic text-[11px]">Sin datos</span>
       </div>
     </template>
   </UCard>

@@ -25,7 +25,7 @@ const iconStyles = {
   error: 'bg-red-500/10 text-red-600 dark:text-red-400 ring-red-500/20',
   info: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 ring-sky-500/20',
   warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-amber-500/20',
-  neutral: 'bg-neutral-500/10 text-neutral-600 dark:text-neutral-400 ring-neutral-500/20'
+  neutral: 'bg-neutral-500/10 text-toned ring-neutral-500/20'
 }
 
 const trendColors = {
@@ -34,7 +34,7 @@ const trendColors = {
   error: 'text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/20',
   info: 'text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20',
   warning: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20',
-  neutral: 'text-neutral-600 dark:text-neutral-400 bg-neutral-500/10 border-neutral-500/20'
+  neutral: 'text-toned bg-neutral-500/10 border-neutral-500/20'
 }
 </script>
 
@@ -55,7 +55,7 @@ const trendColors = {
 
     <div class="flex items-start justify-between gap-3 w-full">
       <div class="space-y-0.5">
-        <h3 class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+        <h3 class="text-[11px] font-bold text-muted uppercase tracking-wider">
           {{ title }}
         </h3>
       </div>
@@ -69,7 +69,7 @@ const trendColors = {
     </div>
 
     <div class="flex items-baseline justify-between gap-2 mt-3">
-      <div class="text-neutral-900 dark:text-white font-black text-2xl lg:text-3xl tracking-tight">
+      <div class="text-highlighted font-black text-2xl lg:text-3xl tracking-tight">
         {{ value }}
       </div>
 
@@ -88,7 +88,7 @@ const trendColors = {
 
         <span 
           v-else-if="trendLabel" 
-          class="inline-flex items-center text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300"
+          class="inline-flex items-center text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-toned"
         >
           {{ trendLabel }}
         </span>

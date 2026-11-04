@@ -39,7 +39,7 @@ const columnas: TableColumn<BudgetLine>[] = [
       return h('div', { class: 'flex items-center gap-2' }, [
         hasItems
           ? h('button', {
-              class: 'size-5 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 text-xs shrink-0',
+              class: 'size-5 rounded bg-elevated hover:bg-elevated flex items-center justify-center text-muted text-xs shrink-0',
               onClick: (e: Event) => {
                 e.stopPropagation()
                 expanded.value[r.categoryId] = !expanded.value[r.categoryId]
@@ -48,7 +48,7 @@ const columnas: TableColumn<BudgetLine>[] = [
           : null,
         h('div', { class: 'flex items-center gap-2 min-w-0' }, [
           r.color ? h('span', { class: 'w-2.5 h-2.5 rounded-full shrink-0', style: { backgroundColor: r.color } }) : null,
-          h('span', { class: 'text-sm font-semibold text-white truncate' }, r.name),
+          h('span', { class: 'text-sm font-semibold text-highlighted truncate' }, r.name),
         ]),
       ])
     },
@@ -57,14 +57,14 @@ const columnas: TableColumn<BudgetLine>[] = [
     accessorKey: 'budget',
     header: () => h('div', { class: 'text-right' }, 'Planeado'),
     meta: { class: { td: 'text-right' } },
-    cell: ({ row }) => h('span', { class: 'text-sm text-white/60 whitespace-nowrap' },
+    cell: ({ row }) => h('span', { class: 'text-sm text-muted whitespace-nowrap' },
       formatMoney(row.original.budget, moneda.value)),
   },
   {
     accessorKey: 'actual',
     header: () => h('div', { class: 'text-right' }, 'Ejecutado'),
     meta: { class: { td: 'text-right' } },
-    cell: ({ row }) => h('span', { class: 'text-sm font-semibold text-white whitespace-nowrap' },
+    cell: ({ row }) => h('span', { class: 'text-sm font-semibold text-highlighted whitespace-nowrap' },
       formatMoney(row.original.actual, moneda.value)),
   },
   {
@@ -74,7 +74,7 @@ const columnas: TableColumn<BudgetLine>[] = [
     cell: ({ row }) => {
       const v = row.original.variance
       return h('span', {
-        class: `text-sm font-semibold whitespace-nowrap ${v > 0 ? 'text-red-300' : v < 0 ? 'text-emerald-300' : 'text-white/50'}`,
+        class: `text-sm font-semibold whitespace-nowrap ${v > 0 ? 'text-red-600 dark:text-red-300' : v < 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-muted'}`,
       }, formatVariance(v, moneda.value))
     },
   },
@@ -86,7 +86,7 @@ const columnas: TableColumn<BudgetLine>[] = [
       const pct = Math.min(100, Math.max(0, Math.round(r.executionRate ?? 0)))
       return h('div', { class: 'flex flex-col gap-1 min-w-28' }, [
         h(UProgress, { modelValue: pct, max: 100, size: 'xs', color: r.status === 'exceeded' ? 'error' : r.status === 'near' ? 'warning' : 'primary' }),
-        h('span', { class: 'text-xs text-white/50' }, formatExecution(r.executionRate)),
+        h('span', { class: 'text-xs text-muted' }, formatExecution(r.executionRate)),
       ])
     },
   },
@@ -116,8 +116,8 @@ const rows = computed(() => {
 
 <template>
   <UCard
-    class="border border-white/10 overflow-hidden"
-    :ui="{ header: 'py-3.5 px-5 border-b border-white/10 bg-white/[0.02]', body: 'p-0 overflow-x-auto' }"
+    class="border border-default overflow-hidden"
+    :ui="{ header: 'py-3.5 px-5 border-b border-default bg-elevated/60', body: 'p-0 overflow-x-auto' }"
   >
     <template #header>
       <div class="flex items-center justify-between gap-4">
@@ -125,7 +125,7 @@ const rows = computed(() => {
           <h2 class="font-display font-semibold">
             Presupuesto vs real
           </h2>
-          <p class="text-sm text-neutral-400">
+          <p class="text-sm text-muted">
             Rubros con sus partidas · expande para ver el detalle
           </p>
         </div>
@@ -144,8 +144,8 @@ const rows = computed(() => {
       >
         <template #empty>
           <div class="flex flex-col items-center justify-center py-12 gap-3">
-            <UIcon name="i-lucide-circle-x" class="size-8 text-white/30" />
-            <p class="text-sm text-white/50 font-medium">
+            <UIcon name="i-lucide-circle-x" class="size-8 text-dimmed" />
+            <p class="text-sm text-muted font-medium">
               Sin presupuesto en el periodo.
             </p>
           </div>

@@ -39,8 +39,8 @@ const columnas: TableColumn<PresupuestoRow>[] = [
     cell: ({ row }) => {
       const r = row.original
       return h('div', { class: 'flex flex-col min-w-0' }, [
-        h('span', { class: 'text-sm font-semibold text-white truncate' }, r.name),
-        h('span', { class: 'text-xs text-white/50 truncate' }, r.kind),
+        h('span', { class: 'text-sm font-semibold text-highlighted truncate' }, r.name),
+        h('span', { class: 'text-xs text-muted truncate' }, r.kind),
       ])
     },
   },
@@ -51,8 +51,8 @@ const columnas: TableColumn<PresupuestoRow>[] = [
     cell: ({ row }) => {
       const r = row.original
       return h('div', { class: 'flex flex-col items-end min-w-0' }, [
-        h('span', { class: 'text-sm font-semibold text-white whitespace-nowrap' }, formatMoney(r.planificado, moneda.value)),
-        h('span', { class: 'text-xs text-white/50 whitespace-nowrap' }, `Real: ${formatMoney(r.ejecutado, moneda.value)}`),
+        h('span', { class: 'text-sm font-semibold text-highlighted whitespace-nowrap' }, formatMoney(r.planificado, moneda.value)),
+        h('span', { class: 'text-xs text-muted whitespace-nowrap' }, `Real: ${formatMoney(r.ejecutado, moneda.value)}`),
       ])
     },
   },
@@ -64,7 +64,7 @@ const columnas: TableColumn<PresupuestoRow>[] = [
       const pct = r.tasaEjecucion != null ? Math.min(100, Math.max(0, Math.round(r.tasaEjecucion))) : 0
       return h('div', { class: 'flex flex-col gap-1 min-w-28' }, [
         h(UProgress, { modelValue: pct, max: 100, size: 'xs', color: r.estado === 'exceeded' ? 'error' : r.estado === 'near' ? 'warning' : 'primary' }),
-        h('span', { class: 'text-xs text-white/50' }, formatExecution(r.tasaEjecucion)),
+        h('span', { class: 'text-xs text-muted' }, formatExecution(r.tasaEjecucion)),
       ])
     },
   },
@@ -92,7 +92,7 @@ const columnas: TableColumn<PresupuestoRow>[] = [
         h(UDropdownMenu, { items, content: { align: 'end' } }, {
           default: () => h(UButton, {
             icon: 'i-lucide-ellipsis-vertical', color: 'neutral', variant: 'ghost', size: 'xs',
-            class: 'text-white/60 hover:text-white hover:bg-white/10 rounded-lg', 'aria-label': 'Acciones',
+            class: 'text-muted hover:text-highlighted hover:bg-elevated rounded-lg', 'aria-label': 'Acciones',
           }),
         }),
       ])
@@ -103,23 +103,23 @@ const columnas: TableColumn<PresupuestoRow>[] = [
 
 <template>
   <UCard
-    class="border border-white/10 overflow-hidden"
-    :ui="{ header: 'py-3.5 px-5 border-b border-white/10 bg-white/[0.02]', body: 'p-0 overflow-x-auto', footer: 'py-3 px-5 border-t border-white/10 bg-white/[0.01]' }"
+    class="border border-default overflow-hidden"
+    :ui="{ header: 'py-3.5 px-5 border-b border-default bg-elevated/60', body: 'p-0 overflow-x-auto', footer: 'py-3 px-5 border-t border-default bg-elevated/60' }"
   >
     <template #header>
       <div class="flex items-center justify-between gap-4">
-        <span class="text-sm font-bold text-white tracking-wide">Comparativa planificado vs ejecutado</span>
+        <span class="text-sm font-bold text-highlighted tracking-wide">Comparativa planificado vs ejecutado</span>
         <UBadge v-if="props.data.length" size="sm" color="primary" variant="subtle" class="px-2.5 font-semibold">
           {{ props.data.length }} {{ props.data.length === 1 ? 'Rubro' : 'Rubros' }}
         </UBadge>
       </div>
     </template>
     <template #default>
-      <UTable data-key="categoryId" :columns="columnas" :data="props.data" :loading="props.loading" sticky class="w-full" :ui="{ tr: 'hover:bg-white/[0.01] transition-colors duration-150' }">
+      <UTable data-key="categoryId" :columns="columnas" :data="props.data" :loading="props.loading" sticky class="w-full" :ui="{ tr: 'hover:bg-elevated/50 transition-colors duration-150' }">
         <template #empty>
           <div class="flex flex-col items-center justify-center py-12 gap-3">
-            <UIcon name="i-lucide-circle-x" class="size-8 text-white/30" />
-            <p class="text-sm text-white/50 font-medium">Sin rubros para este mes.</p>
+            <UIcon name="i-lucide-circle-x" class="size-8 text-dimmed" />
+            <p class="text-sm text-muted font-medium">Sin rubros para este mes.</p>
           </div>
         </template>
       </UTable>

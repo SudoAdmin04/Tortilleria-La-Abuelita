@@ -33,20 +33,20 @@ function barWidth(actual: number, budget: number): number {
 
 <template>
   <UCard
-    class="border border-white/10 overflow-hidden"
+    class="border border-default overflow-hidden"
     :ui="{
-      header: 'py-4 px-5 border-b border-white/10 bg-white/[0.02]',
+      header: 'py-4 px-5 border-b border-default bg-elevated/60',
       body: 'p-5 flex flex-col gap-4',
-      footer: 'py-3 px-5 border-t border-white/10 bg-white/[0.01]',
+      footer: 'py-3 px-5 border-t border-default bg-elevated/60',
     }"
   >
     <template #header>
       <div class="flex items-start justify-between gap-4">
         <div class="flex flex-col gap-1 min-w-0">
-          <span class="text-[15px] font-bold text-white tracking-tight">Fuentes de Ingreso</span>
-          <span class="text-xs text-white/45">Entradas efectivas contra metas presupuestadas.</span>
+          <span class="text-[15px] font-bold text-highlighted tracking-tight">Fuentes de Ingreso</span>
+          <span class="text-xs text-muted">Entradas efectivas contra metas presupuestadas.</span>
         </div>
-        <span class="text-xs font-semibold text-emerald-300/90 tabular-nums shrink-0 pt-0.5">
+        <span class="text-xs font-semibold text-emerald-600/90 dark:text-emerald-300/90 tabular-nums shrink-0 pt-0.5">
           Total: {{ formatMoney(total, moneda) }}
         </span>
       </div>
@@ -56,18 +56,18 @@ function barWidth(actual: number, budget: number): number {
       <div class="flex flex-col gap-4 animate-pulse">
         <div v-for="n in 3" :key="n" class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
-            <div class="h-3 w-32 rounded bg-white/10" />
-            <div class="h-3 w-28 rounded bg-white/10" />
+            <div class="h-3 w-32 rounded bg-elevated" />
+            <div class="h-3 w-28 rounded bg-elevated" />
           </div>
-          <div class="h-1.5 rounded-full bg-white/10" />
+          <div class="h-1.5 rounded-full bg-elevated" />
         </div>
       </div>
     </template>
 
     <template v-else-if="items.length === 0">
       <div class="flex flex-col items-center justify-center py-8 gap-2">
-        <UIcon name="i-lucide-wallet" class="size-7 text-white/25" />
-        <p class="text-sm text-white/45 font-medium">Sin ingresos en la vista actual.</p>
+        <UIcon name="i-lucide-wallet" class="size-7 text-dimmed" />
+        <p class="text-sm text-muted font-medium">Sin ingresos en la vista actual.</p>
       </div>
     </template>
 
@@ -75,12 +75,12 @@ function barWidth(actual: number, budget: number): number {
       <ul class="flex flex-col gap-4">
         <li v-for="(it, i) in items" :key="it.categoryId || it.name" class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between gap-3 text-sm">
-            <span class="text-white/85 font-medium truncate">{{ it.name }}</span>
-            <span class="text-emerald-300/90 font-semibold tabular-nums shrink-0 text-[13px]">
+            <span class="text-toned font-medium truncate">{{ it.name }}</span>
+            <span class="text-emerald-600/90 dark:text-emerald-300/90 font-semibold tabular-nums shrink-0 text-[13px]">
               +{{ formatMoney(it.actual, moneda) }} / {{ formatMoney(it.budget, moneda) }}
             </span>
           </div>
-          <div class="h-1.5 w-full overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10">
+          <div class="h-1.5 w-full overflow-hidden rounded-full bg-elevated ring-1 ring-default">
             <div
               class="h-full rounded-full transition-all duration-300"
               :style="{ width: `${barWidth(it.actual, it.budget)}%`, backgroundColor: colorOf(i) }"
@@ -92,8 +92,8 @@ function barWidth(actual: number, budget: number): number {
 
     <template #footer>
       <div class="flex items-center justify-between gap-3 text-xs">
-        <span class="text-white/40 truncate">Cumplimiento total ingresos</span>
-        <span class="font-bold tabular-nums shrink-0 text-emerald-300/90">
+        <span class="text-muted truncate">Cumplimiento total ingresos</span>
+        <span class="font-bold tabular-nums shrink-0 text-emerald-600/90 dark:text-emerald-300/90">
           {{ compliance == null ? '—' : formatExecution(compliance) }}
         </span>
       </div>

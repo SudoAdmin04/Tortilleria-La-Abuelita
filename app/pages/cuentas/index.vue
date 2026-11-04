@@ -161,24 +161,24 @@ onUnmounted(() => clearTimeout(searchTimer))
 
     <section class="space-y-3">
       <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-chart-column" class="size-4 text-white/50 shrink-0" />
-        <h2 class="text-sm font-bold text-white tracking-wide">Resumen general</h2>
+        <UIcon name="i-lucide-chart-column" class="size-4 text-muted shrink-0" />
+        <h2 class="text-sm font-bold text-highlighted tracking-wide">Resumen general</h2>
       </div>
       <AppStatCards :stats="stats" :loading="statsLoading" :columns="3" />
     </section>
 
     <UCard
-      class="border border-white/10"
+      class="border border-default"
       :ui="{
-        header: 'py-3 px-4 sm:px-5 border-b border-white/10 bg-white/[0.02]',
+        header: 'py-3 px-4 sm:px-5 border-b border-default bg-elevated/60',
         body: 'p-4 sm:p-5 flex flex-col gap-4',
       }"
     >
       <template #header>
         <div class="flex items-center justify-between gap-3">
           <div class="flex items-center gap-2 min-w-0">
-            <UIcon name="i-lucide-list-filter" class="size-4 text-white/50 shrink-0" />
-            <span class="text-sm font-bold text-white tracking-wide truncate">Filtros</span>
+            <UIcon name="i-lucide-list-filter" class="size-4 text-muted shrink-0" />
+            <span class="text-sm font-bold text-highlighted tracking-wide truncate">Filtros</span>
             <UBadge v-if="filtrosActivos > 0" color="primary" variant="subtle" size="sm" class="font-semibold shrink-0">
               {{ filtrosActivos }} activo{{ filtrosActivos === 1 ? '' : 's' }}
             </UBadge>
@@ -189,13 +189,13 @@ onUnmounted(() => clearTimeout(searchTimer))
             variant="soft"
             size="xs"
             label="Limpiar filtros"
-            class="shrink-0 text-white/60 hover:text-white"
+            class="shrink-0 text-muted hover:text-highlighted"
             @click="limpiarFiltros"
           />
         </div>
       </template>
 
-      <div class="flex flex-wrap items-center gap-1.5 rounded-xl bg-white/[0.03] border border-white/5 p-1.5 w-fit max-w-full">
+      <div class="flex flex-wrap items-center gap-1.5 rounded-xl bg-elevated/60 border border-muted p-1.5 w-fit max-w-full">
         <UButton
           v-for="t in tipoItems"
           :key="t.label"
@@ -226,10 +226,10 @@ onUnmounted(() => clearTimeout(searchTimer))
           />
         </UFormField>
         <UFormField label="Visibilidad" size="sm" class="w-full">
-          <div class="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2">
+          <div class="flex items-center gap-2 rounded-lg border border-default bg-elevated/60 px-3 py-2">
             <USwitch v-model="filter.soloActivas" @update:model-value="aplicarFiltros" />
-            <span class="text-xs text-white/60 font-medium">Solo activas</span>
-            <span class="ml-auto text-[11px] text-white/35 font-medium truncate">{{ tipoLabel }}</span>
+            <span class="text-xs text-muted font-medium">Solo activas</span>
+            <span class="ml-auto text-[11px] text-dimmed font-medium truncate">{{ tipoLabel }}</span>
           </div>
         </UFormField>
       </div>
@@ -237,8 +237,8 @@ onUnmounted(() => clearTimeout(searchTimer))
 
     <section class="space-y-3">
       <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-wallet" class="size-4 text-white/80 shrink-0" />
-        <h2 class="text-xs font-semibold uppercase tracking-widest text-white">Mis cuentas</h2>
+        <UIcon name="i-lucide-wallet" class="size-4 text-toned shrink-0" />
+        <h2 class="text-xs font-semibold uppercase tracking-widest text-highlighted">Mis cuentas</h2>
       </div>
 
       <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-4 items-start">
@@ -256,7 +256,7 @@ onUnmounted(() => clearTimeout(searchTimer))
           />
 
           <div v-if="total > pageCount || page > 1" class="flex items-center justify-end gap-4 text-xs">
-            <span class="text-white/60 font-medium">
+            <span class="text-muted font-medium">
               Mostrando {{ (page - 1) * pageCount + 1 }}-{{ Math.min(page * pageCount, total) }} de {{ total }} cuentas
             </span>
             <UPagination

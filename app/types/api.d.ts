@@ -972,6 +972,622 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/suppliers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar proveedores
+         * @description Devuelve todos los proveedores del negocio ordenados por nombre.
+         */
+        get: operations["SuppliersController_findAll"];
+        put?: never;
+        /** Crear un proveedor */
+        post: operations["SuppliersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/suppliers/paginado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar proveedores paginados
+         * @description Página de proveedores con búsqueda por nombre y filtro por estado.
+         */
+        get: operations["SuppliersController_findAllPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/suppliers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtener un proveedor */
+        get: operations["SuppliersController_findOne"];
+        put?: never;
+        post?: never;
+        /**
+         * Eliminar un proveedor
+         * @description Solo se elimina si no tiene compras registradas; si tiene, desactívalo.
+         */
+        delete: operations["SuppliersController_remove"];
+        options?: never;
+        head?: never;
+        /** Actualizar un proveedor */
+        patch: operations["SuppliersController_update"];
+        trace?: never;
+    };
+    "/api/suppliers/{id}/toggle-active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Activar o desactivar un proveedor */
+        patch: operations["SuppliersController_toggleActive"];
+        trace?: never;
+    };
+    "/api/supplies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar insumos
+         * @description Catálogo de insumos con stock actual y costo promedio.
+         */
+        get: operations["SuppliesController_findAll"];
+        put?: never;
+        /**
+         * Crear un insumo
+         * @description Crea el insumo y, si envías `initialStock`, registra la entrada inicial en el kardex.
+         */
+        post: operations["SuppliesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/supplies/paginado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar insumos paginados
+         * @description Búsqueda por nombre, filtro por estado y filtro de stock bajo.
+         */
+        get: operations["SuppliesController_findAllPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/supplies/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtener un insumo */
+        get: operations["SuppliesController_findOne"];
+        put?: never;
+        post?: never;
+        /**
+         * Eliminar un insumo
+         * @description Solo si no tiene movimientos ni recetas asociadas; si tiene, desactívalo.
+         */
+        delete: operations["SuppliesController_remove"];
+        options?: never;
+        head?: never;
+        /** Actualizar un insumo */
+        patch: operations["SuppliesController_update"];
+        trace?: never;
+    };
+    "/api/supplies/{id}/toggle-active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Activar o desactivar un insumo */
+        patch: operations["SuppliesController_toggleActive"];
+        trace?: never;
+    };
+    "/api/inventory/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resumen y valuación del inventario
+         * @description Valúa insumos al costo promedio y productos al costo de producción. Incluye conteos y artículos bajo mínimo.
+         */
+        get: operations["InventoryController_summary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/low-stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Artículos bajo stock mínimo
+         * @description Insumos y productos cuyo stock actual es menor o igual al mínimo configurado.
+         */
+        get: operations["InventoryController_lowStock"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/movements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kardex de inventario
+         * @description Movimientos de insumos y productos con stock antes/después, filtros por artículo, tipo, origen y fechas.
+         */
+        get: operations["InventoryController_movements"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/adjustments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Registrar un ajuste de inventario
+         * @description Ajusta entradas/salidas manuales, mermas o devoluciones. Queda registrado en el kardex y actualiza el stock.
+         */
+        post: operations["InventoryController_adjust"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar productos
+         * @description Catálogo de productos con receta, costo, precio, margen y stock actual.
+         */
+        get: operations["ProductsController_findAll"];
+        put?: never;
+        /**
+         * Crear un producto
+         * @description Crea el producto con su receta opcional y, si envías `initialStock`, registra la entrada inicial en el kardex.
+         */
+        post: operations["ProductsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/paginado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar productos paginados
+         * @description Búsqueda por nombre, filtro por estado y filtro de stock bajo.
+         */
+        get: operations["ProductsController_findAllPaginated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/{id}/recipe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obtener la receta de un producto
+         * @description Insumos consumidos por unidad, costo unitario y costo total de la receta.
+         */
+        get: operations["ProductsController_getRecipe"];
+        /**
+         * Reemplazar la receta de un producto
+         * @description Reemplaza todos los insumos de la receta y recalcula el costo de producción con los costos promedio actuales.
+         */
+        put: operations["ProductsController_setRecipe"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtener un producto */
+        get: operations["ProductsController_findOne"];
+        put?: never;
+        post?: never;
+        /**
+         * Eliminar un producto
+         * @description Solo si no tiene movimientos ni ventas registradas; si tiene, desactívalo.
+         */
+        delete: operations["ProductsController_remove"];
+        options?: never;
+        head?: never;
+        /** Actualizar un producto */
+        patch: operations["ProductsController_update"];
+        trace?: never;
+    };
+    "/api/products/{id}/toggle-active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Activar o desactivar un producto */
+        patch: operations["ProductsController_toggleActive"];
+        trace?: never;
+    };
+    "/api/purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar compras
+         * @description Compras registradas con proveedor, renglones y totales. Filtra por proveedor, estado y rango de fechas.
+         */
+        get: operations["PurchasesController_findAll"];
+        put?: never;
+        /**
+         * Registrar una compra de insumos
+         * @description En una sola transacción: aumenta el stock de cada insumo, recalcula su costo promedio, registra el egreso en la cuenta indicada y guarda el vínculo con la transacción.
+         */
+        post: operations["PurchasesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/purchases/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtener una compra con sus renglones */
+        get: operations["PurchasesController_findOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/purchases/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Cancelar una compra
+         * @description Revierte el stock de los insumos y elimina el egreso generado. Falla si el stock ya no alcanza para revertir.
+         */
+        patch: operations["PurchasesController_cancel"];
+        trace?: never;
+    };
+    "/api/sales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar ventas
+         * @description Ventas con renglones, costo de lo vendido y margen bruto. Filtra por estado y fechas.
+         */
+        get: operations["SalesController_findAll"];
+        put?: never;
+        /**
+         * Registrar una venta
+         * @description En una sola transacción: valida y descuenta stock de cada producto, guarda el costo de producción como snapshot y registra el ingreso en la cuenta indicada.
+         */
+        post: operations["SalesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sales/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtener una venta con sus renglones */
+        get: operations["SalesController_findOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sales/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Cancelar una venta
+         * @description Devuelve el stock de los productos y elimina el ingreso generado.
+         */
+        patch: operations["SalesController_cancel"];
+        trace?: never;
+    };
+    "/api/production": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar lotes de producción
+         * @description Lotes con producto, cantidad, costo total y costo unitario resultante.
+         */
+        get: operations["ProductionController_findAll"];
+        put?: never;
+        /**
+         * Registrar producción
+         * @description Consume los insumos según la receta, calcula el costo del lote y da entrada al producto terminado actualizando su costo unitario.
+         */
+        post: operations["ProductionController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/production/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obtener un lote de producción
+         * @description Incluye los insumos consumidos con su costo unitario y total.
+         */
+        get: operations["ProductionController_findOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/production/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Cancelar producción
+         * @description Devuelve los insumos consumidos y retira el producto terminado. Falla si ya no hay stock suficiente del producto.
+         */
+        patch: operations["ProductionController_cancel"];
+        trace?: never;
+    };
+    "/api/business/reports/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Dashboard operativo del negocio
+         * @description KPIs del periodo: ventas (ingreso, ticket promedio, costo de lo vendido, utilidad bruta), compras, producción, valuación actual del inventario, productos más vendidos y ventas por día. Sin fechas usa el mes actual.
+         */
+        get: operations["BusinessReportsController_dashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/business/reports/sales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reporte de ventas
+         * @description Totales del periodo con desglose diario, por producto (ingreso, costo y utilidad) y por forma de pago.
+         */
+        get: operations["BusinessReportsController_sales"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/business/reports/purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reporte de compras
+         * @description Compras del periodo con desglose diario, por proveedor y por insumo.
+         */
+        get: operations["BusinessReportsController_purchases"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/business/reports/profit-loss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Estado de resultados (ingresos y egresos)
+         * @description Contrasta ventas, costo de lo vendido y utilidad bruta contra los ingresos y egresos reales del libro de transacciones del periodo.
+         */
+        get: operations["BusinessReportsController_profitLoss"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/reports/dashboard": {
         parameters: {
             query?: never;
@@ -1244,6 +1860,103 @@ export interface paths {
          * @description Metas con avance del rango y medios de pago.
          */
         get: operations["DashboardController_savings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/exports/dashboard/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exportar Dashboard completo a PDF
+         * @description Genera y descarga un documento PDF profesional con el resumen general del dashboard (KPIs, ingresos, egresos, saldos) para el periodo y filtros indicados.
+         */
+        get: operations["ExportsController_exportDashboardPdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/exports/dashboard/xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exportar Dashboard completo a Excel (XLSX)
+         * @description Genera y descarga una hoja de cálculo Excel con múltiples pestañas conteniendo el resumen de KPIs, ingresos, egresos y estado financiero global.
+         */
+        get: operations["ExportsController_exportDashboardXlsx"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/exports/transactions/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exportar listado de transacciones a PDF
+         * @description Genera y descarga un reporte PDF con el listado de transacciones filtradas por fechas, tipo, estado, categoría y cuenta.
+         */
+        get: operations["ExportsController_exportTransactionsPdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/exports/transactions/xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exportar listado de transacciones a Excel (XLSX)
+         * @description Genera y descarga una hoja de cálculo Excel con todas las transacciones filtradas para análisis detallado y contabilidad.
+         */
+        get: operations["ExportsController_exportTransactionsXlsx"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Health check (DB connectivity) para Render */
+        get: operations["HealthController_check"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1526,7 +2239,7 @@ export interface paths {
         };
         /**
          * Ejecutar seed de datos iniciales
-         * @description Carga idempotente del ambiente de prueba: roles, pantallas (con módulo y jerarquía), usuarios, permisos role-pantalla y datos financieros de ejemplo del superAdmin (cuentas, categorías, deudas, transacciones, presupuestos, metas y notificaciones). Re-ejecutable, no borra datos.
+         * @description Carga idempotente del ambiente de prueba de la tortillería: roles, pantallas, usuarios de configuración y permisos RBAC; además, catálogo financiero y operación completa de noviembre 2026 para el usuario demo (proveedores, insumos, productos con recetas, compras, producción, ventas, inventario, presupuestos, deudas, metas y notificaciones). Re-ejecutable, no borra datos. En producción exige el header x-seed-token con el valor de SEED_TOKEN.
          */
         get: operations["SeedController_executeSeed"];
         put?: never;
@@ -3802,6 +4515,946 @@ export interface components {
              * @enum {string}
              */
             status?: "open" | "paid";
+        };
+        SupplierResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example Harinas del Norte */
+            name: string;
+            /** @example Laura Méndez */
+            contactName: string | null;
+            /** @example 8181234567 */
+            phone: string | null;
+            /** @example ventas@harinasdelnorte.mx */
+            email: string | null;
+            /** @example Av. Central 123, Monterrey */
+            address: string | null;
+            /** @example true */
+            isActive: boolean;
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        CreateSupplierDto: {
+            /**
+             * @description Nombre o razón social del proveedor.
+             * @example Harinas del Norte
+             */
+            name: string;
+            /**
+             * @description Persona de contacto.
+             * @example Laura Méndez
+             */
+            contactName?: string;
+            /**
+             * @description Teléfono de contacto.
+             * @example 8181234567
+             */
+            phone?: string;
+            /**
+             * @description Correo de contacto.
+             * @example ventas@harinasdelnorte.mx
+             */
+            email?: string;
+            /**
+             * @description Dirección.
+             * @example Av. Central 123, Monterrey
+             */
+            address?: string;
+            /** @description Notas internas. */
+            notes?: string;
+        };
+        UpdateSupplierDto: {
+            /**
+             * @description Nombre o razón social del proveedor.
+             * @example Harinas del Norte
+             */
+            name?: string;
+            /**
+             * @description Persona de contacto.
+             * @example Laura Méndez
+             */
+            contactName?: string;
+            /**
+             * @description Teléfono de contacto.
+             * @example 8181234567
+             */
+            phone?: string;
+            /**
+             * @description Correo de contacto.
+             * @example ventas@harinasdelnorte.mx
+             */
+            email?: string;
+            /**
+             * @description Dirección.
+             * @example Av. Central 123, Monterrey
+             */
+            address?: string;
+            /** @description Notas internas. */
+            notes?: string;
+            /**
+             * @description Activar o desactivar el proveedor.
+             * @example true
+             */
+            isActive?: boolean;
+        };
+        SupplyResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example Harina de maíz nixtamalizado */
+            name: string;
+            /** @example HAR-MAIZ */
+            sku: string | null;
+            /**
+             * @example kg
+             * @enum {string}
+             */
+            unit: "kg" | "g" | "l" | "ml" | "piece" | "pack" | "box";
+            /** @example 25 */
+            stock: number;
+            /** @example 10 */
+            minStock: number;
+            /** @example 18.5 */
+            averageCost: number;
+            /** @example 18.5 */
+            lastCost: number;
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            updatedAt: string;
+            /** @example true */
+            isActive: boolean;
+        };
+        CreateSupplyDto: {
+            /**
+             * @description Nombre del insumo.
+             * @example Harina de maíz nixtamalizado
+             */
+            name: string;
+            /**
+             * @description Código interno o SKU.
+             * @example HAR-MAIZ
+             */
+            sku?: string;
+            /**
+             * @description Unidad de compra/almacenamiento.
+             * @example kg
+             * @enum {string}
+             */
+            unit: "kg" | "g" | "l" | "ml" | "piece" | "pack" | "box";
+            /**
+             * @description Stock mínimo para alertas.
+             * @default 0
+             * @example 10
+             */
+            minStock: number;
+            /**
+             * @description Stock inicial (crea un movimiento de inventario).
+             * @example 25
+             */
+            initialStock?: number;
+            /**
+             * @description Costo unitario inicial.
+             * @example 18.5
+             */
+            initialCost?: number;
+            /** @description Notas internas. */
+            notes?: string;
+        };
+        UpdateSupplyDto: {
+            /**
+             * @description Nombre del insumo.
+             * @example Harina de maíz nixtamalizado
+             */
+            name?: string;
+            /**
+             * @description Código interno o SKU.
+             * @example HAR-MAIZ
+             */
+            sku?: string;
+            /**
+             * @description Unidad de compra/almacenamiento.
+             * @example kg
+             * @enum {string}
+             */
+            unit?: "kg" | "g" | "l" | "ml" | "piece" | "pack" | "box";
+            /**
+             * @description Stock mínimo para alertas.
+             * @default 0
+             * @example 10
+             */
+            minStock: number;
+            /**
+             * @description Stock inicial (crea un movimiento de inventario).
+             * @example 25
+             */
+            initialStock?: number;
+            /**
+             * @description Costo unitario inicial.
+             * @example 18.5
+             */
+            initialCost?: number;
+            /** @description Notas internas. */
+            notes?: string;
+            /**
+             * @description Activar o desactivar el insumo.
+             * @example true
+             */
+            isActive?: boolean;
+        };
+        LowStockItemDto: {
+            /** @enum {string} */
+            itemType: "supply" | "product";
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example Harina de maíz */
+            name: string;
+            /** @enum {string} */
+            unit: "kg" | "g" | "l" | "ml" | "piece" | "pack" | "box" | "kg" | "piece" | "dozen" | "pack" | "box";
+            /** @example 5.5 */
+            stock: number;
+            /** @example 10 */
+            minStock: number;
+            /** @example 4.5 */
+            deficit: number;
+        };
+        InventorySummaryDto: {
+            /** @example 15000.5 */
+            suppliesValue: number;
+            /** @example 8200.75 */
+            productsValue: number;
+            /** @example 23201.25 */
+            totalValue: number;
+            /** @example 8 */
+            suppliesCount: number;
+            /** @example 5 */
+            productsCount: number;
+            /** @example 2 */
+            lowStockCount: number;
+            /** @example 1 */
+            outOfStockCount: number;
+            lowStock: components["schemas"]["LowStockItemDto"][];
+        };
+        InventoryMovementResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /**
+             * @example supply
+             * @enum {string}
+             */
+            itemType: "supply" | "product";
+            /**
+             * @example purchase
+             * @enum {string}
+             */
+            type: "initial" | "purchase" | "sale" | "production_input" | "production_output" | "adjustment_in" | "adjustment_out" | "waste" | "return_in" | "return_out";
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            supplyId: string | null;
+            /** @example null */
+            productId: string | null;
+            /** @example 25.5 */
+            quantity: number;
+            /** @example 18.5 */
+            unitCost: number | null;
+            /** @example 471.75 */
+            totalCost: number | null;
+            /** @example 10 */
+            stockBefore: number;
+            /** @example 35.5 */
+            stockAfter: number;
+            /** @example purchase */
+            referenceType: string | null;
+            /** @example b1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            referenceId: string | null;
+            /** @example 2026-01-15 */
+            date: string;
+            /** @example Compra de harina */
+            notes: string | null;
+        };
+        AdjustInventoryDto: {
+            /**
+             * @description Tipo de artículo a ajustar.
+             * @enum {string}
+             */
+            itemType: "supply" | "product";
+            /**
+             * Format: uuid
+             * @description UUID del insumo o producto.
+             */
+            itemId: string;
+            /**
+             * @description Tipo de ajuste. `adjustment_in`/`return_in` suman; `adjustment_out`/`waste`/`return_out` restan.
+             * @enum {string}
+             */
+            type: "adjustment_in" | "adjustment_out" | "waste" | "return_in" | "return_out";
+            /**
+             * @description Cantidad positiva a mover.
+             * @example 2.5
+             */
+            quantity: number;
+            /**
+             * @description Costo unitario para valuar una entrada.
+             * @example 18.5
+             */
+            unitCost?: number;
+            /**
+             * Format: date
+             * @description Fecha del ajuste (YYYY-MM-DD).
+             * @example 2026-01-15
+             */
+            date: string;
+            /**
+             * @description Motivo del ajuste.
+             * @example Merma por humedad
+             */
+            notes?: string;
+        };
+        RecipeResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example b1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            supplyId: string;
+            /** @example Harina de maíz */
+            supplyName: string;
+            /** @example kg */
+            supplyUnit: string;
+            /** @example 0.95 */
+            quantity: number;
+            /** @example 18.5 */
+            unitCost: number;
+            /** @example 17.575 */
+            lineCost: number;
+        };
+        ProductResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example Tortilla de maíz por kilo */
+            name: string;
+            /** @example TOR-KG */
+            sku: string | null;
+            /**
+             * @example kg
+             * @enum {string}
+             */
+            unit: "kg" | "piece" | "dozen" | "pack" | "box";
+            /** @example 24 */
+            price: number;
+            /** @example 14.5 */
+            cost: number;
+            /** @example 10 */
+            stock: number;
+            /** @example 5 */
+            minStock: number;
+            /** @example 48 */
+            margin: number;
+            /** @example 66.67 */
+            marginPercent: number;
+            /** @example true */
+            isActive: boolean;
+            recipe: components["schemas"]["RecipeResponseDto"][];
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        RecipeItemDto: {
+            /**
+             * Format: uuid
+             * @description UUID del insumo.
+             */
+            supplyId: string;
+            /**
+             * @description Cantidad de insumo por una unidad de producto (en la unidad del insumo).
+             * @example 0.95
+             */
+            quantity: number;
+        };
+        SetRecipeDto: {
+            /** @description Receta completa. Reemplaza la anterior. Puede ir vacía para quitarla. */
+            items: components["schemas"]["RecipeItemDto"][];
+        };
+        CreateProductDto: {
+            /**
+             * @description Nombre del producto.
+             * @example Tortilla de maíz por kilo
+             */
+            name: string;
+            /**
+             * @description Código interno o SKU.
+             * @example TOR-KG
+             */
+            sku?: string;
+            /**
+             * @description Unidad de venta.
+             * @example kg
+             * @enum {string}
+             */
+            unit: "kg" | "piece" | "dozen" | "pack" | "box";
+            /**
+             * @description Precio de venta por unidad.
+             * @example 24
+             */
+            price: number;
+            /**
+             * @description Stock mínimo para alertas.
+             * @default 0
+             * @example 5
+             */
+            minStock: number;
+            /**
+             * @description Stock inicial (crea movimiento de inventario).
+             * @example 10
+             */
+            initialStock?: number;
+            /**
+             * @description Costo unitario inicial (si no usas receta).
+             * @example 14.5
+             */
+            cost?: number;
+            /** @description Descripción del producto. */
+            description?: string;
+            /** @description Receta inicial: insumos consumidos por unidad producida. */
+            recipe?: components["schemas"]["RecipeItemDto"][];
+        };
+        UpdateProductDto: {
+            /**
+             * @description Nombre del producto.
+             * @example Tortilla de maíz por kilo
+             */
+            name?: string;
+            /**
+             * @description Código interno o SKU.
+             * @example TOR-KG
+             */
+            sku?: string;
+            /**
+             * @description Unidad de venta.
+             * @example kg
+             * @enum {string}
+             */
+            unit?: "kg" | "piece" | "dozen" | "pack" | "box";
+            /**
+             * @description Precio de venta por unidad.
+             * @example 24
+             */
+            price?: number;
+            /**
+             * @description Stock mínimo para alertas.
+             * @default 0
+             * @example 5
+             */
+            minStock: number;
+            /**
+             * @description Stock inicial (crea movimiento de inventario).
+             * @example 10
+             */
+            initialStock?: number;
+            /**
+             * @description Costo unitario inicial (si no usas receta).
+             * @example 14.5
+             */
+            cost?: number;
+            /** @description Descripción del producto. */
+            description?: string;
+            /** @description Receta inicial: insumos consumidos por unidad producida. */
+            recipe?: components["schemas"]["RecipeItemDto"][];
+            /**
+             * @description Activar o desactivar el producto.
+             * @example true
+             */
+            isActive?: boolean;
+        };
+        PurchaseItemResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example b1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            supplyId: string;
+            /** @example Harina de maíz nixtamalizado */
+            supplyName: string;
+            /** @example kg */
+            supplyUnit: string;
+            /** @example 25 */
+            quantity: number;
+            /** @example 18.5 */
+            unitCost: number;
+            /** @example 462.5 */
+            lineTotal: number;
+        };
+        PurchaseResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example b1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            supplierId: string;
+            /** @example Harinas del Norte */
+            supplierName: string;
+            /** @example c1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            accountId: string;
+            /** @example Caja chica */
+            accountName: string;
+            /** @example FAC-00231 */
+            invoiceNumber: string | null;
+            /** @example 2026-01-15 */
+            date: string;
+            /** @example 462.5 */
+            subtotal: number;
+            /** @example 74 */
+            tax: number;
+            /** @example 536.5 */
+            total: number;
+            /**
+             * @example received
+             * @enum {string}
+             */
+            status: "received" | "cancelled";
+            /**
+             * @example cash
+             * @enum {string|null}
+             */
+            paymentMethod: "bank_transfer" | "debit_card" | "credit_card" | "cash" | null;
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            transactionId: string | null;
+            /** @example Compra semanal */
+            notes: string | null;
+            items: components["schemas"]["PurchaseItemResponseDto"][];
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        CreatePurchaseItemDto: {
+            /**
+             * Format: uuid
+             * @description UUID del insumo comprado.
+             */
+            supplyId: string;
+            /**
+             * @description Cantidad comprada (en la unidad del insumo).
+             * @example 25
+             */
+            quantity: number;
+            /**
+             * @description Costo unitario de compra.
+             * @example 18.5
+             */
+            unitCost: number;
+        };
+        CreatePurchaseDto: {
+            /**
+             * Format: uuid
+             * @description UUID del proveedor.
+             */
+            supplierId: string;
+            /**
+             * Format: uuid
+             * @description Cuenta desde la que se paga la compra.
+             */
+            accountId: string;
+            /**
+             * Format: date
+             * @description Fecha de la compra (YYYY-MM-DD).
+             * @example 2026-01-15
+             */
+            date: string;
+            /**
+             * @description Número de factura o remisión.
+             * @example FAC-00231
+             */
+            invoiceNumber?: string;
+            /**
+             * @description Forma de pago.
+             * @example cash
+             * @enum {string}
+             */
+            paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+            /**
+             * @description Impuestos de la compra (monto).
+             * @default 0
+             * @example 120
+             */
+            tax: number;
+            /** @description Notas de la compra. */
+            notes?: string;
+            /** @description Renglones de la compra. Cada uno aumenta el stock y recalcula el costo promedio. */
+            items: components["schemas"]["CreatePurchaseItemDto"][];
+        };
+        SaleItemResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example b1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            productId: string;
+            /** @example Tortilla de maíz por kilo */
+            productName: string;
+            /** @example 2 */
+            quantity: number;
+            /** @example 24 */
+            unitPrice: number;
+            /** @example 14.5 */
+            unitCost: number;
+            /** @example 48 */
+            lineTotal: number;
+            /** @example 19 */
+            lineProfit: number;
+        };
+        SaleResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example c1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            accountId: string;
+            /** @example Caja chica */
+            accountName: string;
+            /** @example 2026-01-15 */
+            date: string;
+            /** @example Mostrador */
+            customerName: string | null;
+            /** @example 48 */
+            subtotal: number;
+            /** @example 0 */
+            discount: number;
+            /** @example 48 */
+            total: number;
+            /**
+             * @example completed
+             * @enum {string}
+             */
+            status: "completed" | "cancelled";
+            /**
+             * @example cash
+             * @enum {string|null}
+             */
+            paymentMethod: "bank_transfer" | "debit_card" | "credit_card" | "cash" | null;
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            transactionId: string | null;
+            /** @example Venta del día */
+            notes: string | null;
+            /** @example 29 */
+            totalCost: number;
+            /** @example 19 */
+            grossProfit: number;
+            items: components["schemas"]["SaleItemResponseDto"][];
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        CreateSaleItemDto: {
+            /**
+             * Format: uuid
+             * @description UUID del producto vendido.
+             */
+            productId: string;
+            /**
+             * @description Cantidad vendida (en la unidad del producto).
+             * @example 2
+             */
+            quantity: number;
+            /**
+             * @description Precio unitario. Si se omite se usa el precio actual del producto.
+             * @example 24
+             */
+            unitPrice?: number;
+        };
+        CreateSaleDto: {
+            /**
+             * Format: uuid
+             * @description Cuenta donde se recibe el dinero.
+             */
+            accountId: string;
+            /**
+             * Format: date
+             * @description Fecha de la venta (YYYY-MM-DD).
+             * @example 2026-01-15
+             */
+            date: string;
+            /**
+             * @description Nombre del cliente (opcional).
+             * @example Mostrador
+             */
+            customerName?: string;
+            /**
+             * @description Forma de pago.
+             * @example cash
+             * @enum {string}
+             */
+            paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+            /**
+             * @description Descuento total aplicado a la venta (monto).
+             * @default 0
+             * @example 10
+             */
+            discount: number;
+            /** @description Notas de la venta. */
+            notes?: string;
+            /** @description Productos vendidos. Cada renglón descuenta stock y guarda el costo de producción. */
+            items: components["schemas"]["CreateSaleItemDto"][];
+        };
+        ProductionInputDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            supplyId: string;
+            /** @example Harina de maíz */
+            supplyName: string;
+            /** @example kg */
+            supplyUnit: string;
+            /** @example 9.5 */
+            quantity: number;
+            /** @example 18.5 */
+            unitCost: number;
+            /** @example 175.75 */
+            totalCost: number;
+        };
+        ProductionResponseDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            id: string;
+            /** @example b1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            productId: string;
+            /** @example Tortilla de maíz por kilo */
+            productName: string;
+            /** @example 2026-01-15 */
+            date: string;
+            /** @example 10 */
+            quantity: number;
+            /** @example 175.75 */
+            totalCost: number;
+            /** @example 17.575 */
+            unitCost: number;
+            /**
+             * @example completed
+             * @enum {string}
+             */
+            status: "completed" | "cancelled";
+            /** @example Lote matutino */
+            notes: string | null;
+            /** @description Solo en el detalle. */
+            inputs?: components["schemas"]["ProductionInputDto"][];
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-01-15T12:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        CreateProductionDto: {
+            /**
+             * Format: uuid
+             * @description UUID del producto a producir.
+             */
+            productId: string;
+            /**
+             * Format: date
+             * @description Fecha de producción (YYYY-MM-DD).
+             * @example 2026-01-15
+             */
+            date: string;
+            /**
+             * @description Cantidad de producto a producir (en la unidad del producto).
+             * @example 10
+             */
+            quantity: number;
+            /** @description Notas del lote. */
+            notes?: string;
+        };
+        ReportPeriodDto: {
+            /** @example 2026-01-01 */
+            from: string;
+            /** @example 2026-01-31 */
+            to: string;
+        };
+        SalesKpiDto: {
+            /**
+             * @description Ingreso total por ventas.
+             * @example 12500.5
+             */
+            total: number;
+            /** @example 48 */
+            count: number;
+            /** @example 260.43 */
+            averageTicket: number;
+            /**
+             * @description Costo de los productos vendidos (snapshot).
+             * @example 7300.25
+             */
+            cogs: number;
+            /** @example 5200.25 */
+            grossProfit: number;
+            /** @example 41.6 */
+            grossMarginPercent: number;
+        };
+        PurchasesKpiDto: {
+            /** @example 4200.75 */
+            total: number;
+            /** @example 12 */
+            count: number;
+            /** @example 350.06 */
+            average: number;
+        };
+        ProductionKpiDto: {
+            /** @example 18 */
+            count: number;
+            /**
+             * @description Unidades producidas.
+             * @example 180.5
+             */
+            quantity: number;
+            /** @example 3100.4 */
+            totalCost: number;
+        };
+        InventorySnapshotDto: {
+            /** @example 15000.5 */
+            suppliesValue: number;
+            /** @example 8200.75 */
+            productsValue: number;
+            /** @example 23201.25 */
+            totalValue: number;
+            /** @example 8 */
+            suppliesCount: number;
+            /** @example 5 */
+            productsCount: number;
+            /** @example 2 */
+            lowStockCount: number;
+            /** @example 1 */
+            outOfStockCount: number;
+        };
+        TopProductDto: {
+            /** @example b1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            productId: string;
+            /** @example Tortilla de maíz por kilo */
+            productName: string;
+            /** @example 25.5 */
+            quantity: number;
+            /** @example 612 */
+            revenue: number;
+            /** @example 369.75 */
+            cost: number;
+            /** @example 242.25 */
+            profit: number;
+        };
+        DailySalesDto: {
+            /** @example 2026-01-15 */
+            date: string;
+            /** @example 640.5 */
+            total: number;
+            /** @example 3 */
+            count: number;
+        };
+        BusinessDashboardResponseDto: {
+            period: components["schemas"]["ReportPeriodDto"];
+            sales: components["schemas"]["SalesKpiDto"];
+            purchases: components["schemas"]["PurchasesKpiDto"];
+            production: components["schemas"]["ProductionKpiDto"];
+            inventory: components["schemas"]["InventorySnapshotDto"];
+            topProducts: components["schemas"]["TopProductDto"][];
+            dailySales: components["schemas"]["DailySalesDto"][];
+        };
+        PaymentBreakdownDto: {
+            /** @example cash */
+            paymentMethod: string;
+            /** @example 8000 */
+            total: number;
+            /** @example 30 */
+            count: number;
+        };
+        SalesReportResponseDto: {
+            period: components["schemas"]["ReportPeriodDto"];
+            totals: components["schemas"]["SalesKpiDto"];
+            byDay: components["schemas"]["DailySalesDto"][];
+            byProduct: components["schemas"]["TopProductDto"][];
+            byPaymentMethod: components["schemas"]["PaymentBreakdownDto"][];
+        };
+        DailyPurchasesDto: {
+            /** @example 2026-01-15 */
+            date: string;
+            /** @example 536.5 */
+            total: number;
+            /** @example 2 */
+            count: number;
+        };
+        SupplierPurchasesDto: {
+            /** @example a1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            supplierId: string;
+            /** @example Harinas del Norte */
+            supplierName: string;
+            /** @example 2500 */
+            total: number;
+            /** @example 4 */
+            count: number;
+        };
+        SupplyPurchasesDto: {
+            /** @example b1b2c3d4-e5f6-7890-abcd-ef1234567890 */
+            supplyId: string;
+            /** @example Harina de maíz nixtamalizado */
+            supplyName: string;
+            /** @example kg */
+            unit: string;
+            /** @example 120.5 */
+            quantity: number;
+            /** @example 2229.25 */
+            total: number;
+        };
+        PurchasesReportResponseDto: {
+            period: components["schemas"]["ReportPeriodDto"];
+            totals: components["schemas"]["PurchasesKpiDto"];
+            byDay: components["schemas"]["DailyPurchasesDto"][];
+            bySupplier: components["schemas"]["SupplierPurchasesDto"][];
+            bySupply: components["schemas"]["SupplyPurchasesDto"][];
+        };
+        ProfitLossRevenueDto: {
+            /** @example 12500.5 */
+            sales: number;
+            /** @example 12500.5 */
+            totalIncome: number;
+            /** @example 4200.75 */
+            totalExpenses: number;
+        };
+        ProfitLossResultDto: {
+            /** @example 7300.25 */
+            cogs: number;
+            /** @example 5200.25 */
+            grossProfit: number;
+            /** @example 5200.25 */
+            netProfit: number;
+            /** @example 41.6 */
+            grossMarginPercent: number;
+            /** @example 41.6 */
+            netMarginPercent: number;
+        };
+        ProfitLossReportResponseDto: {
+            period: components["schemas"]["ReportPeriodDto"];
+            revenue: components["schemas"]["ProfitLossRevenueDto"];
+            result: components["schemas"]["ProfitLossResultDto"];
         };
         PeriodResponseDto: {
             /** @example 2025 */
@@ -9046,6 +10699,2761 @@ export interface operations {
             };
         };
     };
+    SuppliersController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lista de proveedores. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Proveedores obtenidos exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["SupplierResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliersController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSupplierDto"];
+            };
+        };
+        responses: {
+            /** @description Proveedor creado. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Proveedor creado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SupplierResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliersController_findAllPaginated: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1) */
+                pagina?: number;
+                /** @description Cantidad de registros por página */
+                registros?: number;
+                /** @description Texto a buscar */
+                buscar?: string;
+                /** @description Filtrar por estado. */
+                isActive?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de proveedores. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Proveedores obtenidos exitosamente */
+                        message?: string;
+                        /** @example 10 */
+                        total?: number;
+                        data?: components["schemas"]["SupplierResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliersController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del proveedor. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Proveedor encontrado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Proveedor obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SupplierResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliersController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del proveedor. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Proveedor eliminado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Proveedor eliminado exitosamente */
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del proveedor. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSupplierDto"];
+            };
+        };
+        responses: {
+            /** @description Proveedor actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Proveedor actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SupplierResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliersController_toggleActive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del proveedor. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Proveedor con estado actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Estado del proveedor actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SupplierResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliesController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lista de insumos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Insumos obtenidos exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["SupplyResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSupplyDto"];
+            };
+        };
+        responses: {
+            /** @description Insumo creado. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Insumo creado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SupplyResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliesController_findAllPaginated: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1) */
+                pagina?: number;
+                /** @description Cantidad de registros por página */
+                registros?: number;
+                /** @description Texto a buscar */
+                buscar?: string;
+                /** @description Filtrar por estado. */
+                isActive?: boolean;
+                /** @description Solo insumos en o bajo el mínimo. */
+                lowStock?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de insumos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Insumos obtenidos exitosamente */
+                        message?: string;
+                        /** @example 10 */
+                        total?: number;
+                        data?: components["schemas"]["SupplyResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliesController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del insumo. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Insumo encontrado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Insumo obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SupplyResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del insumo. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Insumo eliminado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Insumo eliminado exitosamente */
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del insumo. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSupplyDto"];
+            };
+        };
+        responses: {
+            /** @description Insumo actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Insumo actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SupplyResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SuppliesController_toggleActive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del insumo. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Insumo con estado actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Estado del insumo actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SupplyResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_summary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Valuación, conteos y alertas de stock. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Resumen de inventario obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["InventorySummaryDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_lowStock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lista de artículos bajo mínimo. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Alertas de stock obtenidas exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["LowStockItemDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_movements: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1). */
+                page?: number;
+                /** @description Registros por página. */
+                limit?: number;
+                /** @description Filtra por tipo de artículo. */
+                itemType?: "supply" | "product";
+                /** @description Filtra por tipo de movimiento. */
+                type?: "initial" | "purchase" | "sale" | "production_input" | "production_output" | "adjustment_in" | "adjustment_out" | "waste" | "return_in" | "return_out";
+                /** @description UUID del insumo. */
+                supplyId?: string;
+                /** @description UUID del producto. */
+                productId?: string;
+                /** @description Origen del movimiento. */
+                referenceType?: string;
+                /** @description Fecha inicial inclusive (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusive (YYYY-MM-DD). */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página del kardex. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Movimientos de inventario obtenidos exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["InventoryMovementResponseDto"][];
+                        /** @example 10 */
+                        total?: number;
+                        /** @example 1 */
+                        page?: number;
+                        /** @example 25 */
+                        limit?: number;
+                        /** @example 1 */
+                        pages?: number;
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_adjust: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdjustInventoryDto"];
+            };
+        };
+        responses: {
+            /** @description Movimiento de ajuste creado. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Ajuste de inventario registrado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["InventoryMovementResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lista de productos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Productos obtenidos exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["ProductResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProductDto"];
+            };
+        };
+        responses: {
+            /** @description Producto creado. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Producto creado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProductResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_findAllPaginated: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1) */
+                pagina?: number;
+                /** @description Cantidad de registros por página */
+                registros?: number;
+                /** @description Texto a buscar */
+                buscar?: string;
+                /** @description Filtrar por estado. */
+                isActive?: boolean;
+                /** @description Solo productos en o bajo el mínimo. */
+                lowStock?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de productos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Productos obtenidos exitosamente */
+                        message?: string;
+                        /** @example 10 */
+                        total?: number;
+                        data?: components["schemas"]["ProductResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_getRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del producto. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Receta del producto. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Receta obtenida exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["RecipeResponseDto"][];
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_setRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del producto. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetRecipeDto"];
+            };
+        };
+        responses: {
+            /** @description Producto con la nueva receta. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Receta actualizada exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProductResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del producto. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Producto encontrado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Producto obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProductResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del producto. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Producto eliminado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Producto eliminado exitosamente */
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del producto. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProductDto"];
+            };
+        };
+        responses: {
+            /** @description Producto actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Producto actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProductResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_toggleActive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID del producto. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Producto con estado actualizado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Estado del producto actualizado exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProductResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchasesController_findAll: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1). */
+                page?: number;
+                /** @description Registros por página. */
+                limit?: number;
+                /** @description Filtrar por proveedor. */
+                supplierId?: string;
+                /** @description Filtrar por estado. */
+                status?: "received" | "cancelled";
+                /** @description Fecha inicial inclusive (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusive (YYYY-MM-DD). */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de compras. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Compras obtenidas exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["PurchaseResponseDto"][];
+                        /** @example 10 */
+                        total?: number;
+                        /** @example 1 */
+                        page?: number;
+                        /** @example 25 */
+                        limit?: number;
+                        /** @example 1 */
+                        pages?: number;
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchasesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePurchaseDto"];
+            };
+        };
+        responses: {
+            /** @description Compra registrada con inventario y egreso. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Compra registrada exitosamente */
+                        message?: string;
+                    } & components["schemas"]["PurchaseResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchasesController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la compra. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Compra encontrada. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Compra obtenida exitosamente */
+                        message?: string;
+                    } & components["schemas"]["PurchaseResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchasesController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la compra. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Compra cancelada con inventario y egreso revertidos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Compra cancelada exitosamente */
+                        message?: string;
+                    } & components["schemas"]["PurchaseResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SalesController_findAll: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1). */
+                page?: number;
+                /** @description Registros por página. */
+                limit?: number;
+                /** @description Filtrar por estado. */
+                status?: "completed" | "cancelled";
+                /** @description Fecha inicial inclusive (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusive (YYYY-MM-DD). */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de ventas. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Ventas obtenidas exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["SaleResponseDto"][];
+                        /** @example 10 */
+                        total?: number;
+                        /** @example 1 */
+                        page?: number;
+                        /** @example 25 */
+                        limit?: number;
+                        /** @example 1 */
+                        pages?: number;
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SalesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSaleDto"];
+            };
+        };
+        responses: {
+            /** @description Venta registrada con inventario e ingreso. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Venta registrada exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SaleResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SalesController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la venta. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Venta encontrada. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Venta obtenida exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SaleResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SalesController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la venta. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Venta cancelada con inventario e ingreso revertidos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Venta cancelada exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SaleResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductionController_findAll: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1). */
+                page?: number;
+                /** @description Registros por página. */
+                limit?: number;
+                /** @description Filtrar por producto. */
+                productId?: string;
+                /** @description Filtrar por estado. */
+                status?: "completed" | "cancelled";
+                /** @description Fecha inicial inclusive (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusive (YYYY-MM-DD). */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de producciones. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Producciones obtenidas exitosamente */
+                        message?: string;
+                        items?: components["schemas"]["ProductionResponseDto"][];
+                        /** @example 10 */
+                        total?: number;
+                        /** @example 1 */
+                        page?: number;
+                        /** @example 25 */
+                        limit?: number;
+                        /** @example 1 */
+                        pages?: number;
+                    };
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductionController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProductionDto"];
+            };
+        };
+        responses: {
+            /** @description Producción registrada con movimientos de inventario. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Producción registrada exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProductionResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductionController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la producción. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Producción con sus insumos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Producción obtenida exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProductionResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductionController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description UUID de la producción. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Producción cancelada con movimientos revertidos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Producción cancelada exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProductionResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BusinessReportsController_dashboard: {
+        parameters: {
+            query?: {
+                /** @description Fecha inicial inclusive (YYYY-MM-DD). Por defecto, el primer día del mes actual. */
+                from?: string;
+                /** @description Fecha final inclusive (YYYY-MM-DD). Por defecto, el último día del mes actual. */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resumen operativo con ventas, compras, producción e inventario. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Dashboard del negocio obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["BusinessDashboardResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BusinessReportsController_sales: {
+        parameters: {
+            query?: {
+                /** @description Fecha inicial inclusive (YYYY-MM-DD). Por defecto, el primer día del mes actual. */
+                from?: string;
+                /** @description Fecha final inclusive (YYYY-MM-DD). Por defecto, el último día del mes actual. */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ventas del periodo con desgloses. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Reporte de ventas obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["SalesReportResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BusinessReportsController_purchases: {
+        parameters: {
+            query?: {
+                /** @description Fecha inicial inclusive (YYYY-MM-DD). Por defecto, el primer día del mes actual. */
+                from?: string;
+                /** @description Fecha final inclusive (YYYY-MM-DD). Por defecto, el último día del mes actual. */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Compras del periodo con desgloses. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Reporte de compras obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["PurchasesReportResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BusinessReportsController_profitLoss: {
+        parameters: {
+            query?: {
+                /** @description Fecha inicial inclusive (YYYY-MM-DD). Por defecto, el primer día del mes actual. */
+                from?: string;
+                /** @description Fecha final inclusive (YYYY-MM-DD). Por defecto, el último día del mes actual. */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ingresos, egresos y utilidad del periodo. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Estado de resultados obtenido exitosamente */
+                        message?: string;
+                    } & components["schemas"]["ProfitLossReportResponseDto"];
+                };
+            };
+            /** @description Solicitud incorrecta */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No autorizado / Token JWT inválido */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recurso no encontrado */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflicto con recurso existente */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error interno del servidor */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     ReportsController_dashboard: {
         parameters: {
             query?: {
@@ -9993,6 +14401,159 @@ export interface operations {
             };
             /** @description Error interno del servidor */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_exportDashboardPdf: {
+        parameters: {
+            query?: {
+                /** @description Año del periodo. Por defecto el actual (UTC). */
+                year?: number;
+                /** @description Mes del periodo (1-12). Por defecto el actual (UTC). */
+                month?: number;
+                /** @description Granularidad: `monthly` (defecto), `quarterly` (trimestre del mes) o `annual` (año completo). Equivale a los botones Mensual/Trimestral/Anual. */
+                granularity?: "monthly" | "quarterly" | "annual";
+                /** @description Filtra movimientos por cuenta (origen o destino). Equivale al dropdown "Cuenta Principal". Sin filtro usa todas. */
+                accountId?: string;
+                /** @description Filtra movimientos por medio de pago. Equivale al filtro "Todos los métodos". Sin filtro usa todos. */
+                paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_exportDashboardXlsx: {
+        parameters: {
+            query?: {
+                /** @description Año del periodo. Por defecto el actual (UTC). */
+                year?: number;
+                /** @description Mes del periodo (1-12). Por defecto el actual (UTC). */
+                month?: number;
+                /** @description Granularidad: `monthly` (defecto), `quarterly` (trimestre del mes) o `annual` (año completo). Equivale a los botones Mensual/Trimestral/Anual. */
+                granularity?: "monthly" | "quarterly" | "annual";
+                /** @description Filtra movimientos por cuenta (origen o destino). Equivale al dropdown "Cuenta Principal". Sin filtro usa todas. */
+                accountId?: string;
+                /** @description Filtra movimientos por medio de pago. Equivale al filtro "Todos los métodos". Sin filtro usa todos. */
+                paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_exportTransactionsPdf: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1). */
+                page?: number;
+                /** @description Registros por página. */
+                limit?: number;
+                /** @description Fecha inicial inclusiva (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusiva (YYYY-MM-DD). */
+                to?: string;
+                /** @description Filtrar por tipo de movimiento. */
+                type?: "income" | "expense" | "transfer";
+                /** @description Filtrar por estado de conciliación. */
+                status?: "pending" | "reconciled";
+                /** @description Filtrar por medio de pago. */
+                paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+                /** @description Rubro o partida. Si es un rubro, incluye sus partidas. */
+                categoryId?: string;
+                /** @description Cuenta origen o destino. */
+                accountId?: string;
+                /** @description Búsqueda por texto en concepto, descripción o referencia. */
+                search?: string;
+                /** @description Orden por fecha contable. */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_exportTransactionsXlsx: {
+        parameters: {
+            query?: {
+                /** @description Número de página (empieza en 1). */
+                page?: number;
+                /** @description Registros por página. */
+                limit?: number;
+                /** @description Fecha inicial inclusiva (YYYY-MM-DD). */
+                from?: string;
+                /** @description Fecha final inclusiva (YYYY-MM-DD). */
+                to?: string;
+                /** @description Filtrar por tipo de movimiento. */
+                type?: "income" | "expense" | "transfer";
+                /** @description Filtrar por estado de conciliación. */
+                status?: "pending" | "reconciled";
+                /** @description Filtrar por medio de pago. */
+                paymentMethod?: "bank_transfer" | "debit_card" | "credit_card" | "cash";
+                /** @description Rubro o partida. Si es un rubro, incluye sus partidas. */
+                categoryId?: string;
+                /** @description Cuenta origen o destino. */
+                accountId?: string;
+                /** @description Búsqueda por texto en concepto, descripción o referencia. */
+                search?: string;
+                /** @description Orden por fecha contable. */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthController_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -11615,7 +16176,9 @@ export interface operations {
     SeedController_executeSeed: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "x-seed-token": string;
+            };
             path?: never;
             cookie?: never;
         };

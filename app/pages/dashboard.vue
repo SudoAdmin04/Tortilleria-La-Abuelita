@@ -35,7 +35,7 @@ const initialLoading = computed(() => dash.overviewPending.value && !dash.overvi
         <h1 class="font-display text-2xl font-semibold tracking-tight">
           Resumen Financiero Ejecutivo
         </h1>
-        <p class="text-sm text-slate-400 mt-0.5">
+        <p class="text-sm text-muted mt-0.5">
           Control de liquidez mensual, ejecución presupuestaria y arqueo patrimonial · {{ dash.rangeLabel.value }}
         </p>
       </div>

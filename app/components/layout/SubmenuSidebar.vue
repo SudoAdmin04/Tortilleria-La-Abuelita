@@ -47,13 +47,13 @@ const menuUi = {
     'group relative flex items-center w-full text-sm transition-all duration-150 font-light',
     'rounded-xl',
     'border-s-3 border-s-transparent',
-    'text-white/70 hover:bg-white/5 hover:text-primary-200 hover:border-s-primary-200',
-    'data-[active=true]:bg-neutral-800/90 data-[active=true]:text-white data-[active=true]:border-s-primary data-[active=true]:shadow-md',
-    'aria-[current=page]:bg-neutral-800/90 aria-[current=page]:text-white aria-[current=page]:border-s-primary aria-[current=page]:shadow-md'
+    'text-muted hover:bg-default hover:text-primary hover:border-s-primary/50',
+    'data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-medium data-[active=true]:border-s-primary data-[active=true]:shadow-sm',
+    'aria-[current=page]:bg-primary/10 aria-[current=page]:text-primary aria-[current=page]:font-medium aria-[current=page]:border-s-primary aria-[current=page]:shadow-sm'
   ].join(' '),
-  linkLeadingIcon: 'size-5 shrink-0 text-white/60 group-hover:text-primary-200 group-data-[active=true]:text-primary group-aria-[current=page]:text-white transition-colors',
+  linkLeadingIcon: 'size-5 shrink-0 text-muted group-hover:text-primary group-data-[active=true]:text-primary group-aria-[current=page]:text-primary transition-colors',
   linkLabel: 'truncate',
-  linkTrailingIcon: 'size-4 shrink-0 text-white/40 group-hover:text-white/70 group-data-[active=true]:text-primary group-aria-[current=page]:text-primary',
+  linkTrailingIcon: 'size-4 shrink-0 text-dimmed group-hover:text-primary group-data-[active=true]:text-primary group-aria-[current=page]:text-primary transition-colors',
 }
 </script>
 
@@ -63,12 +63,12 @@ const menuUi = {
     v-model:collapsed="collapsed"
     collapsible
     :toggle="false"
-    class="bg-neutral-900/80 border-r border-white/5"
+    class="bg-elevated border-e border-default"
   >
     <template #header="{ collapsed: isCollapsed, collapse }">
       <div class="flex w-full items-center" :class="isCollapsed ? 'justify-center' : 'justify-between gap-2'">
         <div v-if="!isCollapsed && title" class="flex items-center gap-2 min-w-0 flex-1">
-          <h2 class="min-w-0 flex-1 truncate text-xs font-bold text-white uppercase tracking-wider">
+          <h2 class="min-w-0 flex-1 truncate text-xs font-bold text-muted uppercase tracking-wider">
             {{ title }}
           </h2>
         </div>
@@ -79,7 +79,7 @@ const menuUi = {
           color="neutral"
           square
           size="xs"
-          class="text-white/40 hover:text-white hover:bg-white/5"
+          class="text-dimmed hover:text-primary hover:bg-default"
           :aria-label="isCollapsed ? 'Expandir submenú' : 'Contraer submenú'"
           @click="collapse(!isCollapsed)"
         />
@@ -103,20 +103,20 @@ const menuUi = {
           <section v-for="group in groups" :key="group.module" class="flex flex-col">
             <button
               type="button"
-              class="flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer border border-white/5"
+              class="flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-default text-toned hover:bg-default/70 hover:text-highlighted transition-colors cursor-pointer border border-default"
               :aria-expanded="isModuleOpen(group.module)"
               @click="toggleModule(group.module)"
             >
               <div class="flex items-center gap-2 min-w-0">
-                <span class="size-1.5 rounded-full bg-primary/70 shrink-0"></span>
-                <span class="truncate text-[11px] font-bold uppercase tracking-wider text-white/80">
+                <span class="size-1.5 rounded-full bg-primary shrink-0"></span>
+                <span class="truncate text-[11px] font-bold uppercase tracking-wider text-toned">
                   {{ group.label }}
                 </span>
               </div>
 
               <UIcon
                 name="i-lucide-chevron-down"
-                class="size-3.5 transition-transform shrink-0 text-white/50"
+                class="size-3.5 transition-transform shrink-0 text-dimmed"
                 :class="!isModuleOpen(group.module) && '-rotate-90'"
               />
             </button>
@@ -133,7 +133,7 @@ const menuUi = {
         </div>
       </template>
 
-      <p v-else class="text-xs text-white/40 p-2">Sin opciones asignadas.</p>
+      <p v-else class="text-xs text-muted p-2">Sin opciones asignadas.</p>
     </template>
   </UDashboardSidebar>
 </template>
