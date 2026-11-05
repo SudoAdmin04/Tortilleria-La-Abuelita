@@ -2,6 +2,7 @@
 import { listAccounts } from '~/services/accounts.service'
 import { listCategories } from '~/services/categories.service'
 import type { Transaction } from '~/services/transactions.service'
+import type { ExportFormat } from '~/services/exports.repository'
 
 useHead({ title: 'Transacciones' })
 
@@ -29,6 +30,33 @@ const conteos = computed(() => ({
 }))
 
 const totalRegistros = computed(() => summary.value?.totalCount ?? total.value)
+
+const { downloadTransactions, isExporting } = useExports()
+
+const exportando = computed(() =>
+  isExporting('transactions', 'pdf') || isExporting('transactions', 'xlsx'),
+)
+
+function exportar(format: ExportFormat) {
+  return downloadTransactions(format, {
+    from: filter.desde,
+    to: filter.hasta,
+    type: filter.tipo,
+    status: filter.estado,
+    paymentMethod: filter.metodoPago,
+    categoryId: filter.categoriaId,
+    accountId: filter.cuentaId,
+    search: filter.buscar?.trim() || undefined,
+    order: 'desc',
+  })
+}
+
+const exportMenu = [
+  [
+    { label: 'PDF', icon: 'i-lucide-file-text', onSelect: () => exportar('pdf') },
+    { label: 'Excel (XLSX)', icon: 'i-lucide-file-spreadsheet', onSelect: () => exportar('xlsx') },
+  ],
+]
 
 function refreshAll() {
   return Promise.all([fetchPaginado(), fetchResumen(), fetchAnaliticas()])
@@ -126,7 +154,21 @@ onUnmounted(() => clearTimeout(searchTimer))
       search-placeholder="Buscar concepto..."
       :create-label="puedeCrear ? 'Registrar Movimiento' : undefined"
       @create="openCreate"
-    />
+    >
+      <template #actions>
+        <UDropdownMenu :items="exportMenu" :content="{ align: 'end' }">
+          <UButton
+            icon="i-lucide-download"
+            color="neutral"
+            variant="outline"
+            :loading="exportando"
+            trailing-icon="i-lucide-chevron-down"
+          >
+            <span class="hidden sm:inline">Exportar</span>
+          </UButton>
+        </UDropdownMenu>
+      </template>
+    </AppToolbar>
 
     <TransaccionesStatsCards
       :summary="summary"

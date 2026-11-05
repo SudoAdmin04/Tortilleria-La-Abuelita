@@ -90,6 +90,7 @@ const pageLabel = computed(() => {
         <thead class="bg-elevated/60 text-muted text-xs uppercase tracking-wider sticky top-0">
           <tr>
             <th class="text-left font-semibold px-4 py-2.5">Fecha</th>
+            <th class="text-left font-semibold px-4 py-2.5">Tipo</th>
             <th class="text-left font-semibold px-4 py-2.5">Artículo</th>
             <th class="text-left font-semibold px-4 py-2.5">Movimiento</th>
             <th class="text-right font-semibold px-4 py-2.5">Cantidad</th>
@@ -114,11 +115,13 @@ const pageLabel = computed(() => {
             <tr v-for="m in data" :key="m.id" class="hover:bg-elevated/50 transition-colors duration-150">
               <td class="px-4 py-2.5 text-toned whitespace-nowrap">{{ formatDate(m.date) }}</td>
               <td class="px-4 py-2.5">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="text-highlighted font-medium truncate max-w-56">{{ nombreArticulo(m) }}</span>
                   <UBadge :color="m.itemType === 'supply' ? 'neutral' : 'primary'" variant="subtle" size="sm" class="shrink-0">
                     {{ m.itemType === 'supply' ? 'Insumo' : 'Producto' }}
                   </UBadge>
+              </td>
+              <td class="px-4 py-2.5">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="text-highlighted font-medium truncate max-w-56">{{ nombreArticulo(m) }}</span>
                 </div>
               </td>
               <td class="px-4 py-2.5">

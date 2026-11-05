@@ -73,7 +73,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       @create="openCreate"
     />
 
-    <ConfiguracionCategoriasTable
+    <CategoriasTable
       :data="items"
       :loading="loading"
       :total="total"
@@ -85,7 +85,7 @@ onUnmounted(() => clearTimeout(searchTimer))
       @delete="handleDelete"
     />
 
-    <ConfiguracionCategoriasDrawer
+    <CategoriasDrawer
       v-model:open="formDrawerOpen"
       :categoria="editingCategoria"
       :rubros="rubros"

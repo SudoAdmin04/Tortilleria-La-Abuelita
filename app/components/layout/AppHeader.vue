@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth.store'
 import { usePermisosStore } from '~/stores/permisos.store'
-import { listTransactions, type Transaction } from '~/services/transactions.service'
-import { downloadCsv, monthRange, transactionsToCsv } from '~/utils/report-csv'
-import { getApiMessage } from '~/utils/api-error'
 import { monthYearLabel } from '~/utils/format'
 import type { Overview } from '~/services/dashboard.service'
+import type { ExportFormat, ExportGranularity, ExportPaymentMethod } from '~/services/exports.repository'
 
 const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
 const route = useRoute()
-const toast = useToast()
 const authStore = useAuthStore()
 const permisosStore = usePermisosStore()
 
@@ -45,8 +42,9 @@ const period = useState<{ year: number, month: number }>('dashboard-period', () 
   year: now.getFullYear(),
   month: now.getMonth() + 1,
 }))
-const search = useState<string>('dashboard-search', () => '')
 const accountId = useState<string | undefined>('dashboard-account-id', () => undefined)
+const granularity = useState<ExportGranularity>('dashboard-granularity', () => 'monthly')
+const paymentMethod = useState<ExportPaymentMethod | undefined>('dashboard-payment-method', () => undefined)
 
 
 const { data: dashboardOverview } = useNuxtData<Overview>('dashboard-overview')
@@ -71,39 +69,28 @@ function goCurrentMonth() {
   monthOpen.value = false
 }
 
-const downloading = ref(false)
-async function downloadReport() {
-  downloading.value = true
-  try {
-    const { from, to } = monthRange(period.value.year, period.value.month)
-    const limit = 200
-    let page = 1
-    let pages = 1
-    const all: Transaction[] = []
-    do {
-      const res = await listTransactions({
-        page, limit, from, to,
-        accountId: accountId.value || undefined,
-        search: search.value.trim() || undefined,
-        order: 'asc',
-      })
-      all.push(...res.items)
-      pages = res.pages
-      page++
-    } while (page <= pages)
-    if (!all.length) {
-      toast.add({ title: 'Sin movimientos', description: 'No hay datos para el periodo y filtros actuales.', color: 'warning' })
-      return
-    }
-    const mm = String(period.value.month).padStart(2, '0')
-    downloadCsv(transactionsToCsv(all), `reporte-${period.value.year}-${mm}.csv`)
-    toast.add({ title: 'Reporte descargado', description: `${all.length} movimientos exportados.`, color: 'success' })
-  } catch (e) {
-    toast.add({ title: 'Error', description: getApiMessage(e, 'No se pudo descargar el reporte'), color: 'error' })
-  } finally {
-    downloading.value = false
-  }
+const { downloadDashboard, isExporting } = useExports()
+
+const exporting = computed(() =>
+  isExporting('dashboard', 'pdf') || isExporting('dashboard', 'xlsx'),
+)
+
+function descargarDashboard(format: ExportFormat) {
+  return downloadDashboard(format, {
+    year: period.value.year,
+    month: period.value.month,
+    granularity: granularity.value,
+    accountId: accountId.value,
+    paymentMethod: paymentMethod.value,
+  })
 }
+
+const exportMenu = [
+  [
+    { label: 'PDF', icon: 'i-lucide-file-text', onSelect: () => descargarDashboard('pdf') },
+    { label: 'Excel (XLSX)', icon: 'i-lucide-file-spreadsheet', onSelect: () => descargarDashboard('xlsx') },
+  ],
+]
 
 const puedeCrear = computed(() => permisosStore.can('/transacciones', 'canCreate'))
 const quickOpen = ref(false)
@@ -184,15 +171,17 @@ const avatarMenu = computed(() => [
           />
         </template>
 
-        <UButton
-          icon="i-lucide-download"
-          color="neutral"
-          variant="outline"
-          :loading="downloading"
-          @click="downloadReport()"
-        >
-          <span class="hidden md:inline">Descargar Reporte</span>
-        </UButton>
+        <UDropdownMenu :items="exportMenu" :content="{ align: 'end' }">
+          <UButton
+            icon="i-lucide-download"
+            color="neutral"
+            variant="outline"
+            :loading="exporting"
+            trailing-icon="i-lucide-chevron-down"
+          >
+            <span class="hidden md:inline">Descargar Reporte</span>
+          </UButton>
+        </UDropdownMenu>
 
         <UButton
           v-if="puedeCrear"
